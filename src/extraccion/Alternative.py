@@ -1,7 +1,6 @@
 import requests
 import pandas as pd
 
-
 def get_fear_greed_index():
     url = "https://api.alternative.me/fng/?limit=0&format=json&date_format=world"
 

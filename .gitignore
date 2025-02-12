@@ -1,0 +1,6 @@
+# Archivos de PyCharm
+.venv/
+.idea/
+
+# Datos almacenados
+data/

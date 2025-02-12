@@ -1,0 +1,6 @@
+# config.py
+API_KEY = "***REMOVED***"
+API_SECRET = "***REMOVED***"
+ACCESS_TOKEN = "***REMOVED***"
+ACCESS_SECRET = "***REMOVED***"
+BEARER_TOKEN = "***REMOVED***"

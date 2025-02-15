@@ -54,9 +54,9 @@ def get_binance_futures_historical_data(symbol="BTCUSDT", days=365, interval="1h
 
 # Llamada a la función para obtener 1 año de datos en intervalos de 1 hora
 df = get_binance_futures_historical_data(days=365, interval="1h")
+print(df.head())
 
-if df is not None:
-    df.to_csv("C:\\Users\\vegag\\OneDrive\\Documentos\\GitHub\\c2425-R6\\data\\mercadoDerivados_binance.csv", encoding="utf-8-sig", index=True)  # Cambia el nombre del archivo si lo deseas
+# Guardar el conjunto de datos
+output_path = r"../../data/datos_mercadoDerivados_binance.csv"
+df.to_csv(output_path, encoding="utf-8-sig", index=True)
 
-# Mostrar las primeras filas
-df.head()

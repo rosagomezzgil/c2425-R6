@@ -23,8 +23,11 @@ dxy = dxy.rename(columns={"Date": "timestamp", "Close": "dxy"})
 
 # Seleccionar solo las columnas necesarias
 dxy = dxy[["timestamp", "dxy"]]
-dxy.to_csv("datos_bitcoin_dxy.csv", index=False)
-print(dxy)
+print(dxy.head())
+
+# Guardar el conjunto de datos
+output_path = r"../../data/datos_bitcoin_dxy.csv"
+dxy.to_csv(output_path, index=False)
 
 #Si DXY sube, significa que el dólar es más fuerte y los inversores podrían vender BTC.
 #Si DXY baja, BTC podría ser más atractivo como alternativa al dólar.

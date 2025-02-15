@@ -31,6 +31,8 @@ def get_binance_data(symbol="BTCUSDT", interval="1d", limit=1000):
 
 # Ejecutar la función y ver qué devuelve
 binance_df = get_binance_data("BTCUSDT")  # Aseguramos que el símbolo está en mayúsculas
+print(binance_df.head())
 
-binance_df.to_csv("datos_bitcoin_binance.csv", index=False)
-print(binance_df)
+# Guardar el conjunto de datos
+output_path = r"../../data/datos_bitcoin_binance.csv"
+binance_df.to_csv(output_path, index=False)

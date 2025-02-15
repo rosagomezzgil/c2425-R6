@@ -90,7 +90,9 @@ pd.set_option('display.max_rows', None)  # Muestra todas las filas
 pd.set_option('display.max_columns', None)  # Muestra todas las columnas
 pd.set_option('display.expand_frame_repr', False)
 
-df_bitget.to_csv("bitget_scrapping.csv", encoding="utf-8-sig", index=True)
+# Guardar el conjunto de datos
+output_path = r"../../data/bitget_scrapping.csv"
+df_bitget.to_csv(output_path, encoding="utf-8-sig", index=False)
 
 # Mostrar el DataFrame completo
 print(df_bitget)

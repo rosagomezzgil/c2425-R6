@@ -25,7 +25,9 @@ def get_coingecko_data(symbol="bitcoin"):
 # Ejecutar la función y verificar el resultado
 coingecko_df_bitcoin = get_coingecko_data()
 coingecko_df_bitcoin = coingecko_df_bitcoin.iloc[:-1]
+print(coingecko_df_bitcoin.head())
 
-coingecko_df_bitcoin.to_csv("datos_bitcoin_coingecko.csv", index=False)
+# Guardar el conjunto de datos
+output_path = r"../../data/datos_bitcoin_coingecko.csv"
+coingecko_df_bitcoin.to_csv(output_path, index=False)
 
-print(coingecko_df_bitcoin)

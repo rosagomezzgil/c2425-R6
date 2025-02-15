@@ -54,10 +54,8 @@ def get_deribit_historical_data(instrument="BTC-PERPETUAL", days=365, resolution
 
 # Llamada a la función (últimos 365 días, velas de 1 hora)
 df = get_deribit_historical_data(days=365, resolution="60")
+print(df.head())
 
-if df is not None:
-    df.to_csv("C:\\Users\\vegag\\SEGUNDO\\pd1\\mercadoDerivados_derivit.csv", encoding="utf-8-sig",
-              index=True)  # Cambia el nombre del archivo si lo deseas
-
-# Mostrar las primeras filas
-df.head()
+# Guardar el conjunto de datos
+output_path = r"../../data/datos_mercadoDerivados_derivit.csv"
+df.to_csv(output_path, encoding="utf-8-sig", index=True)

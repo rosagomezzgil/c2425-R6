@@ -23,8 +23,10 @@ for tweet in tweets.data:
     data.append([tweet.created_at, tweet.text, tweet.public_metrics["like_count"], tweet.public_metrics["retweet_count"]])
 
 df = pd.DataFrame(data, columns=["Fecha", "Texto", "Likes", "Retweets"])
-
-# Guardar en CSV
-df.to_csv("tweets_bitcoin.csv", index=False)
-
 print(df.head())
+
+# Guardar el conjunto de datos
+output_path = r"../../../data/tweets_bitcoin.csv"
+df.to_csv(output_path, index=False)
+
+

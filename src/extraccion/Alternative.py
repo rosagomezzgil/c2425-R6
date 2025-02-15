@@ -25,5 +25,8 @@ def get_fear_greed_index():
 
 
 fear_greed_df = get_fear_greed_index()
-fear_greed_df.to_csv("datos_bitcoin_fear_greed.csv", index=False)
-print(fear_greed_df)
+print(fear_greed_df.head())
+
+# Guardar el conjunto de datos
+output_path = r"../../data/datos_bitcoin_fear_greed.csv"
+fear_greed_df.to_csv(output_path, index=False)

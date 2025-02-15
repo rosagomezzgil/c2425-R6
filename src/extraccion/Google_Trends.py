@@ -14,5 +14,8 @@ def get_google_trends(keyword="bitcoin"):
     return df
 
 google_trends_df = get_google_trends()
-google_trends_df.to_csv("datos_google_trends.csv", index=False)
-print(google_trends_df)
+print(google_trends_df.head)
+
+# Guardar el conjunto de datos
+output_path = r"../../data/datos_google_trends.csv"
+google_trends_df.to_csv(output_path, index=False)

@@ -1,3 +1,5 @@
+import pandas as pd
+
 def get_halving_dates():
     halvings = [
         {"Fecha": "2012-11-28", "Bloque": 210000, "Recompensa": 25},
@@ -11,4 +13,4 @@ def get_halving_dates():
 
 # Obtener datos de halving
 df_halving = get_halving_dates()
-df_halving
+print(df_halving)

@@ -2,15 +2,32 @@
 #CoinGecko
 import requests
 import pandas as pd
+from typing import Optional
 
-def get_coingecko_data(symbol="bitcoin"):
-#def get_coingecko_data(symbols=["bitcoin", "ethereum", "cardano"]):
+def get_coingecko_data(
+    symbol: str = "bitcoin",
+    vs_currency: str = "usd",
+    days: int = 365,
+    output_path: Optional[str] = None
+):
+    """
+    Obtiene datos históricos de criptomonedas desde CoinGecko.
+
+    Parámetros:
+    - symbol (str): criptomoneda a consultar (ej. ['bitcoin', 'ethereum']).
+    - vs_currency (str): Moneda base ('usd', 'eur', etc.).
+    - days (int): Número de días de datos a obtener.
+    - output_path (str, opcional): Ruta donde guardar el CSV.
+
+    Retorna:
+    - pd.DataFrame con los datos obtenidos.
+    """
+
     url = f"https://api.coingecko.com/api/v3/coins/{symbol}/market_chart"
-    params = {"vs_currency": "usd", "days": 365}
+    params = {"vs_currency": vs_currency, "days": days}
 
     response = requests.get(url, params=params)
-    assert response.status_code == 200
-
+    response.raise_for_status() # Lanza un error si la solicitud falla
     data = response.json()
 
     # Convertir datos a DataFrame
@@ -19,15 +36,21 @@ def get_coingecko_data(symbol="bitcoin"):
     df["volume"] = [x[1] for x in data["total_volumes"]]
     df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
 
+    # Guardar CSV si se proporciona una ruta
+    if output_path:
+        df.to_csv(output_path, index=False)
+        print(f"Datos guardados en: {output_path}")
+
     return df
 
 
-# Ejecutar la función y verificar el resultado
-coingecko_df_bitcoin = get_coingecko_data()
-coingecko_df_bitcoin = coingecko_df_bitcoin.iloc[:-1]
-print(coingecko_df_bitcoin.head())
 
-# Guardar el conjunto de datos
-output_path = r"../../data/datos_bitcoin_coingecko.csv"
-coingecko_df_bitcoin.to_csv(output_path, index=False)
+coingecko_df = get_coingecko_data(
+    symbol="bitcoin",
+    vs_currency="usd",
+    days=365,
+    output_path="../../data/datos_coingecko.csv"
+)
+
+print(coingecko_df.head())
 

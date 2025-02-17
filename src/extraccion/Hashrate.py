@@ -1,21 +1,51 @@
 import requests
 import pandas as pd
+from typing import Optional
 
-# URL de la API de Blockchain.com para el hashrate
-url = "https://api.blockchain.info/charts/hash-rate?timespan=all&format=json"
+def get_bitcoin_hashrate(
+    timespan: str = "all",
+    rolling_average: str = "24hours",
+    output_path: Optional[str] = None
+):
+    """
+    Obtiene datos del hashrate de Bitcoin desde Blockchain.com.
 
-# Hacer la solicitud GET a la API
-response = requests.get(url)
-data = response.json()
+    Parámetros:
+    - timespan (str): Rango de tiempo (ej. "30days", "1year", "all").
+    - rolling_average (str): Promedio móvil (ej. "8hours", "24hours").
+    - output_path (str, opcional): Ruta para guardar los datos en CSV.
 
-# Extraer fechas y valores del hashrate
-hashrate_data = pd.DataFrame(data['values'])
-hashrate_data['x'] = pd.to_datetime(hashrate_data['x'], unit='s')  # Convertir timestamp a fecha
-hashrate_data.rename(columns={'x': 'timestamp', 'y': 'Hashrate'}, inplace=True)
+    Retorna:
+    - pd.DataFrame con la información del hashrate.
+    """
 
-# Mostrar los primeros datos
-print(hashrate_data.head())
+    url = f"https://api.blockchain.info/charts/hash-rate?timespan={timespan}&rollingAverage={rolling_average}&format=json"
 
-# Guardar el conjunto de datos
-output_path = r"../../data/datos_hashrate.csv"
-hashrate_data.to_csv(output_path, index=False)
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Verifica errores HTTP
+
+        data = response.json()
+        df = pd.DataFrame(data["values"])
+
+        # Convertir timestamp a formato de fecha
+        df["x"] = pd.to_datetime(df["x"], unit="s")
+        df.rename(columns={"x": "timestamp", "y": "hashrate"}, inplace=True)
+
+        # Guardar CSV si se proporciona una ruta
+        if output_path:
+            df.to_csv(output_path, index=False)
+            print(f"Datos guardados en: {output_path}")
+
+        return df
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error en la solicitud: {e}")
+        return None
+
+
+hashrate_df = get_bitcoin_hashrate(
+    output_path="../../data/datos_hashrate.csv"
+)
+
+print(hashrate_df.head())

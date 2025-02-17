@@ -3,16 +3,46 @@
 
 import requests
 import pandas as pd
+from typing import Optional
 
-def get_binance_data(symbol="BTCUSDT", interval="1d", limit=1000):
+def get_binance_data(
+        symbol: str = "BTCUSDT",
+        interval: str = "1d",
+        limit: int = 1000,
+        start_time: Optional[int] = None,
+        end_time: Optional[int] = None,
+        output_path: Optional[str] = None
+):
+    """
+    Obtiene datos históricos de Binance.
+
+    Parámetros:
+    - symbol (str): Par de trading (ej. 'BTCUSDT').
+    - interval (str): Intervalo de tiempo ('1m', '1h', '1d', etc.).
+    - limit (int): Número de registros a obtener.
+    - start_time (int, opcional): Tiempo de inicio en milisegundos.
+    - end_time (int, opcional): Tiempo de fin en milisegundos.
+    - output_path (str, opcional): Ruta donde guardar el CSV.
+
+    Retorna:
+    - pd.DataFrame con los datos obtenidos.
+    """
+
     url = "https://api.binance.com/api/v3/klines"
-
-    params = {"symbol": symbol, "interval": interval, "limit": limit}
+    params = {
+        "symbol": symbol.upper(),
+        "interval": interval,
+        "limit": limit,
+    }
+    if start_time:
+        params["startTime"] = start_time
+    if end_time:
+        params["endTime"] = end_time
 
     response = requests.get(url, params=params)
-    assert response.status_code == 200
-
+    response.raise_for_status()  # Lanza un error si la solicitud falla
     data = response.json()
+
     df = pd.DataFrame(data, columns=[
         "timestamp", "open", "high", "low", "close", "volume",
         "close_time", "quote_asset_volume", "trades",
@@ -27,12 +57,17 @@ def get_binance_data(symbol="BTCUSDT", interval="1d", limit=1000):
     #Seleccionar solo las columnas necesarias
     df = df[["timestamp", "open", "high", "low", "close", "volume", "trades"]]
     df.columns = ["timestamp", "open_binance", "high_binance", "low_binance", "close_binance", "volume_binance", "trades_binance"]
+
+    # Guardar CSV si se proporciona una ruta
+    if output_path:
+        df.to_csv(output_path, index=False)
+        print(f"Datos guardados en: {output_path}")
+
     return df
 
-# Ejecutar la función y ver qué devuelve
-binance_df = get_binance_data("BTCUSDT")  # Aseguramos que el símbolo está en mayúsculas
-print(binance_df.head())
+binance_df = get_binance_data(
+    symbol="BTCUSDT",
+    output_path="../../data/datos_bitcoin_binance.csv"
+)
 
-# Guardar el conjunto de datos
-output_path = r"../../data/datos_bitcoin_binance.csv"
-binance_df.to_csv(output_path, index=False)
+print(binance_df.head())

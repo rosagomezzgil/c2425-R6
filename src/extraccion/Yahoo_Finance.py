@@ -31,3 +31,44 @@ dxy.to_csv(output_path, index=False)
 
 #Si DXY sube, significa que el dólar es más fuerte y los inversores podrían vender BTC.
 #Si DXY baja, BTC podría ser más atractivo como alternativa al dólar.
+
+#Sp500
+
+# Descargar datos del S&P 500
+sp500 = yf.download('^GSPC', start="2010-01-01", end="2025-02-17", interval="1d")
+
+# Descargar datos de Bitcoin
+btc = yf.download('BTC-USD', start="2010-01-01", end="2025-02-17", interval="1d")
+
+#Renombrar las columnas
+sp500.columns = ['Open_sp500', 'High_sp500', 'Low_sp500', 'Close_sp500', 'Volume_sp500']
+print(sp500.head())
+print(sp500.tail())
+
+# Guardar el conjunto de datos
+output_path = r"../../data/datos_bitcoin_Sp500.csv"
+dxy.to_csv(output_path, index=False)
+
+#Si encuentras una correlación alta, se puede usar el S&P 500 como indicador adelantado para prever movimientos de Bitcoin.
+
+
+#Nasdaq
+
+# Definir el período de tiempo
+start_date = "2015-01-01"
+end_date = "2025-02-17"
+
+# Descargar datos históricos
+nasdaq = yf.download('^IXIC', start=start_date, end=end_date, interval="1d")
+
+#Renombrar las columnas
+nasdaq.columns = ['Open_nasdaq', 'High_nasdaq', 'Low_nasdaq', 'Close_nasdaq', 'Volume_nasdaq']
+print(nasdaq.head())
+print(nasdaq.tail())
+
+# Guardar el conjunto de datos
+output_path = r"../../data/datos_bitcoin_Nasdaq.csv"
+dxy.to_csv(output_path, index=False)
+
+#Si encuentras una correlación alta, se puede usar el nasdaq como indicador adelantado para prever movimientos de Bitcoin.
+#Tiene subidas y bajadas mas bruscas que el sp500 y mas afines al BTC

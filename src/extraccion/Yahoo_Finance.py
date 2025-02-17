@@ -72,3 +72,26 @@ dxy.to_csv(output_path, index=False)
 
 #Si encuentras una correlación alta, se puede usar el nasdaq como indicador adelantado para prever movimientos de Bitcoin.
 #Tiene subidas y bajadas mas bruscas que el sp500 y mas afines al BTC
+
+#ETFs
+
+# Definir los ETFs de Bitcoin que queremos analizar
+etfs = ["BITO", "IBIT", "ARKB"]
+
+# Descargar los datos históricos y almacenarlos correctamente
+data = {}
+for etf in etfs:
+    data[etf] = yf.download(etf, start="2021-01-01", end="2025-01-01", interval="1d")['Close']
+
+# Convertir el diccionario a un DataFrame
+df_ETFs = pd.concat(data, names=["Ticker"], axis=1).reset_index()
+
+# Renombrar las columnas para claridad
+df_ETFs.columns = ["Date"] + list(data.keys())
+
+# Mostrar el DataFrame
+print(df_ETFs.tail(150))
+
+# Guardar el conjunto de datos
+output_path = r"../../data/datos_bitcoin_EFTs.csv"
+dxy.to_csv(output_path, index=False)

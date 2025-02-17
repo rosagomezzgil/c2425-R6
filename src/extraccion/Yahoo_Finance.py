@@ -42,8 +42,11 @@ btc = yf.download('BTC-USD', start="2010-01-01", end="2025-02-17", interval="1d"
 
 #Renombrar las columnas
 sp500.columns = ['Open_sp500', 'High_sp500', 'Low_sp500', 'Close_sp500', 'Volume_sp500']
+
+# Convertir el índice de fecha en una columna llamada timestamp
+sp500 = sp500.reset_index().rename(columns={'Date': 'timestamp'})
+
 print(sp500.head())
-print(sp500.tail())
 
 # Guardar el conjunto de datos
 output_path = r"../../data/datos_bitcoin_Sp500.csv"
@@ -63,8 +66,11 @@ nasdaq = yf.download('^IXIC', start=start_date, end=end_date, interval="1d")
 
 #Renombrar las columnas
 nasdaq.columns = ['Open_nasdaq', 'High_nasdaq', 'Low_nasdaq', 'Close_nasdaq', 'Volume_nasdaq']
+
+# Convertir el índice de fecha en una columna llamada timestamp
+nasdaq = nasdaq.reset_index().rename(columns={'Date': 'timestamp'})
+
 print(nasdaq.head())
-print(nasdaq.tail())
 
 # Guardar el conjunto de datos
 output_path = r"../../data/datos_bitcoin_Nasdaq.csv"
@@ -90,7 +96,7 @@ df_ETFs = pd.concat(data, names=["Ticker"], axis=1).reset_index()
 df_ETFs.columns = ["Date"] + list(data.keys())
 
 # Mostrar el DataFrame
-print(df_ETFs.tail(150))
+print(df_ETFs.head())
 
 # Guardar el conjunto de datos
 output_path = r"../../data/datos_bitcoin_EFTs.csv"

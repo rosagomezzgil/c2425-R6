@@ -44,8 +44,9 @@ def get_bitcoin_hashrate(
         return None
 
 
-hashrate_df = get_bitcoin_hashrate(
-    output_path="../../data/datos_hashrate.csv"
-)
+if __name__ == '__main__':
+    hashrate_df = get_bitcoin_hashrate(
+        output_path="../../data/datos_hashrate.csv"
+    )
 
-print(hashrate_df.head())
+    print(hashrate_df.head())

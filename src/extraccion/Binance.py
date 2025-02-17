@@ -65,9 +65,10 @@ def get_binance_data(
 
     return df
 
-binance_df = get_binance_data(
-    symbol="BTCUSDT",
-    output_path="../../data/datos_bitcoin_binance.csv"
-)
+if __name__ == '__main__':
+    binance_df = get_binance_data(
+        symbol="BTCUSDT",
+        output_path="../../data/datos_bitcoin_binance.csv"
+    )
 
-print(binance_df.head())
+    print(binance_df.head())

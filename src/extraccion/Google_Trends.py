@@ -40,9 +40,10 @@ def get_google_trends(
 
     return df
 
-google_trends_df = get_google_trends(
-    keywords=["bitcoin"],
-    output_path="../../data/datos_google_trends.csv"
-)
+if __name__ == '__main__':
+    google_trends_df = get_google_trends(
+        keywords=["bitcoin"],
+        output_path="../../data/datos_google_trends.csv"
+    )
 
-print(google_trends_df.head())
+    print(google_trends_df.head())

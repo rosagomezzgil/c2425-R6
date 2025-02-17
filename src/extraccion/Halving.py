@@ -11,6 +11,7 @@ def get_halving_dates():
     df_halving["Fecha"] = pd.to_datetime(df_halving["Fecha"], errors='coerce')
     return df_halving
 
-# Obtener datos de halving
-df_halving = get_halving_dates()
-print(df_halving)
+if __name__ == '__main__':
+    # Obtener datos de halving
+    df_halving = get_halving_dates()
+    print(df_halving)

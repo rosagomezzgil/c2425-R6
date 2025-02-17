@@ -82,11 +82,12 @@ def get_binance_futures_historical_data(
         return None
 
 
-df = get_binance_futures_historical_data(
-    symbol="BTCUSDT",
-    days=365 * 3,
-    interval="1d",
-    output_path=r"../../data/datos_mercadoDerivados_binance.csv"
-)
+if __name__ == '__main__':
+    df = get_binance_futures_historical_data(
+        symbol="BTCUSDT",
+        days=365 * 3,
+        interval="1d",
+        output_path=r"../../data/datos_mercadoDerivados_binance.csv"
+    )
 
-print(df.head())
+    print(df.head())

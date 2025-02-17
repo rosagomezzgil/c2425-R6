@@ -44,13 +44,13 @@ def get_coingecko_data(
     return df
 
 
+if __name__ == '__main__':
+    coingecko_df = get_coingecko_data(
+        symbol="bitcoin",
+        vs_currency="usd",
+        days=365,
+        output_path="../../data/datos_coingecko.csv"
+    )
 
-coingecko_df = get_coingecko_data(
-    symbol="bitcoin",
-    vs_currency="usd",
-    days=365,
-    output_path="../../data/datos_coingecko.csv"
-)
-
-print(coingecko_df.head())
+    print(coingecko_df.head())
 

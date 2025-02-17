@@ -80,11 +80,11 @@ def get_deribit_historical_data(
         print("No se obtuvieron datos.")
         return None
 
+if __name__ == '__main__':
+    df = get_deribit_historical_data(
+        days=365 * 3,
+        interval="1d",
+        output_path=r"../../data/datos_mercadoDerivados_derivit.csv"
+    )
 
-df = get_deribit_historical_data(
-    days=365 * 3,
-    interval="1d",
-    output_path=r"../../data/datos_mercadoDerivados_derivit.csv"
-)
-
-print(df.head())
+    print(df.head())

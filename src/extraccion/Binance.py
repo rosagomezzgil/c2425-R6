@@ -16,16 +16,14 @@ def get_binance_data(
     """
     Obtiene datos históricos de Binance.
 
-    Parámetros:
-    - symbol (str): Par de trading (ej. 'BTCUSDT').
-    - interval (str): Intervalo de tiempo ('1m', '1h', '1d', etc.).
-    - limit (int): Número de registros a obtener.
-    - start_time (int, opcional): Tiempo de inicio en milisegundos.
-    - end_time (int, opcional): Tiempo de fin en milisegundos.
-    - output_path (str, opcional): Ruta donde guardar el CSV.
+    :param symbol: (str) Par de trading (ej. 'BTCUSDT').
+    :param interval: (str) Intervalo de tiempo ('1m', '1h', '1d', etc.).
+    :param limit: (int) Número de registros a obtener.
+    :param start_time: (int, opcional) Tiempo de inicio en milisegundos.
+    :param end_time: (int, opcional) Tiempo de fin en milisegundos.
+    :param output_path: (str, opcional) Ruta donde guardar el CSV.
 
-    Retorna:
-    - pd.DataFrame con los datos obtenidos.
+    :return: pd.DataFrame con los datos obtenidos.
     """
 
     url = "https://api.binance.com/api/v3/klines"

@@ -10,13 +10,11 @@ def get_bitcoin_hashrate(
     """
     Obtiene datos del hashrate de Bitcoin desde Blockchain.com.
 
-    Parámetros:
-    - timespan (str): Rango de tiempo (ej. "30days", "1year", "all").
-    - rolling_average (str): Promedio móvil (ej. "8hours", "24hours").
-    - output_path (str, opcional): Ruta para guardar los datos en CSV.
+    :param timespan: (str) Rango de tiempo (ej. "30days", "1year", "all").
+    :param rolling_average: (str) Promedio móvil (ej. "8hours", "24hours").
+    :param output_path: (str, opcional) Ruta para guardar los datos en CSV.
 
-    Retorna:
-    - pd.DataFrame con la información del hashrate.
+    :return: pd.DataFrame con la información del hashrate.
     """
 
     url = f"https://api.blockchain.info/charts/hash-rate?timespan={timespan}&rollingAverage={rolling_average}&format=json"

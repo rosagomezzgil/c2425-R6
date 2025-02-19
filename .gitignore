@@ -4,3 +4,5 @@
 
 # Datos almacenados
 data/
+
+__pycache__/

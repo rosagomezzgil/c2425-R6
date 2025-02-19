@@ -42,6 +42,8 @@ if __name__ == '__main__':
     plt.ylabel("Precio")
     plt.legend()
     plt.show()
+
+    df.to_csv("../../data/datos_bitcoin_limpiados_binance.csv", index=False)
     
 
 

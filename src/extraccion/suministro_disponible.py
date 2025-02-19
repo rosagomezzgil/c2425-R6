@@ -5,6 +5,8 @@ import pandas as pd
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 
+# Google Cloud Console
+
 # Función para obtener Market Data
 def get_market_data(symbol="BTCUSDT"):
     url = f"https://api.binance.com/api/v3/ticker/24hr?symbol={symbol}"

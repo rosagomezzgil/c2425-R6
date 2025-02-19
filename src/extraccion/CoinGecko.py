@@ -13,14 +13,12 @@ def get_coingecko_data(
     """
     Obtiene datos históricos de criptomonedas desde CoinGecko.
 
-    Parámetros:
-    - symbol (str): criptomoneda a consultar (ej. ['bitcoin', 'ethereum']).
-    - vs_currency (str): Moneda base ('usd', 'eur', etc.).
-    - days (int): Número de días de datos a obtener.
-    - output_path (str, opcional): Ruta donde guardar el CSV.
+    :param symbol: (str) criptomoneda a consultar (ej. ['bitcoin', 'ethereum']).
+    :param vs_currency: (str): Moneda base ('usd', 'eur', etc.).
+    :param days: (int) Número de días de datos a obtener.
+    :param output_path: (str, opcional): Ruta donde guardar el CSV.
 
-    Retorna:
-    - pd.DataFrame con los datos obtenidos.
+    :return: pd.DataFrame con los datos obtenidos.
     """
 
     url = f"https://api.coingecko.com/api/v3/coins/{symbol}/market_chart"

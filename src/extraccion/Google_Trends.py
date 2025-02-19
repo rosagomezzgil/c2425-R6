@@ -12,14 +12,12 @@ def get_google_trends(
     """
     Obtiene datos de tendencias de Google Trends.
 
-    Parámetros:
-    - keywords (List[str]): Lista de palabras clave a consultar.
-    - timeframe (str): Período de tiempo ('today 5-y', '2020-01-01 2024-01-01', etc.).
-    - geo (str): Código de país ('US' para EE.UU., 'ES' para España, vacío para global).
-    - output_path (str, opcional): Ruta donde guardar el CSV.
+    :param keywords: (List[str]) Lista de palabras clave a consultar.
+    :param timeframe: (str) Período de tiempo ('today 5-y', '2020-01-01 2024-01-01', etc.).
+    :param geo: (str) Código de país ('US' para EE.UU., 'ES' para España, vacío para global).
+    :param output_path: (str, opcional): Ruta donde guardar el CSV.
 
-    Retorna:
-    - pd.DataFrame con los datos obtenidos.
+    :return: pd.DataFrame con los datos obtenidos.
     """
     pytrends = TrendReq()
     pytrends.build_payload(keywords, timeframe=timeframe, geo=geo)

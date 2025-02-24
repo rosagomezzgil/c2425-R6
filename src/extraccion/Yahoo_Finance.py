@@ -1,105 +1,103 @@
-#Macroeconomicos
-#Índice del dólar (DXY)
-#Yahoo Finance
-
 import yfinance as yf
 import pandas as pd
+import os
 import time
 
-# Descargar los datos del Índice del Dólar (DXY) desde Yahoo Finance
-dxy = yf.download("DX-Y.NYB", period="5y", interval="1d")
+def download_data(ticker, start_date, end_date, interval, columns_rename=None, output_filename=None, max_retries=5):
+    """
+    Descarga datos de Yahoo Finance, maneja errores y los guarda en un CSV.
 
-# Asegurar que la fecha sea una columna normal y no un índice
-dxy = dxy.reset_index()
+    :param ticker: Símbolo del activo a descargar de Yahoo Finance.
+    :param start_date: Fecha de inicio en formato "YYYY-MM-DD".
+    :param end_date: Fecha de fin en formato "YYYY-MM-DD".
+    :param interval: Intervalo de tiempo entre datos (por ejemplo, "1d" para diario).
+    :param columns_rename: Diccionario opcional para renombrar columnas.
+    :param output_filename: Ruta del archivo CSV donde se guardarán los datos.
+    :param max_retries: Número máximo de intentos en caso de error de límite de solicitudes.
+    :return: DataFrame con los datos descargados o None si falla.
+    """
+    retries = 0
+    while retries < max_retries:
+        try:
+            # Descargar datos
+            df = yf.download(ticker, start=start_date, end=end_date, interval=interval)
 
-# Si las columnas tienen un MultiIndex, lo corregimos
-if isinstance(dxy.columns, pd.MultiIndex):
-    dxy.columns = dxy.columns.get_level_values(0)  # Tomamos solo el primer nivel de nombres
+            # Convertir índice de fecha en columna normal
+            df = df.reset_index()
 
-# Verificar nombres de columnas antes de renombrar
-print("Nombres de columnas:", dxy.columns)
+            # Renombrar columnas si es necesario
+            if columns_rename:
+                df = df.rename(columns=columns_rename)
 
-# Renombrar correctamente las columnas
-dxy = dxy.rename(columns={"Date": "timestamp", "Close": "dxy"})
+            # Seleccionar solo las columnas necesarias si se han renombrado
+            if 'timestamp' in df.columns and 'dxy' in df.columns:
+                df = df[['timestamp', 'dxy']]
 
-# Seleccionar solo las columnas necesarias
-dxy = dxy[["timestamp", "dxy"]]
-print(dxy.head())
+            # Guardar el conjunto de datos
+            if output_filename:
+                df.to_csv(output_filename, index=False)
+                print(f"Datos guardados en: {output_filename}")
 
-# Guardar el conjunto de datos
-output_path = r"../../data/datos_bitcoin_dxy.csv"
-dxy.to_csv(output_path, index=False)
+            return df
+        except yf.YFRateLimitError:
+            retries += 1
+            wait_time = 2 ** retries  # Espera exponencial
+            print(f"Rate limit error. Reintentando en {wait_time} segundos...")
+            time.sleep(wait_time)
 
-#Si DXY sube, significa que el dólar es más fuerte y los inversores podrían vender BTC.
-#Si DXY baja, BTC podría ser más atractivo como alternativa al dólar.
+    print(f"Error: No se pudo descargar {ticker} después de {max_retries} intentos.")
+    return None
 
-#Sp500
+if __name__ == '__main__':
+    # Parámetros
+    start_date = "2022-01-01"
+    end_date = "2025-02-17"
+    interval = "1d"
+    output_dir = "data"
+    os.makedirs(output_dir, exist_ok=True)
 
-# Descargar datos del S&P 500
-sp500 = yf.download('^GSPC', start="2010-01-01", end="2025-02-17", interval="1d")
+    # Índice del Dólar (DXY)
+    dxy = download_data(
+        ticker="DX-Y.NYB",
+        start_date="2022-01-01",  # 5 años atrás desde 2024
+        end_date=end_date,
+        interval=interval,
+        columns_rename={"Date": "timestamp", "Close": "dxy"},
+        output_filename=os.path.join(output_dir, "datos_dxy.csv")
+    )
 
-print(sp500)
-# Descargar datos de Bitcoin
-#btc = yf.download('BTC-USD', start="2010-01-01", end="2025-02-17", interval="1d")
+    # S&P 500
+    sp500 = download_data(
+        ticker="^GSPC",
+        start_date=start_date,
+        end_date=end_date,
+        interval=interval,
+        columns_rename={"Date": "timestamp"},
+        output_filename=os.path.join(output_dir, "datos_sp500.csv")
+    )
 
-#Renombrar las columnas
-#sp500.columns = ['Open_sp500', 'High_sp500', 'Low_sp500', 'Close_sp500', 'Volume_sp500']
+    # Nasdaq
+    nasdaq = download_data(
+        ticker="^IXIC",
+        start_date="2022-01-01",
+        end_date=end_date,
+        interval=interval,
+        columns_rename={"Date": "timestamp"},
+        output_filename=os.path.join(output_dir, "datos_nasdaq.csv")
+    )
 
-# Convertir el índice de fecha en una columna llamada timestamp
-sp500 = sp500.reset_index().rename(columns={'Date': 'timestamp'})
+    # ETFs de Bitcoin
+    etfs = ["BITO", "IBIT", "ARKB"]
+    data = {}
+    for etf in etfs:
+        data[etf] = download_data(
+            ticker=etf,
+            start_date="2022-01-01",
+            end_date="2025-01-01",
+            interval=interval
+        )
 
-print(sp500.head())
-
-# Guardar el conjunto de datos
-output_path = r"../../data/datos_bitcoin_Sp500.csv"
-sp500.to_csv(output_path, index=False)
-
-#Si encuentras una correlación alta, se puede usar el S&P 500 como indicador adelantado para prever movimientos de Bitcoin.
-
-
-#Nasdaq
-
-# Definir el período de tiempo
-start_date = "2015-01-01"
-end_date = "2025-02-17"
-
-# Descargar datos históricos
-nasdaq = yf.download('^IXIC', start=start_date, end=end_date, interval="1d")
-
-#Renombrar las columnas
-nasdaq.columns = ['Open_nasdaq', 'High_nasdaq', 'Low_nasdaq', 'Close_nasdaq', 'Volume_nasdaq']
-
-# Convertir el índice de fecha en una columna llamada timestamp
-nasdaq = nasdaq.reset_index().rename(columns={'Date': 'timestamp'})
-
-print(nasdaq.head())
-
-# Guardar el conjunto de datos
-output_path = r"../../data/datos_bitcoin_Nasdaq.csv"
-nasdaq.to_csv(output_path, index=False)
-
-#Si encuentras una correlación alta, se puede usar el nasdaq como indicador adelantado para prever movimientos de Bitcoin.
-#Tiene subidas y bajadas mas bruscas que el sp500 y mas afines al BTC
-
-#ETFs
-
-# Definir los ETFs de Bitcoin que queremos analizar
-etfs = ["BITO", "IBIT", "ARKB"]
-
-# Descargar los datos históricos y almacenarlos correctamente
-data = {}
-for etf in etfs:
-    data[etf] = yf.download(etf, start="2021-01-01", end="2025-01-01", interval="1d")['Close']
-
-# Convertir el diccionario a un DataFrame
-df_ETFs = pd.concat(data, names=["Ticker"], axis=1).reset_index()
-
-# Renombrar las columnas para claridad
-df_ETFs.columns = ["Date"] + list(data.keys())
-
-# Mostrar el DataFrame
-print(df_ETFs.head())
-
-# Guardar el conjunto de datos
-output_path = r"../../data/datos_bitcoin_EFTs.csv"
-df_ETFs.to_csv(output_path, index=False)
+    df_ETFs = pd.concat(data, names=["Ticker"], axis=1).reset_index()
+    df_ETFs.columns = ["Date"] + list(data.keys())
+    df_ETFs.to_csv(os.path.join(output_dir, "datos_etfs.csv"), index=False)
+    print(f"Datos de ETFs guardados en: {os.path.join(output_dir, 'datos_etfs.csv')}")

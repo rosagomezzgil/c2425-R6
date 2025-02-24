@@ -4,6 +4,7 @@
 
 import yfinance as yf
 import pandas as pd
+import time
 
 # Descargar los datos del Índice del Dólar (DXY) desde Yahoo Finance
 dxy = yf.download("DX-Y.NYB", period="5y", interval="1d")
@@ -37,11 +38,12 @@ dxy.to_csv(output_path, index=False)
 # Descargar datos del S&P 500
 sp500 = yf.download('^GSPC', start="2010-01-01", end="2025-02-17", interval="1d")
 
+print(sp500)
 # Descargar datos de Bitcoin
-btc = yf.download('BTC-USD', start="2010-01-01", end="2025-02-17", interval="1d")
+#btc = yf.download('BTC-USD', start="2010-01-01", end="2025-02-17", interval="1d")
 
 #Renombrar las columnas
-sp500.columns = ['Open_sp500', 'High_sp500', 'Low_sp500', 'Close_sp500', 'Volume_sp500']
+#sp500.columns = ['Open_sp500', 'High_sp500', 'Low_sp500', 'Close_sp500', 'Volume_sp500']
 
 # Convertir el índice de fecha en una columna llamada timestamp
 sp500 = sp500.reset_index().rename(columns={'Date': 'timestamp'})
@@ -50,7 +52,7 @@ print(sp500.head())
 
 # Guardar el conjunto de datos
 output_path = r"../../data/datos_bitcoin_Sp500.csv"
-dxy.to_csv(output_path, index=False)
+sp500.to_csv(output_path, index=False)
 
 #Si encuentras una correlación alta, se puede usar el S&P 500 como indicador adelantado para prever movimientos de Bitcoin.
 
@@ -74,7 +76,7 @@ print(nasdaq.head())
 
 # Guardar el conjunto de datos
 output_path = r"../../data/datos_bitcoin_Nasdaq.csv"
-dxy.to_csv(output_path, index=False)
+nasdaq.to_csv(output_path, index=False)
 
 #Si encuentras una correlación alta, se puede usar el nasdaq como indicador adelantado para prever movimientos de Bitcoin.
 #Tiene subidas y bajadas mas bruscas que el sp500 y mas afines al BTC
@@ -100,4 +102,4 @@ print(df_ETFs.head())
 
 # Guardar el conjunto de datos
 output_path = r"../../data/datos_bitcoin_EFTs.csv"
-dxy.to_csv(output_path, index=False)
+df_ETFs.to_csv(output_path, index=False)

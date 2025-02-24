@@ -44,7 +44,6 @@ if __name__ == '__main__':
     plt.show()
 
     df.to_csv("../../data/datos_bitcoin_limpiados_binance.csv", index=False)
-    
 
 
 

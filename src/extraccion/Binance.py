@@ -22,7 +22,6 @@ def get_binance_data(
     :param start_time: (int, opcional) Tiempo de inicio en milisegundos.
     :param end_time: (int, opcional) Tiempo de fin en milisegundos.
     :param output_path: (str, opcional) Ruta donde guardar el CSV.
-
     :return: pd.DataFrame con los datos obtenidos.
     """
 

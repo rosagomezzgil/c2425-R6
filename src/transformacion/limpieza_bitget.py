@@ -1,10 +1,13 @@
 import pandas as pd
+import numpy as np
+
 
 def convertir_euros(valor):
     """
     Función para convertir valores monetarios en float
     """
     return float(valor.replace("€", "").replace(",", "")) if isinstance(valor, str) else valor
+
 
 def convertir_volumen(vol):
     """
@@ -14,6 +17,7 @@ def convertir_volumen(vol):
             return convertir_euros(vol.replace("B", "")) * 1e9  # Convertir a número real
 
     return convertir_euros(vol)
+
 
 def detectar_outliers_iqr(data, col):
     """
@@ -26,6 +30,22 @@ def detectar_outliers_iqr(data, col):
     limite_superior = Q3 + 1.5 * IQR
     outliers = data[(data[col] < limite_inferior) | (data[col] > limite_superior)]
     return outliers
+
+
+def calcular_rsi(df, window=14):
+    delta = df["cerrar**"].diff(1)
+    ganancia = np.where(delta > 0, delta, 0)
+    perdida = np.where(delta < 0, -delta, 0)
+
+    media_ganancia = pd.Series(ganancia).rolling(window=window).mean()
+    media_perdida = pd.Series(perdida).rolling(window=window).mean()
+
+    rs = media_ganancia / media_perdida
+    rsi = 100 - (100 / (1 + rs))
+
+    df["RSI"] = rsi
+    return df
+
 
 if __name__ == '__main__':
     df = pd.read_csv(r"../../data/bitget_scrapping.csv")
@@ -87,4 +107,22 @@ if __name__ == '__main__':
     print("\nDataset limpio y listo para su análisis:")
     print(df.head())
 
-    df.to_csv("../../data/bitget_scrapping.csv", index=False)
+
+
+    df["var_diaria"] = df["cerrar**"].pct_change() * 100  # % de variación
+    df["volatilidad_50"] = df["cerrar**"].rolling(window=50).std()
+    df["volatilidad_200"] = df["cerrar**"].rolling(window=200).std()
+    df["rango_dia"] = df["cerrar**"] - df["abrir*"]
+    df["momentum_50"] = df["cerrar**"] - df["cerrar**"].shift(50)
+    df["momentum_200"] = df["cerrar**"] - df["cerrar**"].shift(200)
+    # Media Móvil Simple (SMA)
+    df['SMA_50'] = df['cerrar**'].rolling(window=50).mean()  # 50 días
+    df['SMA_200'] = df['cerrar**'].rolling(window=200).mean()  # 200 días
+
+    # Media Móvil Exponencial (EMA)
+    df['EMA_50'] = df['cerrar**'].ewm(span=50, adjust=False).mean()
+    df['EMA_200'] = df['cerrar**'].ewm(span=200, adjust=False).mean()
+
+    df = calcular_rsi(df)
+
+    df.to_csv("../../data/limpios_bitget_scrapping.csv", index=False)

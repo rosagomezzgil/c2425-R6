@@ -1,5 +1,6 @@
 import pandas as pd
 
+# Datos de Halving
 def get_halving_dates():
     halvings = [
         {"Fecha": "2012-11-28", "Bloque": 210000, "Recompensa": 25},

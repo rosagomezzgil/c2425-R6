@@ -1,6 +1,20 @@
 import pandas as pd
 import numpy as np
 
+def calcular_rsi(df, window=14):
+    delta = df["close"].diff(1)
+    ganancia = np.where(delta > 0, delta, 0)
+    perdida = np.where(delta < 0, -delta, 0)
+
+    media_ganancia = pd.Series(ganancia).rolling(window=window).mean()
+    media_perdida = pd.Series(perdida).rolling(window=window).mean()
+
+    rs = media_ganancia / media_perdida
+    rsi = 100 - (100 / (1 + rs))
+
+    df["RSI"] = rsi
+    return df
+
 if __name__ == '__main__':
     # Cargar el DataFrame
     df = pd.read_csv(r"../../data/datos_mercadoDerivados_derivit.csv", parse_dates=["timestamp"])
@@ -20,7 +34,6 @@ if __name__ == '__main__':
 
     df_diario = df_diario.sort_values(by="timestamp")
 
-
     # Verificar resultado
     print(df_diario.head())
 
@@ -38,22 +51,7 @@ if __name__ == '__main__':
     df_diario['EMA_50'] = df_diario['close'].ewm(span=50, adjust=False).mean()
     df_diario['EMA_200'] = df_diario['close'].ewm(span=200, adjust=False).mean()
 
-    def calcular_rsi(df, window=14):
-        delta = df["close"].diff(1)
-        ganancia = np.where(delta > 0, delta, 0)
-        perdida = np.where(delta < 0, -delta, 0)
-
-        media_ganancia = pd.Series(ganancia).rolling(window=window).mean()
-        media_perdida = pd.Series(perdida).rolling(window=window).mean()
-
-        rs = media_ganancia / media_perdida
-        rsi = 100 - (100 / (1 + rs))
-
-        df["RSI"] = rsi
-        return df
-
     df_diario = calcular_rsi(df_diario)
-
 
     # Guardar el conjunto de datos
     output_path = r"../../data/limpieza_mercDer_deribit.csv"

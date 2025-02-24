@@ -29,12 +29,12 @@ def analyze_tweets(file_path):
     print(df["Sentimiento"].value_counts())
     return df
 
+if __name__ == '__main__':
+    # Ruta del archivo (modificar según sea necesario)
+    file_path = r"../../data/tweets_bitcoin.csv"
+    df_resultado = analyze_tweets(file_path)
+    print(df_resultado.head())
 
-# Ruta del archivo (modificar según sea necesario)
-file_path = r"../../data/tweets_bitcoin.csv"
-df_resultado = analyze_tweets(file_path)
-print(df_resultado.head())
-
-# Guardar el conjunto de datos
-output_path = r"../../data/sentiment_analysis.csv"
-df_resultado.to_csv(output_path, index=False)
+    # Guardar el conjunto de datos
+    output_path = r"../../data/sentiment_analysis.csv"
+    df_resultado.to_csv(output_path, index=False)

@@ -1,9 +1,19 @@
+# Ejecutar en Google Colab, porque en local da error de Too Many Requests
+
 import yfinance as yf
 import pandas as pd
 import os
 import time
+from typing import Optional
 
-def download_data(ticker, start_date, end_date, interval, columns_rename=None, output_filename=None, max_retries=5):
+def download_data(
+        ticker: str,
+        start_date: str,
+        end_date: str,
+        interval: str,
+        columns_rename: Optional[dict] = None,
+        output_filename: Optional[str] = None,
+        max_retries: int = 5):
     """
     Descarga datos de Yahoo Finance, maneja errores y los guarda en un CSV.
 
@@ -91,26 +101,14 @@ if __name__ == '__main__':
         output_filename=os.path.join(output_dir, "datos_nasdaq.csv")
     )
 
-    """
     # ETFs de Bitcoin
     etfs = ["BITO", "IBIT", "ARKB"]
-    data = {}
-
     for etf in etfs:
-        data[etf] = download_data(
+        download_data(
             ticker=etf,
             start_date=start_date,
-            end_date=end_date,  # Se unifica la fecha de fin con los demás
-            interval=interval
+            end_date=end_date,
+            interval=interval,
+            columns_rename={"Date": "timestamp", "Close": etf.lower()},
+            output_filename=os.path.join(output_dir, f"datos_{etf.lower()}.csv")
         )
-
-    # Concatenar datos y guardar CSV
-    df_ETFs = pd.concat(data, axis=1).reset_index()
-
-    if not df_ETFs.empty:
-        df_ETFs.to_csv(os.path.join(output_dir, "datos_etfs.csv"), index=False)
-        print(f"Datos de ETFs guardados en: {os.path.join(output_dir, 'datos_etfs.csv')}")
-    else:
-        print("Advertencia: No se guardaron datos de ETFs debido a falta de datos.")
-
-"""

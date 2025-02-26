@@ -40,7 +40,6 @@ if __name__ == '__main__':
             nasdaq[col] = pd.to_numeric(nasdaq[col], errors="coerce")
 
     #  Agregar variables de análisis técnico
-
     #  Medias Móviles
     nasdaq['SMA_50'] = nasdaq['Close'].rolling(window=50).mean()
     nasdaq['SMA_200'] = nasdaq['Close'].rolling(window=200).mean()

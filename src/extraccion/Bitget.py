@@ -7,93 +7,108 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
+from typing import Optional
 
-# Configurar Selenium con Chrome
-options = Options()
-options.add_argument("--headless")  # Modo sin interfaz gráfica
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
-options.add_argument(
-    "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-)
+def scrape_bitget_data(
+        url: str,
+        max_pages: Optional[int] = None,
+        wait_time: int = 3,
+        output_path: Optional[str] = None
+):
+    """
+    Extrae datos históricos de Bitcoin desde Bitget y los guarda en un archivo CSV.
 
-# Iniciar WebDriver
-service = Service(ChromeDriverManager().install())
-driver = webdriver.Chrome(service=service, options=options)
+    :param url: URL de la página de datos históricos de Bitget.
+    :param max_pages: Número máximo de páginas a recorrer (None para todas).
+    :param wait_time: Tiempo de espera entre interacciones para cargar los datos.
+    :param output_path: Ruta del archivo CSV de salida.
 
-# URL de Bitget (Datos históricos de Bitcoin)
-url = "https://www.bitget.com/es/price/bitcoin/historical-data"
-driver.get(url)
+    :return: pd.DataFrame con los datos históricos.
+    """
+    # Configurar Selenium con Chrome
+    options = Options()
+    options.add_argument("--headless")  # Modo sin interfaz gráfica
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                         "AppleWebKit/537.36 (KHTML, like Gecko) "
+                         "Chrome/120.0.0.0 Safari/537.36")
 
-# Esperar a que la tabla cargue completamente
-wait = WebDriverWait(driver, 10)
-wait.until(EC.presence_of_element_located((By.TAG_NAME, "table")))
+    # Iniciar WebDriver
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=options)
+    driver.get(url)
 
-# Listas para almacenar datos
-all_rows = []
+    # Esperar a que la tabla cargue completamente
+    wait = WebDriverWait(driver, 10)
+    wait.until(EC.presence_of_element_located((By.TAG_NAME, "table")))
 
-while True:
-    time.sleep(3)  # Esperar un poco para que cargue la página
+    # Listas para almacenar datos
+    all_rows = []
+    page_count = 0
 
-    # **SOLUCIÓN: Volver a encontrar la tabla en cada iteración**
-    try:
-        table = driver.find_element(By.TAG_NAME, "table")
-        rows = table.find_elements(By.TAG_NAME, "tr")
-    except:
-        print("Error al encontrar la tabla, reintentando...")
-        continue  # Si hay error, vuelve a intentar
+    while True:
+        time.sleep(wait_time)  # Esperar para que cargue la página
 
-    # Obtener encabezados si es la primera página
-    if not all_rows:
-        headers = [th.text.strip() for th in rows[0].find_elements(By.TAG_NAME, "th")]
-
-    # Obtener todas las filas de la tabla
-    page_data = []
-    for row in rows[1:]:  # Omitir encabezados
         try:
-            cols = [td.text.strip() for td in row.find_elements(By.TAG_NAME, "td")]
-            if cols:
-                page_data.append(cols)
+            table = driver.find_element(By.TAG_NAME, "table")
+            rows = table.find_elements(By.TAG_NAME, "tr")
         except:
-            print("Fila descartada por error de referencia.")
+            print("Error al encontrar la tabla, reintentando...")
             continue
 
-    # Agregar datos de la página actual
-    all_rows.extend(page_data)
+        # Obtener encabezados si es la primera página
+        if not all_rows:
+            headers = [th.text.strip() for th in rows[0].find_elements(By.TAG_NAME, "th")]
 
-    # Buscar el botón "Next Page"
-    try:
-        next_button = driver.find_element(By.XPATH, "//li[contains(@class, 'ant-pagination-next')]")
+        # Obtener datos de la tabla
+        page_data = []
+        for row in rows[1:]:  # Omitir encabezados
+            try:
+                cols = [td.text.strip() for td in row.find_elements(By.TAG_NAME, "td")]
+                if cols:
+                    page_data.append(cols)
+            except:
+                print("Fila descartada por error de referencia.")
+                continue
 
-        # Si está deshabilitado, salimos del bucle
-        if "ant-pagination-disabled" in next_button.get_attribute("class"):
-            print("Última página alcanzada. Finalizando...")
+        # Agregar datos de la página actual
+        all_rows.extend(page_data)
+        page_count += 1
+
+        # Verificar si se alcanzó el límite de páginas
+        if max_pages and page_count >= max_pages:
+            print(f"Se alcanzó el límite de {max_pages} páginas. Finalizando...")
             break
 
-        # Hacer clic en la flecha "Siguiente"
-        driver.execute_script("arguments[0].click();", next_button)
+        # Buscar botón "Next Page"
+        try:
+            next_button = driver.find_element(By.XPATH, "//li[contains(@class, 'ant-pagination-next')]")
 
-        # Esperar que la nueva página cargue
-        time.sleep(3)
+            # Si está deshabilitado, salir del bucle
+            if "ant-pagination-disabled" in next_button.get_attribute("class"):
+                print("Última página alcanzada. Finalizando...")
+                break
 
-    except Exception as e:
-        print("No se encontró la flecha de 'Siguiente' o ya estamos en la última página.")
-        break
+            # Hacer clic en la flecha "Siguiente"
+            driver.execute_script("arguments[0].click();", next_button)
+            time.sleep(wait_time)
+        except:
+            print("No se encontró la flecha de 'Siguiente' o ya estamos en la última página.")
+            break
 
-# Cerrar el navegador
-driver.quit()
+    # Cerrar el navegador
+    driver.quit()
 
-# Convertir datos en DataFrame
-df_bitget = pd.DataFrame(all_rows, columns=headers)
+    # Convertir datos en DataFrame
+    df_bitget = pd.DataFrame(all_rows, columns=headers)
 
-pd.set_option('display.max_rows', None)  # Muestra todas las filas
-pd.set_option('display.max_columns', None)  # Muestra todas las columnas
-pd.set_option('display.expand_frame_repr', False)
+    if output_path:
+        df_bitget.to_csv(output_path, encoding="utf-8-sig", index=False)
+        print(f"Datos guardados en {output_path}")
 
-# Guardar el conjunto de datos
-output_path = r"../../data/bitget_scrapping.csv"
-df_bitget.to_csv(output_path, encoding="utf-8-sig", index=False)
+    return df_bitget
 
-# Mostrar el DataFrame completo
-print(df_bitget)
-
+if __name__ == '__main__':
+    data_url = "https://www.bitget.com/es/price/bitcoin/historical-data"
+    scrape_bitget_data(url=data_url, max_pages=None, wait_time=2, output_path="../../data/bitget_scrapping.csv")

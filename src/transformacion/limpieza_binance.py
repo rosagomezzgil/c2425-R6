@@ -13,7 +13,6 @@ if __name__ == '__main__':
     #Convertir timestamp a fecha
     df['timestamp'] = pd.to_datetime(df['timestamp'])  # Convertir a formato fecha
     df.sort_values('timestamp', inplace=True)  # Ordenar por fecha
-    df.set_index('timestamp', inplace=True)  # Usar la fecha como índice
 
     # Ver si hay valores nulos
     print(df.isnull().sum())    #No tiene valores nulos
@@ -31,11 +30,11 @@ if __name__ == '__main__':
     plt.figure(figsize=(12,6))
 
         # Graficamos el precio de cierre
-    plt.plot(df.index, df['close_binance'], label="Precio de cierre", color="blue")
+    plt.plot(df['timestamp'], df['close_binance'], label="Precio de cierre", color="blue")
 
         # Graficamos las medias móviles
-    plt.plot(df.index, df['SMA_50'], label="SMA 50", color="orange")
-    plt.plot(df.index, df['SMA_200'], label="SMA 200", color="red")
+    plt.plot(df['timestamp'], df['SMA_50'], label="SMA 50", color="orange")
+    plt.plot(df['timestamp'], df['SMA_200'], label="SMA 200", color="red")
 
     plt.title("Bitcoin - Precio y Medias Móviles")
     plt.xlabel("Fecha")
@@ -44,6 +43,3 @@ if __name__ == '__main__':
     plt.show()
 
     df.to_csv("../../data/datos_bitcoin_limpiados_binance.csv", index=False)
-
-
-

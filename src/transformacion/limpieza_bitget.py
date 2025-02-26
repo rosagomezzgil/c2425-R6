@@ -1,6 +1,5 @@
+from Calcular_RSI import calcular_rsi
 import pandas as pd
-import numpy as np
-
 
 def convertir_euros(valor):
     """
@@ -10,8 +9,6 @@ def convertir_euros(valor):
         valor = valor.replace("€", "").replace("$", "").replace(",", "")
         return float(valor)
     return valor
-
-
 
 def convertir_volumen(vol):
     """
@@ -34,22 +31,6 @@ def detectar_outliers_iqr(data, col):
     limite_superior = Q3 + 1.5 * IQR
     outliers = data[(data[col] < limite_inferior) | (data[col] > limite_superior)]
     return outliers
-
-
-def calcular_rsi(df, window=14):
-    delta = df["cerrar**"].diff(1)
-    ganancia = np.where(delta > 0, delta, 0)
-    perdida = np.where(delta < 0, -delta, 0)
-
-    media_ganancia = pd.Series(ganancia).rolling(window=window).mean()
-    media_perdida = pd.Series(perdida).rolling(window=window).mean()
-
-    rs = media_ganancia / media_perdida
-    rsi = 100 - (100 / (1 + rs))
-
-    df["RSI"] = rsi
-    return df
-
 
 if __name__ == '__main__':
     df = pd.read_csv(r"../../data/bitget_scrapping.csv")
@@ -112,7 +93,6 @@ if __name__ == '__main__':
     print(df.head())
 
 
-
     df["var_diaria"] = df["cerrar**"].pct_change() * 100  # % de variación
     df["volatilidad_50"] = df["cerrar**"].rolling(window=50).std()
     df["volatilidad_200"] = df["cerrar**"].rolling(window=200).std()
@@ -127,6 +107,6 @@ if __name__ == '__main__':
     df['EMA_50'] = df['cerrar**'].ewm(span=50, adjust=False).mean()
     df['EMA_200'] = df['cerrar**'].ewm(span=200, adjust=False).mean()
 
-    df = calcular_rsi(df)
+    df = calcular_rsi(df, 'cerrar**')
 
     df.to_csv("../../data/limpios_bitget_scrapping.csv", index=False)

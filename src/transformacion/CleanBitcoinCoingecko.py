@@ -1,19 +1,5 @@
+from Calcular_RSI import calcular_rsi
 import pandas as pd
-import numpy as np
-
-def calcular_rsi(df, window=14):
-    delta = df["price"].diff(1)
-    ganancia = np.where(delta > 0, delta, 0)
-    perdida = np.where(delta < 0, -delta, 0)
-
-    media_ganancia = pd.Series(ganancia).rolling(window=window).mean()
-    media_perdida = pd.Series(perdida).rolling(window=window).mean()
-
-    rs = media_ganancia / media_perdida
-    rsi = 100 - (100 / (1 + rs))
-
-    df["RSI"] = rsi
-    return df
 
 if __name__ == '__main__':
     df = pd.read_csv(r"../../data/datos_coingecko.csv")
@@ -39,7 +25,7 @@ if __name__ == '__main__':
     df['EMA_50'] = df['price'].ewm(span=50, adjust=False).mean()
     df['EMA_200'] = df['price'].ewm(span=200, adjust=False).mean()
 
-    df = calcular_rsi(df)
+    df = calcular_rsi(df, 'price')
 
     output_path = r"../../data/datos_coingecko_limpios.csv"
     df.to_csv(output_path, encoding = "utf-8-sig", index=False)

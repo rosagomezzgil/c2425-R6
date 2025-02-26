@@ -65,13 +65,6 @@ README.md: Contiene la información general del proyecto.
 - Se utilizan modelos de machine learning como **ARIMA, LSTM** o **Redes Neuronales** para prever tendencias futuras.
 - Se comparan los resultados de diferentes modelos para optimizar la predicción.
 
-### 4. Visualización de Resultados
-- Se generan **gráficos de velas, tendencias y predicciones**.
-- Se presentan los resultados en un dashboard interactivo.
-
-# Finalización del Análisis
-
-El análisis se da por concluido cuando se han generado predicciones sobre el comportamiento futuro del Bitcoin. Se presentan los resultados y se realizan recomendaciones basadas en las tendencias identificadas.
 
 # Crédito
 Rodrigo Jesús-Portanet    

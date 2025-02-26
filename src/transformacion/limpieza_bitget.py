@@ -6,7 +6,11 @@ def convertir_euros(valor):
     """
     Función para convertir valores monetarios en float
     """
-    return float(valor.replace("€", "").replace(",", "")) if isinstance(valor, str) else valor
+    if isinstance(valor, str):
+        valor = valor.replace("€", "").replace("$", "").replace(",", "")
+        return float(valor)
+    return valor
+
 
 
 def convertir_volumen(vol):

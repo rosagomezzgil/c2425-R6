@@ -29,4 +29,3 @@ if __name__ == '__main__':
     # Guardar el conjunto de datos
     output_path = r"../../data/creacion_variables_binance.csv"
     df.to_csv(output_path, encoding="utf-8-sig", index=False)
-    print(df)

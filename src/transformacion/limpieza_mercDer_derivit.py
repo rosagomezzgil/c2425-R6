@@ -3,7 +3,7 @@ import pandas as pd
 
 if __name__ == '__main__':
     # Cargar el DataFrame
-    df = pd.read_csv(r"../../data/datos_mercadoDerivados_derivit.csv", parse_dates=["timestamp"])
+    df = pd.read_csv(r"../../data/datos_mercadoDerivados_deribit.csv", parse_dates=["timestamp"])
 
     # Convertir timestamp a datetime si aún no lo es
     df["timestamp"] = pd.to_datetime(df["timestamp"])

@@ -1,23 +1,5 @@
+from Calcular_RSI import calcular_rsi
 import pandas as pd
-import numpy as np
-
-def calcular_rsi(df, window=14):
-    """
-    Calcula el RSI (Relative Strength Index) con una ventana determinada.
-    """
-    delta = df["Close"].diff(1)
-    ganancia = np.where(delta > 0, delta, 0)
-    perdida = np.where(delta < 0, -delta, 0)
-
-    media_ganancia = pd.Series(ganancia).rolling(window=window).mean()
-    media_perdida = pd.Series(perdida).rolling(window=window).mean()
-
-    rs = media_ganancia / media_perdida
-    rsi = 100 - (100 / (1 + rs))
-
-    df["RSI"] = rsi
-    return df
-
 
 if __name__ == '__main__':
     # Cargar datos desde CSV
@@ -60,7 +42,7 @@ if __name__ == '__main__':
     sp500["rango_dia"] = sp500["High"] - sp500["Low"]
 
     # RSI (Relative Strength Index)
-    sp500 = calcular_rsi(sp500)
+    sp500 = calcular_rsi(sp500, 'Close')
 
     # Guardar el conjunto de datos procesados
     output_path = r"../../data/datos_bitcoin_limpiados_sp500.csv"

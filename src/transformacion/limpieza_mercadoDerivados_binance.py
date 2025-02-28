@@ -32,6 +32,14 @@ if __name__ == '__main__':
     print(df.isnull().sum())
 
 
+    ### CAMBIO DE NOMBRES DE LAS VARIABLES PARA EL ESTUDIO ###
+    df = df.rename(columns={'open': 'mDopen',
+                            'high': 'mDhigh',
+                            'low': 'mDlow',
+                            'close': 'mDclose',
+                            'volume': 'mDvolume',
+                            'trades': 'mDtrades'})
+
     ### DETECCIÓN DE OUTLIERS ###
     # No vamos a eliminar outliers ya que pueden ser utiles para la prediccion, solamente los detectamos
 
@@ -39,14 +47,22 @@ if __name__ == '__main__':
     print("\nDataset limpio y listo para su análisis:")
     print(df.head())
 
-    df["var_diaria"] = df["close"].pct_change() * 100
-    df["volatilidad_50"] = df["close"].rolling(window=50).std()
-    df["volatilidad_200"] = df["close"].rolling(window=200).std()
-    df["rango_dia"] = df["high"] - df["low"]
-    df["momentum_50"] = df["close"] - df["close"].shift(50)
-    df["momentum_200"] = df["close"] - df["close"].shift(200)
+    df["mDvar_diaria"] = df["mDclose"].pct_change() * 100
+    df["mDvolatilidad_50"] = df["mDclose"].rolling(window=50).std()
+    df["mDvolatilidad_200"] = df["mDclose"].rolling(window=200).std()
+    df["mDrango_dia"] = df["mDclose"] - df["mDlow"]
+    df["mDmomentum_50"] = df["mDclose"] - df["mDclose"].shift(50)
+    df["mDmomentum_200"] = df["mDclose"] - df["mDclose"].shift(200)
+    # Media Móvil Simple (SMA)
+    df['mDSMA_50'] = df['mDclose'].rolling(window=50).mean()  # 50 días
+    df['mDSMA_200'] = df['mDclose'].rolling(window=200).mean()  # 200 días
 
-    df = calcular_rsi(df, 'close')
+    # Media Móvil Exponencial (EMA)
+    df['mDEMA_50'] = df['mDclose'].ewm(span=50, adjust=False).mean()
+    df['mDEMA_200'] = df['mDclose'].ewm(span=200, adjust=False).mean()
+
+    df = calcular_rsi(df, 'mDclose')
+    df = df.rename(columns={'RSI': 'mD_RSI'})
 
     df.to_csv("../../data/mercadoDerivados_binance_limpio.csv", encoding="utf-8-sig", index=False)
     print(df)

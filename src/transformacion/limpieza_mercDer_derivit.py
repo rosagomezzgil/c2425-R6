@@ -17,27 +17,35 @@ if __name__ == '__main__':
         "volume": "sum"     # Volumen total del día
     }).reset_index()
 
+    ###CAMBIO DE NOMBRE DE LAS COLUMNAS PARA EL MERGE POSTERIORMENTE
+    df_diario = df_diario.rename(columns={'open': 'mDopen',
+                           'high': 'mDhigh',
+                           'low': 'mDlow',
+                           'close': 'mDclose',
+                           'volume': 'mDvolume'})
+
 
     df_diario = df_diario.sort_values(by="timestamp")
 
     # Verificar resultado
     print(df_diario.head())
 
-    df_diario["var_diaria"] = df_diario["close"].pct_change() * 100
-    df_diario["volatilidad_50"] = df_diario["close"].rolling(window=50).std()
-    df_diario["volatilidad_200"] = df_diario["close"].rolling(window=200).std()
-    df_diario["rango_dia"] = df_diario["close"] - df_diario["open"]
-    df_diario["momentum_50"] = df_diario["close"] - df_diario["close"].shift(50)
-    df_diario["momentum_200"] = df_diario["close"] - df_diario["close"].shift(200)
+    df_diario["mDvar_diaria"] = df_diario["mDclose"].pct_change() * 100
+    df_diario["mDvolatilidad_50"] = df_diario["mDclose"].rolling(window=50).std()
+    df_diario["mDvolatilidad_200"] = df_diario["mDclose"].rolling(window=200).std()
+    df_diario["mDrango_dia"] = df_diario["mDclose"] - df_diario["mDopen"]
+    df_diario["mDmomentum_50"] = df_diario["mDclose"] - df_diario["mDclose"].shift(50)
+    df_diario["mDmomentum_200"] = df_diario["mDclose"] - df_diario["mDclose"].shift(200)
     # Media Móvil Simple (SMA)
-    df_diario['SMA_50'] = df_diario['close'].rolling(window=50).mean()  # 50 días
-    df_diario['SMA_200'] = df_diario['close'].rolling(window=200).mean()  # 200 días
+    df_diario['mDSMA_50'] = df_diario['mDclose'].rolling(window=50).mean()  # 50 días
+    df_diario['mDSMA_200'] = df_diario['mDclose'].rolling(window=200).mean()  # 200 días
 
     # Media Móvil Exponencial (EMA)
-    df_diario['EMA_50'] = df_diario['close'].ewm(span=50, adjust=False).mean()
-    df_diario['EMA_200'] = df_diario['close'].ewm(span=200, adjust=False).mean()
+    df_diario['mDEMA_50'] = df_diario['mDclose'].ewm(span=50, adjust=False).mean()
+    df_diario['mDEMA_200'] = df_diario['mDclose'].ewm(span=200, adjust=False).mean()
 
-    df_diario = calcular_rsi(df_diario, 'close')
+    df_diario = calcular_rsi(df_diario, 'mDclose')
+    df_diario = df_diario.rename(columns={'RSI': 'mD_RSI'})
 
     # Guardar el conjunto de datos
     output_path = r"../../data/limpieza_mercDer_deribit.csv"

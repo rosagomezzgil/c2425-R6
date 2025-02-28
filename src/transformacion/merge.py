@@ -3,11 +3,16 @@ import glob
 import os
 
 if __name__ == '__main__':
-    #ruta absoluta a la carpeta 'data'
+
+    """
+                                  1 - JUNTAMOS TODOS LOS DATAFRAMES
+    """
+
+    ### RUTA ABSOLUTA A LA CARPETA 'DATA' ###
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))  # Sube 2 niveles desde 'src/transformacion/'
     DATA_DIR = os.path.join(BASE_DIR, "data")
 
-    #lista de los csv q vamos a cargar
+    ### LISTA DE LOS CSV Q VAMOS A CARGAR ###
     archivos = [
         "limpios_bitget_scrapping.csv", "creacion_variables_binance.csv",
         "datos_bitcoin_limpiados_fear_greed.csv", "datos_coingecko_limpios.csv", "limpios_google_trends.csv",
@@ -15,17 +20,17 @@ if __name__ == '__main__':
         "mercadoDerivados_binance_limpio.csv", "limpieza_mercDer_deribit.csv"
     ]
 
-    #nombres de sufijos para las columnas (a quitar después, en la limpieza)
+    ### NOMBRES DE SUFIJOS PARA LAS COLUMNAS (a quitar después, en la limpieza) ###
     sufijos = [
         "_bitget", "_", "_fg", "_coingecko", "_gtrends",
         "_halving", "_hashrate", "_mDbinance", "_mDderibit"
     ]
 
-    #encontrar los archivos en 'data/' que coincidan con los nombres seleccionados
+    ### ENCONTRAR LOS ARCHIVOS EN 'data/' QUE COINCIDAN CON LOS NOMBRES SELECCIONADOS ###
     csv_files = [os.path.join(DATA_DIR, file) for file in archivos if
                  os.path.exists(os.path.join(DATA_DIR, file))]
 
-    #cargamos los archivos y mostramos las estructuras que tienen
+    ### CARGAMOS LOS ARCHIVOS Y MOSTRAMOS LAS ESTRUCTURAS QUE TIENEN ###
     dataframes = []
     for file, sufijo in zip(csv_files, sufijos):
         df = pd.read_csv(file)
@@ -79,17 +84,29 @@ if __name__ == '__main__':
     demasiados nulos.
     """
 
-    #eliminamos fechas irrelevantes (mantenemos datos desde 2018 en adelante, últimos 7 años)
-    # REVISAR CANTIDAD DE AÑOS
-    df_final = df_final[df_final["timestamp"] >= "2018-01-01"]
+    """
+                                  2 - LIMPIEZA DEL DATAFRAME CONJUNTO
+    """
 
-    #seleccionamos las columnas que vamos a consolidar
-    columns_to_merge = ["close", "open", "RSI", "SMA_50", "SMA_200", "EMA_50", "EMA_200",
-                        "volatilidad_50", "volatilidad_200", "momentum_50", "momentum_200"]
+    ### ELIMINAMOS FECHAS IRRELEVANTES (mantenemos datos desde 2020 en adelante, últimos 5 años) ###
+    # REVISAR CANTIDAD DE AÑOS
+    df_final = df_final[df_final["timestamp"] >= "2020-01-01"]
+
+    ### COLUMNAS QUE VAMOS A CONSOLIDAR (juntar) ###
+    columns_to_merge = ["close", "open", "RSI", "SMA_50", "SMA_200",
+                        "EMA_50", "EMA_200", "volatilidad_50",
+                        "volatilidad_200", "momentum_50", "momentum_200", #mercado Spot
+                        "mDclose", "mDopen", "mD_RSI", "mDSMA_50", "mDSMA_200",
+                        "mDEMA_50", "mDEMA_200", "mDvolatilidad_50",
+                        "mDvolatilidad_200", "mDmomentum_50", "mDmomentum_200"] #mercado de Derivados
+    #faltan VOLUMENES (de mercado spot y mercados de derivados)
+    #no se pueden juntar datos de mercado spot (solo valores de bitcoin) con los del mercado de derivados
 
     #creamos un nuevo DataFrame con solo timestamp
     df_cleaned = df_final[["timestamp"]].copy()
 
+
+    """Juntamos las columnas que son lo mimso mediante la media entre sus valores"""
     #consolidamos cada grupo de columnas
     for base_name in columns_to_merge:
         matching_cols = [col for col in df_final.columns if col.startswith(base_name)]
@@ -114,7 +131,9 @@ if __name__ == '__main__':
     df_cleaned = df_cleaned.reset_index(drop=True)
     print(df_cleaned.dtypes)
     print(df_cleaned.info())
+    print(df_cleaned.isnull().sum())
     print(df_cleaned.head())
+
 
 
     #Guardar el DataFrame final

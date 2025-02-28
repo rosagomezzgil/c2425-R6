@@ -17,6 +17,9 @@ if __name__ == '__main__':
     # Ver si hay valores nulos
     print(df.isnull().sum())    #No tiene valores nulos
 
+    #Vamos a añadir una columna que pase el volumen a dolares (está en cantidad de BTC y lo queremos en $)
+    df["volumen_binance_usd"] = df["volume_binance"] * df["close_binance"]
+
     #annadir columnas: Medias moviles
     # Media Móvil Simple (SMA)
     df['SMA_50'] = df['close_binance'].rolling(window=50).mean()  # 50 días

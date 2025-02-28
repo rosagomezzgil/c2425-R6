@@ -58,12 +58,21 @@ if __name__ == '__main__':
     # Convertir la columna 'Fecha' a datetime
     df["fecha"] = pd.to_datetime(df["fecha"], format="%Y-%m-%d")
 
+    #cambio el nombre de la columna fecha a timpestamp para que tenga formato y nombre igual que el resto
+    df = df.rename(columns={'fecha': 'timestamp'})
+    df = df.rename(columns={'abrir*': 'open'})
+    df = df.rename(columns={'máximo': 'high'})
+    df = df.rename(columns={'mínimo': 'low'})
+    df = df.rename(columns={'cerrar**': 'close'})
+
     # Aplicar la conversión a todas las columnas numéricas
-    columnas_monetarias = ["abrir*", "máximo", "mínimo", "cerrar**"]
+    columnas_monetarias = ["open", "high", "low", "close"]
     for col in columnas_monetarias:
         df[col] = df[col].apply(convertir_euros)
 
     df["volumen"] = df["volumen"].apply(convertir_volumen)
+
+
 
     # Mostrar resultado
     print("Limpieza de formato de datos:")
@@ -93,20 +102,20 @@ if __name__ == '__main__':
     print(df.head())
 
 
-    df["var_diaria"] = df["cerrar**"].pct_change() * 100  # % de variación
-    df["volatilidad_50"] = df["cerrar**"].rolling(window=50).std()
-    df["volatilidad_200"] = df["cerrar**"].rolling(window=200).std()
-    df["rango_dia"] = df["cerrar**"] - df["abrir*"]
-    df["momentum_50"] = df["cerrar**"] - df["cerrar**"].shift(50)
-    df["momentum_200"] = df["cerrar**"] - df["cerrar**"].shift(200)
+    df["var_diaria"] = df["close"].pct_change() * 100  # % de variación
+    df["volatilidad_50"] = df["close"].rolling(window=50).std()
+    df["volatilidad_200"] = df["close"].rolling(window=200).std()
+    df["rango_dia"] = df["close"] - df["open"]
+    df["momentum_50"] = df["close"] - df["close"].shift(50)
+    df["momentum_200"] = df["close"] - df["close"].shift(200)
     # Media Móvil Simple (SMA)
-    df['SMA_50'] = df['cerrar**'].rolling(window=50).mean()  # 50 días
-    df['SMA_200'] = df['cerrar**'].rolling(window=200).mean()  # 200 días
+    df['SMA_50'] = df['close'].rolling(window=50).mean()  # 50 días
+    df['SMA_200'] = df['close'].rolling(window=200).mean()  # 200 días
 
     # Media Móvil Exponencial (EMA)
-    df['EMA_50'] = df['cerrar**'].ewm(span=50, adjust=False).mean()
-    df['EMA_200'] = df['cerrar**'].ewm(span=200, adjust=False).mean()
+    df['EMA_50'] = df['close'].ewm(span=50, adjust=False).mean()
+    df['EMA_200'] = df['close'].ewm(span=200, adjust=False).mean()
 
-    df = calcular_rsi(df, 'cerrar**')
+    df = calcular_rsi(df, 'close')
 
     df.to_csv("../../data/limpios_bitget_scrapping.csv", index=False)

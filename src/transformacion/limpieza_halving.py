@@ -11,6 +11,7 @@ if __name__ == '__main__':
 
     #convertimos la columna timestamp a datetime
     df["Fecha"] = pd.to_datetime(df["Fecha"]).dt.date
+    df = df.rename(columns={'Fecha': 'timestamp'}) #cambio el nombre para que coincida
 
 
     output_path = r"../../data/halving_data_limpio.csv"

@@ -145,6 +145,7 @@ if __name__ == '__main__':
     df_final["mDvolume_mDderibit"] = df_final['mDvolume_mDderibit'] * df_final['mDclose_mDderibit']
     df_final = df_final.rename(columns={'mDvolume_mDderibit': 'mDvolume_mDderibit_usd'})
 
+    #AQUI SE SUMAN YA QUE BINANCE Y DERIBIT TIENEN SOLO EL VOLUMEN DE M.DER DE SUS PLATAFORMAS
     df_cleaned["mDvolume"] = df_final['mDvolume_mDbinance_usd'] + df_final['mDvolume_mDderibit_usd'] #en USD($)
 
 

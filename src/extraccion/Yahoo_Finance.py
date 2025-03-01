@@ -44,10 +44,6 @@ def download_data(
             if columns_rename:
                 df = df.rename(columns=columns_rename)
 
-            # Seleccionar solo las columnas necesarias si se han renombrado
-            if 'timestamp' in df.columns and 'dxy' in df.columns:
-                df = df[['timestamp', 'dxy']]
-
             # Guardar el conjunto de datos
             if output_filename:
                 df.to_csv(output_filename, index=False)
@@ -77,7 +73,7 @@ if __name__ == '__main__':
         start_date=start_date,
         end_date=end_date,
         interval=interval,
-        columns_rename={"Date": "timestamp", "Close": "dxy"},
+        columns_rename={"Date": "timestamp"},
         output_filename=os.path.join(output_dir, "datos_dxy.csv")
     )
 
@@ -100,15 +96,3 @@ if __name__ == '__main__':
         columns_rename={"Date": "timestamp"},
         output_filename=os.path.join(output_dir, "datos_nasdaq.csv")
     )
-
-    # ETFs de Bitcoin
-    etfs = ["BITO", "IBIT", "ARKB"]
-    for etf in etfs:
-        download_data(
-            ticker=etf,
-            start_date=start_date,
-            end_date=end_date,
-            interval=interval,
-            columns_rename={"Date": "timestamp", "Close": etf.lower()},
-            output_filename=os.path.join(output_dir, f"datos_{etf.lower()}.csv")
-        )

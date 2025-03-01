@@ -19,6 +19,7 @@ if __name__ == '__main__':
         "halving_data_limpio.csv", "datos_hashrate_limpiados_binance.csv",
         "mercadoDerivados_binance_limpio.csv", "limpieza_mercDer_deribit.csv"
     ]
+    #faltan sp500, nasdaq, sentiment analysis. Añadir y añadir lo correspondiente a ellos en el resto de codigo
 
     ### NOMBRES DE SUFIJOS PARA LAS COLUMNAS (a quitar después, en la limpieza) ###
     sufijos = [
@@ -89,20 +90,21 @@ if __name__ == '__main__':
     """
 
     ### ELIMINAMOS FECHAS IRRELEVANTES (mantenemos datos desde 2020 en adelante, últimos 5 años) ###
-    # REVISAR CANTIDAD DE AÑOS
+    # REVISAR CANTIDAD DE AÑOS (muchos nulos porq hay fuentes que tienen muy pocos datos)
     df_final = df_final[df_final["timestamp"] >= "2020-01-01"]
 
     ### COLUMNAS QUE VAMOS A CONSOLIDAR (juntar) ###
-    columns_to_merge = ["close", "open", "RSI", "SMA_50", "SMA_200",
+    columns_to_merge = ["open", "close", "RSI", "SMA_50", "SMA_200",
                         "EMA_50", "EMA_200", "volatilidad_50",
                         "volatilidad_200", "momentum_50", "momentum_200", #mercado Spot
-                        "mDclose", "mDopen", "mD_RSI", "mDSMA_50", "mDSMA_200",
+                        "mDopen", "mDclose", "mD_RSI", "mDSMA_50", "mDSMA_200",
                         "mDEMA_50", "mDEMA_200", "mDvolatilidad_50",
                         "mDvolatilidad_200", "mDmomentum_50", "mDmomentum_200"] #mercado de Derivados
-    #faltan VOLUMENES (de mercado spot y mercados de derivados)
-    #no se pueden juntar datos de mercado spot (solo valores de bitcoin) con los del mercado de derivados
+    #faltan VOLUMENES (de mercado spot y mercados de derivados, porque no se juntan por la media, más abajo añadidos)
+    #NO se pueden juntar datos de mercado spot (solo valores de bitcoin) con los del mercado de derivados
 
-    #creamos un nuevo DataFrame con solo timestamp
+    #creamos un nuevo DataFrame con solo timestamp (iremos metiendo aqui los datos del df LIMPIO)
+    ###  df_cleaned ES EL DEFINITIVO (df_final es donde tenemos todos los datos pero sin organizar)
     df_cleaned = df_final[["timestamp"]].copy()
 
 
@@ -118,14 +120,81 @@ if __name__ == '__main__':
 
 
     #agregamos columnas útiles que no tuvimos en cuenta a la hora de consolidar
-    keep_columns = ["fear_greed_index_fg", "price_coingecko", "market_cap_coingecko", "bitcoin_gtrends",
+    keep_columns = ["fear_greed_index_fg", "market_cap_coingecko", "bitcoin_gtrends",
                     "hashrate_hashrate"]
 
 
     df_cleaned = pd.concat([df_cleaned, df_final[keep_columns]], axis=1)
 
-    #FALTAN MUCHAS COLUMNAS, COMO LOS MAXIMOS, MINIMOS, VOLUMENES, VARIACIONES DIARIAS, ETC
-    #REVISAR
+    #FALTAN MUCHAS COLUMNAS, COMO LOS VOLÚMENES, MAX Y MIN, VARIACIONES DIARIAS, ETC
+    #ADICION DE ESAS COLUMNAS:
+
+    """VOLUMENES"""
+    ### VOLUMEN DE BTC MOVIDO ESE DÍA ###
+    #mercado spot
+    df_cleaned["volume"] = df_final["volume_coingecko"] #ESTA EN USD($)
+    #COINGECKO CONTIENE EL VOLUMEN TOTAL QUE SE HA MOVIDO EN EL MERCADO ENTERO (todas las paginas de exchange)
+    #MIENTRAS QUE BINANCE Y BITGET SÓLO LA CANTIDAD QUE SE HA MOVIDO EN SU PLATAFORMA
+    #SUMAR ESTOS DATOS PODRÍA PROVOCAR DUPLICACION DE CANTIDADES
+
+    #mercado de derivados
+    #(primero voy a pasar ambos mercados de derivados a USD($) para que los datos sean consistentes
+    df_final["mDvolume_mDbinance"] = df_final['mDvolume_mDbinance'] * df_final['mDclose_mDbinance']
+    df_final = df_final.rename(columns={'mDvolume_mDbinance': 'mDvolume_mDbinance_usd'})
+
+    df_final["mDvolume_mDderibit"] = df_final['mDvolume_mDderibit'] * df_final['mDclose_mDderibit']
+    df_final = df_final.rename(columns={'mDvolume_mDderibit': 'mDvolume_mDderibit_usd'})
+
+    df_cleaned["mDvolume"] = df_final['mDvolume_mDbinance_usd'] + df_final['mDvolume_mDderibit_usd'] #en USD($)
+
+
+    """MAXIMOS, MINIMOS"""
+    #mercado spot
+    df_cleaned['high'] = df_final[['high_bitget', 'high_binance_', 'close_coingecko']].max(axis=1)
+    df_cleaned['low'] = df_final[['low_bitget', 'low_binance_', 'close_coingecko']].min(axis=1)
+    #pongo close_coingecko ya que es el unico dato de precio de esa fuente de datos
+
+    #mercado de derivados
+    df_cleaned['mDhigh'] = df_final[['mDhigh_mDbinance', 'mDhigh_mDderibit']].max(axis=1)
+    df_cleaned['mDlow'] = df_final[['mDlow_mDbinance', 'mDlow_mDderibit']].min(axis=1)
+
+
+
+    """VARIACIÓN DIARIA"""
+    #mercado spot
+    df_cleaned["var_diaria"] = df_cleaned["close"].pct_change() * 100  # % de variación
+
+    #mercado de Derivados
+    df_cleaned["mDvar_diaria"] = df_cleaned["mDclose"].pct_change() * 100
+
+
+
+    """RANGO DIARIO"""
+    #mercado spot
+    df_cleaned["rango_dia"] = df_cleaned["close"].diff().abs()
+
+    #mercado de Derivados
+    df_cleaned["mDrango_dia"] = df_cleaned["mDclose"] - df_cleaned["mDopen"]
+
+
+
+
+    ### REORDENAMOS LAS COLUMNAS DEL DATAFRAME (primero mercado spot, luego m.Derivados, luego columnas sueltas)
+    print(df_cleaned.columns.tolist())
+    nuevo_orden = ['timestamp', 'open', 'high', 'low', 'close', 'volume', 'var_diaria', 'rango_dia', 'RSI',
+                   'SMA_50', 'SMA_200', 'EMA_50', 'EMA_200', 'volatilidad_50', 'volatilidad_200', 'momentum_50',
+                   'momentum_200',
+                   #mercado SPOt
+                   'mDopen', 'mDhigh', 'mDlow', 'mDclose', 'mDvolume', 'mDvar_diaria', 'mDrango_dia', 'mD_RSI',
+                   'mDSMA_50', 'mDSMA_200', 'mDEMA_50', 'mDEMA_200', 'mDvolatilidad_50', 'mDvolatilidad_200',
+                   'mDmomentum_50', 'mDmomentum_200',
+                   #mercado DERIVADOS
+                   'fear_greed_index_fg', 'market_cap_coingecko', 'bitcoin_gtrends', 'hashrate_hashrate',
+                   #COLUMNAS SUELTAS
+                    ]
+
+    df_cleaned = df_cleaned[nuevo_orden]
+
 
 
     df_cleaned = df_cleaned.reset_index(drop=True)

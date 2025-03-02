@@ -46,7 +46,7 @@ if __name__ == '__main__':
     # RSI (Relative Strength Index)
     sp500 = calcular_rsi(dxy, 'Close')
 
-# Guardar el conjunto de datos procesados
+    # Guardar el conjunto de datos procesados
     output_path = r"../../data/datos_bitcoin_limpiados_dxy.csv"
     dxy.to_csv(output_path, index=False)
 

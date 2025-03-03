@@ -75,6 +75,7 @@ def scrape_bitget_data(
         # Agregar datos de la página actual
         all_rows.extend(page_data)
         page_count += 1
+        print(f"{page_count} páginas leidas")
 
         # Verificar si se alcanzó el límite de páginas
         if max_pages and page_count >= max_pages:
@@ -111,4 +112,7 @@ def scrape_bitget_data(
 
 if __name__ == '__main__':
     data_url = "https://www.bitget.com/es/price/bitcoin/historical-data"
-    scrape_bitget_data(url=data_url, max_pages=None, wait_time=2, output_path="../../data/bitget_scrapping.csv")
+    df_bitget = scrape_bitget_data(url=data_url, max_pages=None, wait_time=2, output_path="../../data/bitget_scrapping.csv")
+
+    print(df_bitget.shape)
+    print(df_bitget.head())

@@ -50,5 +50,6 @@ if __name__ == '__main__':
         output_path="../../data/datos_coingecko.csv"
     )
 
+    print(coingecko_df.shape)
     print(coingecko_df.head())
 

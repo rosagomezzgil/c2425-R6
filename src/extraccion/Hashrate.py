@@ -1,4 +1,3 @@
-# Bibliotecas
 import requests
 import pandas as pd
 from typing import Optional
@@ -48,4 +47,5 @@ if __name__ == '__main__':
         output_path="../../data/datos_hashrate.csv"
     )
 
+    print(hashrate_df.shape)
     print(hashrate_df.head())

@@ -28,9 +28,6 @@ def get_google_trends(
     df.rename(columns={"date": "timestamp"}, inplace=True)
     df = df[["timestamp"] + keywords]
 
-    # TODO: Revisar si es necesario convertir a formato largo si hay varias palabras clave
-    # df = df.melt(id_vars=["timestamp"], var_name="keyword", value_name="google_trends")
-
     # Guardar CSV si se proporciona una ruta
     if output_path:
         df.to_csv(output_path, index=False)
@@ -41,7 +38,13 @@ def get_google_trends(
 if __name__ == '__main__':
     google_trends_df = get_google_trends(
         keywords=["bitcoin"],
+        timeframe='today 5-y',
         output_path="../../data/datos_google_trends.csv"
     )
 
+    # Comprobar que el rango son 5 años
+    print(google_trends_df.iloc[0, 0])
+    print(google_trends_df.iloc[-1, 0])
+
+    print(google_trends_df.shape)
     print(google_trends_df.head())

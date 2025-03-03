@@ -42,4 +42,5 @@ def get_fear_greed_index(limit: int = 0, date_format: str = "world", output_path
 
 if __name__ == '__main__':
     fear_greed_df = get_fear_greed_index(output_path="../../data/datos_bitcoin_fear_greed.csv")
+    print(fear_greed_df.shape)
     print(fear_greed_df.head())

@@ -67,5 +67,5 @@ if __name__ == '__main__':
         symbol="BTCUSDT",
         output_path="../../data/datos_bitcoin_binance.csv"
     )
-
+    print(binance_df.shape)
     print(binance_df.head())

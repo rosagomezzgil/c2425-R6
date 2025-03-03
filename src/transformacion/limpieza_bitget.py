@@ -105,7 +105,7 @@ if __name__ == '__main__':
     df["var_diaria"] = df["close"].pct_change() * 100  # % de variación
     df["volatilidad_50"] = df["close"].rolling(window=50).std()
     df["volatilidad_200"] = df["close"].rolling(window=200).std()
-    df["rango_dia"] = df["close"] - df["open"]
+    df["rango_dia"] = df["high"] - df["low"]
     df["momentum_50"] = df["close"] - df["close"].shift(50)
     df["momentum_200"] = df["close"] - df["close"].shift(200)
     # Media Móvil Simple (SMA)

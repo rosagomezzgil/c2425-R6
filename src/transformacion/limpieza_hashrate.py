@@ -22,7 +22,7 @@ if __name__ == '__main__':
     df_merged = pd.merge(df_complete, df, on='timestamp', how='left')
 
     # Contar cuántos días faltaban antes de la interpolación
-    missing_days = df_complete.shape[0] - df.shape[0] 
+    missing_days = df_complete.shape[0] - df.shape[0]
 
     # Ver cuántos días consecutivos sin datos había antes de la interpolación
     df['diff'] = df['timestamp'].diff().dt.days  # Diferencia en días entre fechas
@@ -59,6 +59,6 @@ if __name__ == '__main__':
     plt.show()
 
     # Ver si hay valores nulos
-    print(df.isnull().sum())  # No tiene valores nulos
+    print(df_merged.isnull().sum())  # No tiene valores nulos
 
-    df.to_csv("../../data/datos_hashrate_limpiados_binance.csv", index=False)
+    df_merged.to_csv("../../data/datos_hashrate_limpiados_binance.csv", index=False)

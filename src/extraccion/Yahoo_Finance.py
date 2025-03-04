@@ -64,7 +64,7 @@ if __name__ == '__main__':
     start_date = "2022-01-01"
     end_date = "2025-02-17"
     interval = "1d"
-    output_dir = "../../data"
+    output_dir = "../../data/extraccion"
     os.makedirs(output_dir, exist_ok=True)
 
     # Índice del Dólar (DXY)

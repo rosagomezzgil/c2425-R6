@@ -47,7 +47,7 @@ if __name__ == '__main__':
         symbol="bitcoin",
         vs_currency="usd",
         days=365,
-        output_path="../../data/datos_coingecko.csv"
+        output_path="../../data/extraccion/datos_coingecko.csv"
     )
 
     print(coingecko_df.shape)

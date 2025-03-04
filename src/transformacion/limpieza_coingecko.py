@@ -7,6 +7,7 @@ if __name__ == '__main__':
     print(df.info())  # Ver tipos de datos y valores nulos
     print(df.describe())  # Estadísticas básicas
     print(df.head())  # Primeras filas
+    print(df.dtypes())
 
     #convertimos la columna timestamp a datetime
     df["timestamp"] = pd.to_datetime(df["timestamp"]).dt.date

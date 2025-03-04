@@ -87,7 +87,7 @@ if __name__ == '__main__':
         symbol="BTCUSDT",
         days=365 * 3,
         interval="1d",
-        output_path=r"../../data/datos_mercadoDerivados_binance.csv"
+        output_path=r"../../data/extraccion/datos_mercadoDerivados_binance.csv"
     )
 
     print(df.head())

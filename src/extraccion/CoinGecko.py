@@ -31,7 +31,7 @@ def get_coingecko_data(
     # Convertir datos a DataFrame
     df = pd.DataFrame(data["prices"], columns=["timestamp", "price"])
     df["market_cap"] = [x[1] for x in data["market_caps"]]
-    df["volume"] = [x[1] for x in data["total_volumes"]]
+    df["volumen"] = [x[1] for x in data["total_volumes"]]
     df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
 
     # Guardar CSV si se proporciona una ruta

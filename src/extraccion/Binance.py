@@ -53,7 +53,6 @@ def get_binance_data(
 
     #Seleccionar solo las columnas necesarias
     df = df[["timestamp", "open", "high", "low", "close", "volume", "trades"]]
-    df.columns = ["timestamp", "open_binance", "high_binance", "low_binance", "close_binance", "volume_binance", "trades_binance"]
 
     # Guardar CSV si se proporciona una ruta
     if output_path:

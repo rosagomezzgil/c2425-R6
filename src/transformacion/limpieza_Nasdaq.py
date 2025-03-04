@@ -1,3 +1,5 @@
+# DESCARGAR EL CSV DEL DRIVE SI LA EXTRACCION DA ERROR
+
 from Calcular_RSI import calcular_rsi
 import pandas as pd
 

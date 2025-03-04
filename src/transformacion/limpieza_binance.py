@@ -55,3 +55,5 @@ if __name__ == '__main__':
 
     df = calcular_rsi(df, 'close')
     df.to_csv("../../data/creacion_variables_binance.csv", index=False)
+
+    print(df.dtypes)

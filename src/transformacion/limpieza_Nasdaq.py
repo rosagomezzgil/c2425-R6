@@ -3,7 +3,7 @@ import pandas as pd
 
 if __name__ == '__main__':
     # Cargar datos desde CSV
-    nasdaq = pd.read_csv(r"../../data/datos_nasdaq.csv")
+    nasdaq = pd.read_csv(r"../../data/datos_bitcoin_nasdaq.csv")
 
     # Ver si hay valores nulos
     print(nasdaq.isnull().sum())    #No tiene valores nulos

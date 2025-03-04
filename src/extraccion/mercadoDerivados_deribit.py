@@ -36,6 +36,7 @@ def get_deribit_historical_data(
 
     while current_start < end_time:
         current_end = min(current_start + interval_ms, end_time)
+        print(f"Cuanto falta: {end_time - current_end}")
 
         params = {
             "instrument_name": instrument,
@@ -84,7 +85,7 @@ if __name__ == '__main__':
     df = get_deribit_historical_data(
         days=365 * 3,
         interval="1d",
-        output_path=r"../../data/datos_mercadoDerivados_deribit.csv"
+        output_path=r"../../data/extraccion/datos_mercadoDerivados_deribit.csv"
     )
 
     print(df.head())

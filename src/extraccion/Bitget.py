@@ -112,7 +112,7 @@ def scrape_bitget_data(
 
 if __name__ == '__main__':
     data_url = "https://www.bitget.com/es/price/bitcoin/historical-data"
-    df_bitget = scrape_bitget_data(url=data_url, max_pages=None, wait_time=2, output_path="../../data/bitget_scrapping.csv")
+    df_bitget = scrape_bitget_data(url=data_url, max_pages=None, wait_time=2, output_path="../../data/extraccion/bitget_scrapping.csv")
 
     print(df_bitget.shape)
     print(df_bitget.head())

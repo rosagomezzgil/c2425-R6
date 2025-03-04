@@ -25,18 +25,18 @@ def get_market_data(symbol="BTCUSDT"):
         print("Error al obtener datos:", response.status_code)
         return None
 
-if __name__ == '__main__':
-    # Archivo donde se guardarán los datos
-    csv_filename = r'../../data/extraccion/historico_market_data.csv'
 
-    # Bucle para recolectar datos cada X segundos
-    while True:
-        df = get_market_data("BTCUSDT")
+# Archivo donde se guardarán los datos
+csv_filename = "C:\\Users\\vegag\\SEGUNDO\\pd1\\historico_market_data.csv"
 
-        if df is not None:
-            # Guardar los datos en CSV sin borrar los anteriores
-            df.to_csv(csv_filename, mode="a", header=not pd.io.common.file_exists(csv_filename), index=False)
-            print(f"✅ Datos guardados en {csv_filename} - {df['timestamp'].values[0]}")
+# Bucle para recolectar datos cada X segundos
+while True:
+    df = get_market_data("BTCUSDT")
 
-        # Esperar X segundos antes de la siguiente recolección
-        time.sleep(60)  # Recolecta datos cada 60 segundos (puedes cambiarlo)
+    if df is not None:
+        # Guardar los datos en CSV sin borrar los anteriores
+        df.to_csv(csv_filename, mode="a", header=not pd.io.common.file_exists(csv_filename), index=False)
+        print(f"✅ Datos guardados en {csv_filename} - {df['timestamp'].values[0]}")
+
+    # Esperar X segundos antes de la siguiente recolección
+    time.sleep(60)  # Recolecta datos cada 60 segundos (puedes cambiarlo)

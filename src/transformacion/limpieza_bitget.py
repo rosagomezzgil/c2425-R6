@@ -57,6 +57,7 @@ if __name__ == '__main__':
 
     # Convertir la columna 'Fecha' a datetime
     df["fecha"] = pd.to_datetime(df["fecha"], format="%Y-%m-%d")
+    df.sort_values('fecha', inplace=True)  # Ordenar por fecha
 
     #cambio el nombre de la columna fecha a timpestamp para que tenga formato y nombre igual que el resto
     df = df.rename(columns={'fecha': 'timestamp'})

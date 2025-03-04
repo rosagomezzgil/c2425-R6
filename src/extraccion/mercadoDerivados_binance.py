@@ -90,4 +90,5 @@ if __name__ == '__main__':
         output_path=r"../../data/extraccion/datos_mercadoDerivados_binance.csv"
     )
 
+    print(df.shape)
     print(df.head())

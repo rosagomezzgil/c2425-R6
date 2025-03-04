@@ -84,9 +84,6 @@ if __name__ == '__main__':
     print("\nValores nulos en el dataset:")
     print(df.isnull().sum())
 
-    # Si hay valores nulos en precios o volumen, se imputan con la media
-    df.fillna(df.mean(), inplace=True)
-
     ### DETECCIÓN DE OUTLIERS ###
 
     print("\nOutliers detectados en el dataset:")

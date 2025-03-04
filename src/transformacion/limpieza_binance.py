@@ -4,7 +4,7 @@ from Calcular_RSI import calcular_rsi
 
 if __name__ == '__main__':
     # Cargar datos desde un CSV (ajusta la ruta a tu archivo)
-    df = pd.read_csv(r"../../data/datos_bitcoin_binance.csv")
+    df = pd.read_csv(r"../../data/extraccion/datos_bitcoin_binance.csv")
 
     # Ver las primeras filas
     print(df.head())
@@ -54,4 +54,4 @@ if __name__ == '__main__':
     df["momentum_200"] = df["close"] - df["close"].shift(200)
 
     df = calcular_rsi(df, 'close')
-    df.to_csv("../../data/creacion_variables_binance.csv", index=False)
+    df.to_csv("../../data/limpieza/limpios_binance.csv", index=False)

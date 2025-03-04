@@ -3,7 +3,7 @@ import numpy as np
 
 
 if __name__ == '__main__':
-    df = pd.read_csv(r"../../data/halving_data.csv")
+    df = pd.read_csv(r"../../data/extraccion/halving_data.csv")
 
     print(df.info())  # Ver tipos de datos y valores nulos
     print(df.describe())  # Estadísticas básicas
@@ -14,6 +14,6 @@ if __name__ == '__main__':
     df = df.rename(columns={'Fecha': 'timestamp'}) #cambio el nombre para que coincida
 
 
-    output_path = r"../../data/halving_data_limpio.csv"
+    output_path = r"../../data/limpieza/limpios_halving.csv"
     df.to_csv(output_path, encoding = "utf-8-sig", index=False)
     print(df)

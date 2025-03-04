@@ -3,7 +3,7 @@ import pandas as pd
 
 if __name__ == '__main__':
     # Cargar datos desde CSV
-    sp500 = pd.read_csv(r"../../data/datos_bitcoin_sp500.csv")
+    sp500 = pd.read_csv(r"../../data/extraccion/datos_sp500.csv")
 
     # Ver si hay valores nulos
     print(sp500.isnull().sum())  # No tiene valores nulos
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     sp500 = calcular_rsi(sp500, 'Close')
 
     # Guardar el conjunto de datos procesados
-    output_path = r"../../data/datos_bitcoin_limpiados_sp500.csv"
+    output_path = r"../../data/limpieza/limpios_sp500.csv"
     sp500.to_csv(output_path, index=False)
 
     print(f"Archivo guardado en: {output_path}")

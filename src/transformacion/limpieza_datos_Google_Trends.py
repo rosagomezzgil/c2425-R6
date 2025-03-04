@@ -1,7 +1,7 @@
 import pandas as pd
 
 if __name__ == '__main__':
-    df = pd.read_csv(r"../../data/datos_google_trends.csv")
+    df = pd.read_csv(r"../../data/extraccion/datos_google_trends.csv")
     df = df.reset_index(drop=True)
 
     # Convertir timestamp a datetime
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     df_merged.fillna(0, inplace=True)
 
     # Guardar el conjunto de datos
-    output_path = r"../../data/limpios_google_trends.csv"
+    output_path = r"../../data/limpieza/limpios_google_trends.csv"
     df_merged.to_csv(output_path, encoding="utf-8-sig", index=False)
     print(df_merged.head())
     print(df_merged.info())

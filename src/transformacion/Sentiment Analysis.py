@@ -31,10 +31,10 @@ def analyze_tweets(file_path):
 
 if __name__ == '__main__':
     # Ruta del archivo (modificar según sea necesario)
-    file_path = r"../../data/tweets_bitcoin.csv"
+    file_path = r"../../data/extraccion/tweets_bitcoin.csv"
     df_resultado = analyze_tweets(file_path)
     print(df_resultado.head())
 
     # Guardar el conjunto de datos
-    output_path = r"../../data/sentiment_analysis.csv"
+    output_path = r"../../data/limpieza/sentiment_analysis.csv"
     df_resultado.to_csv(output_path, index=False)

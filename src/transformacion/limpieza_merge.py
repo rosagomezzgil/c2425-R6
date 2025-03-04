@@ -73,7 +73,7 @@ def interpretar_metrica(mae: float, r: float, nombre: str):
 
 if __name__ == "__main__":
     # Cargar los datos
-    file = r'../../data/merged_data.csv'
+    file = r'../../data/limpieza/merged_data.csv'
     merged = pd.read_csv(file, header=0)
 
     # Convertir timestamp a tipo datetime
@@ -173,6 +173,6 @@ if __name__ == "__main__":
     merged_limpio = merged_limpio.loc[:, ~merged_limpio.columns.str.contains('|'.join(eliminar))]
 
     # Guardar el dataframe final
-    output_path = r'../../data/limpio_merged_data.csv'
+    output_path = r'../../data/limpieza/cleaned_data.csv'
     merged_limpio.to_csv(output_path, index=False)
 

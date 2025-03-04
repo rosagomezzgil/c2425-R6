@@ -2,7 +2,7 @@ import pandas as pd
 
 if __name__ == '__main__':
     # Cargar datos desde un CSV (ajusta la ruta a tu archivo)
-    df = pd.read_csv(r"../../data/datos_hashrate.csv")
+    df = pd.read_csv(r"../../data/extraccion/datos_hashrate.csv")
 
     # Ver las primeras filas
     print(df.head())
@@ -41,4 +41,4 @@ if __name__ == '__main__':
     # Ver si hay valores nulos
     print(df_merged.isnull().sum())  # No tiene valores nulos
 
-    df_merged.to_csv("../../data/datos_hashrate_limpiados_binance.csv", index=False)
+    df_merged.to_csv("../../data/limpieza/limpios_hashrate.csv", index=False)

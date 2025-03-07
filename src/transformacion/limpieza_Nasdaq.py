@@ -45,7 +45,7 @@ if __name__ == '__main__':
     nasdaq = calcular_rsi(nasdaq, 'Close')
 
     # Guardar el conjunto de datos procesados
-    output_path = r"../../data/datos_bitcoin_limpiados_nasdaq.csv"
+    output_path = r"../../data/limpieza/limpios_nasdaq.csv"
     nasdaq.to_csv(output_path, index=False)
 
     print(f"Archivo guardado en: {output_path}")

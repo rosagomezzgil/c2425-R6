@@ -2,7 +2,7 @@ from Calcular_RSI import calcular_rsi
 import pandas as pd
 
 if __name__ == '__main__':
-    df = pd.read_csv(r"../../data/datos_coingecko.csv")
+    df = pd.read_csv(r"../../data/extraccion/datos_coingecko.csv")
 
     print(df.info())  # Ver tipos de datos y valores nulos
     print(df.describe())  # Estadísticas básicas
@@ -28,7 +28,7 @@ if __name__ == '__main__':
 
     df = calcular_rsi(df, 'close')
 
-    output_path = r"../../data/datos_coingecko_limpios.csv"
+    output_path = r"../../data/limpieza/limpios_coingecko.csv"
     df.to_csv(output_path, encoding = "utf-8-sig", index=False)
     print(df)
 

@@ -3,7 +3,7 @@ import pandas as pd
 
 if __name__ == '__main__':
     # Cargar el DataFrame
-    df = pd.read_csv(r"../../data/datos_mercadoDerivados_deribit.csv", parse_dates=["timestamp"])
+    df = pd.read_csv(r"../../data/extraccion/datos_mercadoDerivados_deribit.csv", parse_dates=["timestamp"])
 
     # Convertir timestamp a datetime si aún no lo es
     df["timestamp"] = pd.to_datetime(df["timestamp"])
@@ -29,6 +29,9 @@ if __name__ == '__main__':
 
     # Verificar resultado
     print(df_diario.head())
+    ### DETECCIÓN Y TRATAMIENTO DE VALORES NULOS ###
+    print("\nValores nulos en el dataset:")
+    print(df.isnull().sum())
 
     df_diario["mDvar_diaria"] = df_diario["mDclose"].pct_change() * 100
     df_diario["mDvolatilidad_50"] = df_diario["mDclose"].rolling(window=50).std()
@@ -48,6 +51,6 @@ if __name__ == '__main__':
     df_diario = df_diario.rename(columns={'RSI': 'mD_RSI'})
 
     # Guardar el conjunto de datos
-    output_path = r"../../data/limpieza_mercDer_deribit.csv"
+    output_path = r"../../data/limpieza/limpios_mercadoDerivados_deribit.csv"
     df_diario.to_csv(output_path, encoding="utf-8-sig", index=False)
     print(df_diario)

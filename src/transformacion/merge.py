@@ -1,5 +1,4 @@
 import pandas as pd
-import glob
 import os
 
 if __name__ == '__main__':
@@ -9,18 +8,18 @@ if __name__ == '__main__':
     """
     ### RUTA ABSOLUTA A LA CARPETA 'DATA' ###
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))  # Sube 2 niveles desde 'src/transformacion/'
-    DATA_DIR = os.path.join(BASE_DIR, "data")
+    DATA_DIR = os.path.join(BASE_DIR, "data/limpieza")
 
     ### LISTA DE LOS CSV Q VAMOS A CARGAR ###
     archivos = [
-        "limpios_bitget_scrapping.csv", "creacion_variables_binance.csv",
-        "datos_bitcoin_limpiados_fear_greed.csv", "datos_coingecko_limpios.csv", "limpios_google_trends.csv",
-        "datos_hashrate_limpiados_binance.csv",
-        "mercadoDerivados_binance_limpio.csv", "limpieza_mercDer_deribit.csv", "datos_bitcoin_limpiados_sp500.csv",
-        "datos_bitcoin_limpiados_nasdaq.csv", "datos_bitcoin_limpiados_dxy.csv"
+        "limpios_bitget_scrapping.csv", "limpios_binance.csv",
+        "limpios_fear_greed.csv", "limpios_coingecko.csv", "limpios_google_trends.csv",
+        "limpios_hashrate.csv",
+        "limpios_mercadoDerivados_binance.csv", "limpios_mercadoDerivados_deribit.csv", "limpios_sp500.csv",
+        "limpios_nasdaq.csv", "limpios_dxy.csv"
     ]
 
-    ### NOMBRES DE SUFIJOS PARA LAS COLUMNAS (a quitar después, en la limpieza) ###
+    ### NOMBRES DE SUFIJOS PARA LAS COLUMNAS ###
     sufijos = [
         "_bitget", "_binance", "_fg", "_coingecko", "_gtrends",
         "_hashrate", "_mDbinance", "_mDderibit", "_sp500", "_nasdaq", "_dxy"
@@ -39,10 +38,10 @@ if __name__ == '__main__':
         print(f"Archivo: {os.path.basename(file)}")
 
         assert ("timestamp" in df.columns)
-        print("PERIODO COMPRENDIDO: \n", df["timestamp"].min(), df["timestamp"].max(), "\n")
-
 
         df["timestamp"] = pd.to_datetime(df["timestamp"])
+        print("PERIODO COMPRENDIDO: \n", df["timestamp"].min(), df["timestamp"].max(), "\n")
+
 
         #reenombramos columnas para evitar confusiones (excepto 'timestamp')
         df = df.add_suffix(sufijo)  #agrega el sufijo
@@ -56,5 +55,4 @@ if __name__ == '__main__':
 
     #Guardar el DataFrame final
     output_path = os.path.join(DATA_DIR, "merged_data.csv")
-    #df_final.to_csv(output_path, index=False)
     df_final.to_csv(output_path, index=False)

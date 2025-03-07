@@ -1,9 +1,11 @@
+# DESCARGAR EL CSV DEL DRIVE SI LA EXTRACCION DA ERROR
+
 import pandas as pd
 from Calcular_RSI import calcular_rsi
 
 if __name__ == '__main__':
 
-    dxy = pd.read_csv(r"../../data/datos_bitcoin_dxy.csv")
+    dxy = pd.read_csv(r"../../data/extraccion/datos_dxy.csv")
 
     #Hacemos un analisis inicial de como se comporta el df
     print(dxy.head())
@@ -47,7 +49,7 @@ if __name__ == '__main__':
     sp500 = calcular_rsi(dxy, 'Close')
 
     # Guardar el conjunto de datos procesados
-    output_path = r"../../data/datos_bitcoin_limpiados_dxy.csv"
+    output_path = r"../../data/limpieza/limpios_dxy.csv"
     dxy.to_csv(output_path, index=False)
 
     print(f"Archivo guardado en: {output_path}")

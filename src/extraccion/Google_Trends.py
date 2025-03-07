@@ -39,7 +39,7 @@ if __name__ == '__main__':
     google_trends_df = get_google_trends(
         keywords=["bitcoin"],
         timeframe='today 5-y',
-        output_path="../../data/datos_google_trends.csv"
+        output_path="../../data/extraccion/datos_google_trends.csv"
     )
 
     # Comprobar que el rango son 5 años

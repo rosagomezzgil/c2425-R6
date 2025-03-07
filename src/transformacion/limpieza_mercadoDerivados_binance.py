@@ -2,7 +2,7 @@ from Calcular_RSI import calcular_rsi
 import pandas as pd
 
 if __name__ == '__main__':
-    df = pd.read_csv(r"../../data/datos_mercadoDerivados_binance.csv")
+    df = pd.read_csv(r"../../data/extraccion/datos_mercadoDerivados_binance.csv")
 
     # Mostrar las primeras filas del DataFrame
     print("Primeras filas del archivo CSV:")
@@ -64,5 +64,5 @@ if __name__ == '__main__':
     df = calcular_rsi(df, 'mDclose')
     df = df.rename(columns={'RSI': 'mD_RSI'})
 
-    df.to_csv("../../data/mercadoDerivados_binance_limpio.csv", encoding="utf-8-sig", index=False)
+    df.to_csv("../../data/limpieza/limpios_mercadoDerivados_binance.csv", encoding="utf-8-sig", index=False)
     print(df)

@@ -50,7 +50,7 @@ if __name__ == "__main__":
     # Parámetros de extracción
     query = "(Bitcoin OR BTC OR #Bitcoin) -is:retweet lang:en"
     max_results = 100
-    output_path = "../../../data/tweets_bitcoin.csv"
+    output_path = "../../../data/extraccion/tweets_bitcoin.csv"
 
     df_twitter = fetch_tweets(query=query, max_results=max_results, output_filename=output_path)
 

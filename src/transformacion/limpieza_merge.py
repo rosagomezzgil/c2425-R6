@@ -1,36 +1,46 @@
 import pandas as pd
 import numpy as np
 
-def evaluar(column: str, data_source_1: str, data_source_2: str, df: pd.DataFrame):
+def calcular_retorno_logaritmico(series: pd.Series):
     """
-    Calcula el Error Absoluto Medio (MAE) y la correlación de Pearson entre dos fuentes de datos (Binance/Bitget o Binance/Coingecko).
-    :param column: Nombre base de la columna (sin el sufijo _binance o _bitget).
-    :param data_source_1: Primer fuente de datos (por ejemplo, 'binance').
-    :param data_source_2: Segunda fuente de datos (por ejemplo, 'bitget' o 'coingecko').
+    Calcula el retorno logarítmico de una serie temporal de precios.
+
+    :param series: Serie de precios en el tiempo.
+    :return: Serie de retornos logarítmicos.
+    """
+    return np.log(series / series.shift(1))
+
+def evaluar(column: str, data_source_1: str, data_source_2: str, df: pd.DataFrame) -> tuple[float, float]:
+    """
+    Evalúa la similitud entre dos fuentes de datos mediante los retornos logarítmicos.
+
+    :param column: Nombre base de la columna (sin sufijo de fuente de datos).
+    :param data_source_1: Primera fuente de datos (ejemplo: 'binance').
+    :param data_source_2: Segunda fuente de datos (ejemplo: 'bitget' o 'coingecko').
     :param df: DataFrame con los datos.
-    :return: (MAE, Pearson)
+    :return: Una tupla con el Error Absoluto Medio (MAE) y la correlación de Pearson de los retornos.
     """
 
-    column_1, column_2 = column + '_' + data_source_1, column + '_' + data_source_2
+    column_1, column_2 = f"{column}_{data_source_1}", f"{column}_{data_source_2}"
 
+    # Verificar que las columnas existen en el DataFrame
     assert column_2 in df, f"Columna no encontrada: {column_2}"
     assert column_1 in df, f"Columna no encontrada: {column_1}"
 
-    # Eliminar filas con valores nulos en cualquiera de las dos series
+    # Eliminar filas con valores nulos
     df_filtered = df[[column_1, column_2]].dropna()
 
-    # Extraer los valores limpios
-    source_1_values = df_filtered[column_1].values
-    source_2_values = df_filtered[column_2].values
+    # Calcular retornos logarítmicos
+    df_filtered = df_filtered[(df_filtered[column_1] > 0) & (df_filtered[column_2] > 0)]
+    df_filtered[f"{column_1}_retornos"] = calcular_retorno_logaritmico(df_filtered[column_1])
+    df_filtered[f"{column_2}_retornos"] = calcular_retorno_logaritmico(df_filtered[column_2])
 
-    # Calcular MAE
-    mae = np.mean(np.abs(source_1_values - source_2_values))
+    # Eliminar NaNs generados por el cálculo de retornos
+    df_filtered = df_filtered.dropna()
 
-    # Calcular Pearson (si hay variabilidad en los datos)
-    if np.std(source_1_values) == 0 or np.std(source_2_values) == 0:
-        pearson = np.nan  # No se puede calcular correlación si hay varianza cero
-    else:
-        pearson = np.corrcoef(source_1_values, source_2_values)[0, 1]
+    # Calcular MAE y correlación de Pearson en los retornos
+    mae = np.mean(np.abs(df_filtered[f"{column_1}_retornos"] - df_filtered[f"{column_2}_retornos"]))
+    pearson = np.corrcoef(df_filtered[f"{column_1}_retornos"], df_filtered[f"{column_2}_retornos"])[0, 1]
 
     print(f"MAE entre {data_source_1.capitalize()} y {data_source_2.capitalize()} ({column}): {mae:.5f}")
     print(f"Correlación Pearson (r) entre {data_source_1.capitalize()} y {data_source_2.capitalize()} ({column}): {pearson:.5f}")
@@ -63,7 +73,7 @@ def interpretar_metrica(mae: float, r: float, nombre: str):
 
 if __name__ == "__main__":
     # Cargar los datos
-    file = r'../../data/merged_data.csv'
+    file = r'../../data/limpieza/merged_data.csv'
     merged = pd.read_csv(file, header=0)
 
     # Convertir timestamp a tipo datetime
@@ -94,10 +104,9 @@ if __name__ == "__main__":
     print()
 
     """
-    En términos de precios y volatilidad, Binance y Bitget se comportan de manera casi idéntica, siguiendo las mismas tendencias, aunque con algunas diferencias en magnitud.
-    Las métricas como varianza diaria, volatilidad y rango del día son consistentes entre ambas plataformas, lo que sugiere que ambas tienen patrones similares de movimiento en el mercado.
-    El volumen y las medias móviles también muestran una alta similitud en las tendencias, aunque con diferencias en magnitudes.
-    La única excepción notable es el RSI, que muestra una correlación negativa, lo que indica que Binance y Bitget pueden tener diferentes señales sobre la fuerza o debilidad del mercado en un mismo período
+    En general, Binance y Bitget muestran una alta coherencia en la mayoría de las métricas clave,
+    con diferencias mínimas en precios, volatilidad y medias móviles,
+    lo que indica que ambas plataformas reflejan tendencias similares del mercado.
     """
 
     """
@@ -120,15 +129,9 @@ if __name__ == "__main__":
     print()
 
     """
-    En términos generales, Binance y Coingecko muestran una tendencia similar en muchas métricas clave,
-    como el precio de cierre, volatilidad y momentum.
-    La relación entre estas dos plataformas es fuerte en la mayoría de las métricas,
-    lo que indica que los movimientos de precios en ambas plataformas son en gran medida consistentes.
-    
-    Volumen muestra una relación débil, lo que sugiere que los datos de volumen entre ambas plataformas no coinciden bien.
-    La varianza diaria y el rango del día presentan discrepancias significativas,
-    con una correlación negativa en la varianza y una baja correlación en el rango del día,
-    lo que podría indicar diferencias en la forma en que cada plataforma maneja estos datos.
+    Los datos muestran que Binance y Coingecko presentan discrepancias significativas en varias métricas clave, 
+    especialmente en el precio de cierre, volumen, variación diaria y momentum,
+    donde las correlaciones son negativas, indicando que los valores de ambas plataformas no siguen la misma tendencia.
     """
 
     """
@@ -152,12 +155,12 @@ if __name__ == "__main__":
     print()
 
     """
-    En términos generales, las plataformas Binance y Deribit tienen una correlación muy alta en casi todas las métricas clave,
-    lo que sugiere que las tendencias de los precios y otros indicadores siguen patrones muy similares en ambas plataformas.
-    Sin embargo, algunas diferencias en volumen y rango del día sugieren
-    que pueden haber variaciones en la forma en que cada plataforma maneja o reporta ciertos datos.
-    A pesar de estas diferencias, las métricas muestran una alta consistencia en su comportamiento general,
-    lo que implica que las dos plataformas están alineadas en la mayoría de los aspectos de análisis técnico y de mercado.
+    Las plataformas Binance y Deribit muestran una alta concordancia en los datos,
+    especialmente en términos de precios y métricas clave. Las diferencias observadas,
+    como en volumen y algunas métricas de largo plazo (como EMA 200 y rango diario),
+    aunque notables, son moderadas en comparación con la similitud general.
+    Estas métricas son lo suficientemente consistentes como para confiar en que ambas plataformas 
+    siguen la misma tendencia de mercado
     """
 
     """
@@ -170,6 +173,6 @@ if __name__ == "__main__":
     merged_limpio = merged_limpio.loc[:, ~merged_limpio.columns.str.contains('|'.join(eliminar))]
 
     # Guardar el dataframe final
-    output_path = r'../../data/limpio_merged_data.csv'
+    output_path = r'../../data/limpieza/cleaned_data.csv'
     merged_limpio.to_csv(output_path, index=False)
 

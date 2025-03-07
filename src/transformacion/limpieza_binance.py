@@ -54,4 +54,4 @@ if __name__ == '__main__':
     df["momentum_200"] = df["close"] - df["close"].shift(200)
 
     df = calcular_rsi(df, 'close')
-    df.to_csv("../../data/limpieza/limpios_binance.csv", index=False)
+    df.to_csv("../../data/creacion_variables_binance.csv", index=False)

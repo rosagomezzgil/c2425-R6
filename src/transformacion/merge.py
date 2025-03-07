@@ -6,7 +6,6 @@ if __name__ == '__main__':
     """
                                   1 - JUNTAMOS TODOS LOS DATAFRAMES
     """
-
     ### RUTA ABSOLUTA A LA CARPETA 'DATA' ###
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))  # Sube 2 niveles desde 'src/transformacion/'
     DATA_DIR = os.path.join(BASE_DIR, "data/limpieza")

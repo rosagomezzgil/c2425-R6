@@ -12,7 +12,7 @@ def get_google_trends(
     pytrends = TrendReq()
 
     # Pausa antes de hacer la solicitud para evitar bloqueos
-    time.sleep(10)
+    time.sleep(15)
 
     pytrends.build_payload(keywords, timeframe=timeframe, geo=geo)
 

@@ -15,10 +15,11 @@ if __name__ == '__main__':
     nasdaq['timestamp'] = pd.to_datetime(nasdaq['timestamp'])
     nasdaq.sort_values('timestamp', inplace=True)  # Ordenar por fecha
 
-    # Convertir todas las columnas excepto 'timestamp' a numéricas
+    # Convertir todas las columnas excepto 'timestamp' a numéricas e interpolar
     for col in nasdaq.columns:
         if col != "timestamp":
             nasdaq[col] = pd.to_numeric(nasdaq[col], errors="coerce")
+            nasdaq[col] = nasdaq[col].interpolate(method='linear')
 
     #  Agregar variables de análisis técnico
     #  Medias Móviles

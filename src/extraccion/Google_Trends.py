@@ -1,7 +1,7 @@
-#DataFrame con el volumen de búsquedas de "Bitcoin" en Google.
-#Google Trends
+import time
 from pytrends.request import TrendReq
 from typing import List, Optional
+import pandas as pd
 
 def get_google_trends(
     keywords: List[str] = ["bitcoin"],
@@ -9,26 +9,22 @@ def get_google_trends(
     geo: str = "",
     output_path: Optional[str] = None
 ):
-    """
-    Obtiene datos de tendencias de Google Trends.
-
-    :param keywords: (List[str]) Lista de palabras clave a consultar.
-    :param timeframe: (str) Período de tiempo ('today 5-y', '2020-01-01 2024-01-01', etc.).
-    :param geo: (str) Código de país ('US' para EE.UU., 'ES' para España, vacío para global).
-    :param output_path: (str, opcional): Ruta donde guardar el CSV.
-
-    :return: pd.DataFrame con los datos obtenidos.
-    """
     pytrends = TrendReq()
+
+    # Pausa antes de hacer la solicitud para evitar bloqueos
+    time.sleep(15)
+
     pytrends.build_payload(keywords, timeframe=timeframe, geo=geo)
 
     df = pytrends.interest_over_time().reset_index()
 
-    # Renombrar y filtrar columnas
+    if df.empty:
+        print("⚠️ No se recibieron datos. Puede que Google esté bloqueando la solicitud.")
+        return pd.DataFrame()
+
     df.rename(columns={"date": "timestamp"}, inplace=True)
     df = df[["timestamp"] + keywords]
 
-    # Guardar CSV si se proporciona una ruta
     if output_path:
         df.to_csv(output_path, index=False)
         print(f"Datos guardados en: {output_path}")
@@ -42,9 +38,8 @@ if __name__ == '__main__':
         output_path="../../data/extraccion/datos_google_trends.csv"
     )
 
-    # Comprobar que el rango son 5 años
-    print(google_trends_df.iloc[0, 0])
-    print(google_trends_df.iloc[-1, 0])
-
-    print(google_trends_df.shape)
-    print(google_trends_df.head())
+    if not google_trends_df.empty:
+        print(google_trends_df.iloc[0, 0])
+        print(google_trends_df.iloc[-1, 0])
+        print(google_trends_df.shape)
+        print(google_trends_df.head())

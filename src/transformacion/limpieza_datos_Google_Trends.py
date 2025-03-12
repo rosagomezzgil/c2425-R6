@@ -21,6 +21,11 @@ if __name__ == '__main__':
     #Remplazar los valores faltantes por 0 ya que significa que no ha habido busquedas ese dia sobre el bitcoin
     df_merged.fillna(0, inplace=True)
 
+    # Interpolación lineal
+    filtro = df_merged['bitcoin'] == 0
+    df_merged.loc[filtro, 'bitcoin'] = None
+    df_merged["bitcoin"] = df_merged["bitcoin"].interpolate(method='linear')
+
     # Guardar el conjunto de datos
     output_path = r"../../data/limpieza/limpios_google_trends.csv"
     df_merged.to_csv(output_path, encoding="utf-8-sig", index=False)

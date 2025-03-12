@@ -19,10 +19,18 @@ if __name__ == '__main__':
     dxy['timestamp'] = pd.to_datetime(dxy['timestamp'])
     dxy.sort_values('timestamp', inplace=True)  # Ordenar por fecha
 
+    # Crear un rango de fechas completo con frecuencia diaria
+    df_complete = pd.DataFrame(
+        {'timestamp': pd.date_range(start=dxy['timestamp'].min(), end=dxy['timestamp'].max(), freq='D')})
+
+    # Unir con el dataset original
+    dxy = pd.merge(df_complete, dxy, on='timestamp', how='left')
+
     # Convertir todas las columnas excepto 'timestamp' a numéricas
     for col in dxy.columns:
         if col != "timestamp":
             dxy[col] = pd.to_numeric(dxy[col], errors="coerce")
+            dxy[col] = dxy[col].interpolate(method='linear')  # Interpolación lineal
 
     # Agregar variables de análisis técnico
     # Medias Móviles

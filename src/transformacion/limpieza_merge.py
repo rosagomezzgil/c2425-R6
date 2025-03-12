@@ -172,6 +172,11 @@ if __name__ == "__main__":
     # Filtramos las columnas que no contienen ninguna de las palabras clave
     merged_limpio = merged_limpio.loc[:, ~merged_limpio.columns.str.contains('|'.join(eliminar))]
 
+    # Eliminar nulos
+    for col in merged_limpio.columns:
+        if col != "timestamp":
+            merged_limpio[col] = merged_limpio[col].interpolate(method='linear')  # Interpolación lineal
+
     # Guardar el dataframe final
     output_path = r'../../data/limpieza/cleaned_data.csv'
     merged_limpio.to_csv(output_path, index=False)

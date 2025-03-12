@@ -17,10 +17,18 @@ if __name__ == '__main__':
     sp500['timestamp'] = pd.to_datetime(sp500['timestamp'])
     sp500.sort_values('timestamp', inplace=True)  # Ordenar por fecha
 
+    # Crear un rango de fechas completo con frecuencia diaria
+    df_complete = pd.DataFrame(
+        {'timestamp': pd.date_range(start=sp500['timestamp'].min(), end=sp500['timestamp'].max(), freq='D')})
+
+    # Unir con el dataset original
+    sp500 = pd.merge(df_complete, sp500, on='timestamp', how='left')
+
     # Convertir todas las columnas excepto 'timestamp' a numéricas
     for col in sp500.columns:
         if col != "timestamp":
             sp500[col] = pd.to_numeric(sp500[col], errors="coerce")
+            sp500[col] = sp500[col].interpolate(method='linear')  # Interpolación lineal
 
     # Agregar variables de análisis técnico
     # Medias Móviles

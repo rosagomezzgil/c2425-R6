@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from typing import Optional
 
 def calcular_retorno_logaritmico(series: pd.Series):
     """
@@ -70,6 +71,40 @@ def interpretar_metrica(mae: float, r: float, nombre: str):
         return f"{nombre}: Casi sin relación. Tienen diferencias importantes aquí."
     else:
         return f"{nombre}: Relación negativa. Parecen moverse en direcciones opuestas. Algo está mal."
+
+def calcular_tendencia(
+        df: pd.DataFrame,
+        horizonte: int,
+        threshold: float = 0,
+        output_path: Optional[str] = None
+):
+    """
+    Calcula la tendencia futura basada en la variación porcentual del precio medio.
+
+    :param df: (pd.DataFrame) datos de Bitcoin.
+    :param horizonte: (int) Número de períodos para calcular la tendencia.
+    :param threshold: (float, opcional) Umbral para definir tendencias alcistas/bajistas. Default: 0.
+    :param output_path: (str, opcional) Ruta donde guardar el CSV procesado. Default: None
+    :return: pd.DataFrame con la tendencia calculada.
+    """
+
+    # Calcular el precio medio en la ventana
+    precio_medio = df['close_binance'].rolling(window=horizonte).mean()
+
+    # Calcular la variación porcentual
+    df[f'pct_cambio_{horizonte}d'] = (precio_medio.shift(-horizonte) - precio_medio) / precio_medio * 100
+
+    # Definir la tendencia futura
+    df[f'tendencia_futura_{horizonte}d'] = 0  # Neutral por defecto
+    df.loc[df[f'pct_cambio_{horizonte}d'] > threshold, f'tendencia_futura_{horizonte}d'] = 1  # Alcista
+    df.loc[df[f'pct_cambio_{horizonte}d'] < -threshold, f'tendencia_futura_{horizonte}d'] = -1  # Bajista
+
+    # Guardar CSV si se proporciona una ruta
+    if output_path:
+        df.to_csv(output_path, index=False)
+        print(f"Datos guardados en: {output_path}")
+
+    return df
 
 if __name__ == "__main__":
     # Cargar los datos
@@ -179,33 +214,9 @@ if __name__ == "__main__":
 
     # Guardar el dataframe final
     output_path = r'../../data/limpieza/cleaned_data.csv'
-    merged_limpio.to_csv(output_path, index=False)
 
-def calcular_tendencia(csv_file_path, horizonte):
-    # Cargar los datos
-    df = pd.read_csv(csv_file_path)
+    df = calcular_tendencia(df= merged_limpio, horizonte= 7)
+    df = calcular_tendencia(df= df, horizonte= 30, output_path= output_path)
 
-    # Calcular el precio medio en la ventana
-    precio_medio = df['close_binance'].rolling(window=horizonte).mean()
-
-    # Calcular la variación porcentual
-    df[f'pct_cambio_{horizonte}d'] = (precio_medio.shift(-horizonte) - precio_medio) / precio_medio * 100
-
-    # Definir la tendencia futura
-    threshold = 0  # Se puede ajustar según volatilidad
-    df[f'tendencia_futura_{horizonte}d'] = 0  # Neutral por defecto
-    df.loc[df[f'pct_cambio_{horizonte}d'] > threshold, f'tendencia_futura_{horizonte}d'] = 1  # Alcista
-    df.loc[df[f'pct_cambio_{horizonte}d'] < -threshold, f'tendencia_futura_{horizonte}d'] = -1  # Bajista
-
-    # Guardar el dataset actualizado
-    output_file = r'../../data/limpieza/cleaned_data.csv'
-    df.to_csv(output_file, index=False)
-
-    # Mostrar las últimas filas
-    print(df.tail(60))
-
-    return df
-
-df_resultado = calcular_tendencia(output_path, 7)
-df_resultado = calcular_tendencia(output_path, 30)
+    print(df.head)
 

@@ -3,12 +3,13 @@ import pandas as pd
 import time
 from typing import Optional
 
+
 def get_deribit_historical_data(
-        instrument: str = "BTC-PERPETUAL",
-        days: int = 365,
-        interval: str = "1h",
-        resolution: str ="60",
-        output_path: Optional[str] = None
+    instrument: str = "BTC-PERPETUAL",
+    days: int = 365,
+    interval: str = "1h",
+    resolution: str = "60",
+    output_path: Optional[str] = None,
 ):
     """
     Descarga datos históricos de Deribit
@@ -26,8 +27,14 @@ def get_deribit_historical_data(
 
     all_data = []
     interval_ms = {
-        "1m": 60 * 1000, "5m": 5 * 60 * 1000, "15m": 15 * 60 * 1000, "1h": 60 * 60 * 1000, "1d": 24 * 60 * 60 * 1000
-    }[interval]  # Convertir el intervalo a milisegundos
+        "1m": 60 * 1000,
+        "5m": 5 * 60 * 1000,
+        "15m": 15 * 60 * 1000,
+        "1h": 60 * 60 * 1000,
+        "1d": 24 * 60 * 60 * 1000,
+    }[
+        interval
+    ]  # Convertir el intervalo a milisegundos
 
     end_time = int(time.time() * 1000)
     start_time = end_time - (days * 24 * 60 * 60 * 1000)
@@ -42,12 +49,12 @@ def get_deribit_historical_data(
             "instrument_name": instrument,
             "start_timestamp": current_start,
             "end_timestamp": current_end,
-            "resolution": resolution
+            "resolution": resolution,
         }
 
         try:
             response = requests.get(url, params=params)
-            response.raise_for_status() # Lanza error si la solicitud falla
+            response.raise_for_status()  # Lanza error si la solicitud falla
             data = response.json()
 
             if "result" not in data or not data["result"]:
@@ -55,7 +62,9 @@ def get_deribit_historical_data(
 
             df = pd.DataFrame(data["result"])
 
-            df["timestamp"] = pd.to_datetime(df["ticks"], unit="ms")  # Convertir timestamp a fecha legible
+            df["timestamp"] = pd.to_datetime(
+                df["ticks"], unit="ms"
+            )  # Convertir timestamp a fecha legible
             df.set_index("timestamp", inplace=True)
 
             all_data.append(df[["open", "high", "low", "close", "volume"]])
@@ -81,11 +90,12 @@ def get_deribit_historical_data(
         print("No se obtuvieron datos.")
         return None
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     df = get_deribit_historical_data(
         days=365 * 3,
         interval="1d",
-        output_path=r"../../data/extraccion/datos_mercadoDerivados_deribit.csv"
+        output_path=r"../../data/extraccion/datos_mercadoDerivados_deribit.csv",
     )
 
     print(df.shape)

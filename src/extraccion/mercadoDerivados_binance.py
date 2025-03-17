@@ -3,11 +3,12 @@ import pandas as pd
 import time
 from typing import Optional
 
+
 def get_binance_futures_historical_data(
-        symbol: str = "BTCUSDT",
-        days: int = 365,
-        interval: str = "1h",
-        output_path: Optional[str] = None
+    symbol: str = "BTCUSDT",
+    days: int = 365,
+    interval: str = "1h",
+    output_path: Optional[str] = None,
 ):
     """
     Descarga datos históricos de Binance Futures.
@@ -25,8 +26,14 @@ def get_binance_futures_historical_data(
     all_data = []
     limit = 1000  # Máximo de velas por solicitud en Binance
     interval_ms = {
-        "1m": 60 * 1000, "5m": 5 * 60 * 1000, "15m": 15 * 60 * 1000, "1h": 60 * 60 * 1000, "1d": 24 * 60 * 60 * 1000
-    }[interval]  # Convertir el intervalo a milisegundos
+        "1m": 60 * 1000,
+        "5m": 5 * 60 * 1000,
+        "15m": 15 * 60 * 1000,
+        "1h": 60 * 60 * 1000,
+        "1d": 24 * 60 * 60 * 1000,
+    }[
+        interval
+    ]  # Convertir el intervalo a milisegundos
 
     end_time = int(time.time() * 1000)  # Tiempo actual en ms
     start_time = end_time - (days * 24 * 60 * 60 * 1000)  # Tiempo inicial en ms
@@ -37,7 +44,7 @@ def get_binance_futures_historical_data(
             "interval": interval,
             "startTime": start_time,
             "endTime": end_time,
-            "limit": limit
+            "limit": limit,
         }
 
         try:
@@ -49,11 +56,23 @@ def get_binance_futures_historical_data(
                 print("No se obtuvieron más datos o error en la API.")
                 break
 
-            df = pd.DataFrame(data, columns=[
-                "timestamp", "open", "high", "low", "close", "volume",
-                "close_time", "quote_asset_volume", "trades",
-                "taker_buy_base", "taker_buy_quote", "ignore"
-            ])
+            df = pd.DataFrame(
+                data,
+                columns=[
+                    "timestamp",
+                    "open",
+                    "high",
+                    "low",
+                    "close",
+                    "volume",
+                    "close_time",
+                    "quote_asset_volume",
+                    "trades",
+                    "taker_buy_base",
+                    "taker_buy_quote",
+                    "ignore",
+                ],
+            )
 
             df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
             df.set_index("timestamp", inplace=True)
@@ -82,12 +101,12 @@ def get_binance_futures_historical_data(
         return None
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     df = get_binance_futures_historical_data(
         symbol="BTCUSDT",
         days=365 * 3,
         interval="1d",
-        output_path=r"../../data/extraccion/datos_mercadoDerivados_binance.csv"
+        output_path=r"../../data/extraccion/datos_mercadoDerivados_binance.csv",
     )
 
     print(df.shape)

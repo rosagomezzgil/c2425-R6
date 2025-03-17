@@ -1,7 +1,7 @@
 from Calcular_RSI import calcular_rsi
 import pandas as pd
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     df = pd.read_csv(r"../../data/extraccion/datos_mercadoDerivados_binance.csv")
 
     # Mostrar las primeras filas del DataFrame
@@ -31,14 +31,17 @@ if __name__ == '__main__':
     print("\nValores nulos en el dataset:")
     print(df.isnull().sum())
 
-
     ### CAMBIO DE NOMBRES DE LAS VARIABLES PARA EL ESTUDIO ###
-    df = df.rename(columns={'open': 'mDopen',
-                            'high': 'mDhigh',
-                            'low': 'mDlow',
-                            'close': 'mDclose',
-                            'volume': 'mDvolume',
-                            'trades': 'mDtrades'})
+    df = df.rename(
+        columns={
+            "open": "mDopen",
+            "high": "mDhigh",
+            "low": "mDlow",
+            "close": "mDclose",
+            "volume": "mDvolume",
+            "trades": "mDtrades",
+        }
+    )
 
     ### DETECCIÓN DE OUTLIERS ###
     # No vamos a eliminar outliers ya que pueden ser utiles para la prediccion, solamente los detectamos
@@ -54,15 +57,19 @@ if __name__ == '__main__':
     df["mDmomentum_50"] = df["mDclose"] - df["mDclose"].shift(50)
     df["mDmomentum_200"] = df["mDclose"] - df["mDclose"].shift(200)
     # Media Móvil Simple (SMA)
-    df['mDSMA_50'] = df['mDclose'].rolling(window=50).mean()  # 50 días
-    df['mDSMA_200'] = df['mDclose'].rolling(window=200).mean()  # 200 días
+    df["mDSMA_50"] = df["mDclose"].rolling(window=50).mean()  # 50 días
+    df["mDSMA_200"] = df["mDclose"].rolling(window=200).mean()  # 200 días
 
     # Media Móvil Exponencial (EMA)
-    df['mDEMA_50'] = df['mDclose'].ewm(span=50, adjust=False).mean()
-    df['mDEMA_200'] = df['mDclose'].ewm(span=200, adjust=False).mean()
+    df["mDEMA_50"] = df["mDclose"].ewm(span=50, adjust=False).mean()
+    df["mDEMA_200"] = df["mDclose"].ewm(span=200, adjust=False).mean()
 
-    df = calcular_rsi(df, 'mDclose')
-    df = df.rename(columns={'RSI': 'mD_RSI'})
+    df = calcular_rsi(df, "mDclose")
+    df = df.rename(columns={"RSI": "mD_RSI"})
 
-    df.to_csv("../../data/limpieza/limpios_mercadoDerivados_binance.csv", encoding="utf-8-sig", index=False)
+    df.to_csv(
+        "../../data/limpieza/limpios_mercadoDerivados_binance.csv",
+        encoding="utf-8-sig",
+        index=False,
+    )
     print(df)

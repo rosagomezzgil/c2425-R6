@@ -3,11 +3,12 @@ from pytrends.request import TrendReq
 from typing import List, Optional
 import pandas as pd
 
+
 def get_google_trends(
     keywords: List[str] = ["bitcoin"],
     timeframe: str = "today 5-y",
     geo: str = "",
-    output_path: Optional[str] = None
+    output_path: Optional[str] = None,
 ):
     pytrends = TrendReq()
 
@@ -19,7 +20,9 @@ def get_google_trends(
     df = pytrends.interest_over_time().reset_index()
 
     if df.empty:
-        print("⚠️ No se recibieron datos. Puede que Google esté bloqueando la solicitud.")
+        print(
+            "⚠️ No se recibieron datos. Puede que Google esté bloqueando la solicitud."
+        )
         return pd.DataFrame()
 
     df.rename(columns={"date": "timestamp"}, inplace=True)
@@ -31,11 +34,12 @@ def get_google_trends(
 
     return df
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     google_trends_df = get_google_trends(
         keywords=["bitcoin"],
-        timeframe='today 5-y',
-        output_path="../../data/extraccion/datos_google_trends.csv"
+        timeframe="today 5-y",
+        output_path="../../data/extraccion/datos_google_trends.csv",
     )
 
     if not google_trends_df.empty:

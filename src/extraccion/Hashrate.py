@@ -2,10 +2,11 @@ import requests
 import pandas as pd
 from typing import Optional
 
+
 def get_bitcoin_hashrate(
     timespan: str = "all",
     rolling_average: str = "24hours",
-    output_path: Optional[str] = None
+    output_path: Optional[str] = None,
 ):
     """
     Obtiene datos del hashrate de Bitcoin desde Blockchain.com.
@@ -42,7 +43,7 @@ def get_bitcoin_hashrate(
         return None
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     hashrate_df = get_bitcoin_hashrate(
         output_path="../../data/extraccion/datos_hashrate.csv"
     )

@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 import time
 
+
 # Función para obtener Market Data
 def get_market_data(symbol="BTCUSDT"):
     url = f"https://api.binance.com/api/v3/ticker/24hr?symbol={symbol}"
@@ -18,7 +19,7 @@ def get_market_data(symbol="BTCUSDT"):
             "highPrice": float(data["highPrice"]),
             "lowPrice": float(data["lowPrice"]),
             "volume": float(data["volume"]),
-            "quoteVolume": float(data["quoteVolume"])
+            "quoteVolume": float(data["quoteVolume"]),
         }
         return pd.DataFrame([market_data])
     else:
@@ -35,7 +36,12 @@ while True:
 
     if df is not None:
         # Guardar los datos en CSV sin borrar los anteriores
-        df.to_csv(csv_filename, mode="a", header=not pd.io.common.file_exists(csv_filename), index=False)
+        df.to_csv(
+            csv_filename,
+            mode="a",
+            header=not pd.io.common.file_exists(csv_filename),
+            index=False,
+        )
         print(f"✅ Datos guardados en {csv_filename} - {df['timestamp'].values[0]}")
 
     # Esperar X segundos antes de la siguiente recolección

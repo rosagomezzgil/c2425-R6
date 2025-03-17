@@ -181,3 +181,31 @@ if __name__ == "__main__":
     output_path = r'../../data/limpieza/cleaned_data.csv'
     merged_limpio.to_csv(output_path, index=False)
 
+def calcular_tendencia(csv_file_path, horizonte):
+    # Cargar los datos
+    df = pd.read_csv(csv_file_path)
+
+    # Calcular el precio medio en la ventana
+    precio_medio = df['close_binance'].rolling(window=horizonte).mean()
+
+    # Calcular la variación porcentual
+    df[f'pct_cambio_{horizonte}d'] = (precio_medio.shift(-horizonte) - precio_medio) / precio_medio * 100
+
+    # Definir la tendencia futura
+    threshold = 0  # Se puede ajustar según volatilidad
+    df[f'tendencia_futura_{horizonte}d'] = 0  # Neutral por defecto
+    df.loc[df[f'pct_cambio_{horizonte}d'] > threshold, f'tendencia_futura_{horizonte}d'] = 1  # Alcista
+    df.loc[df[f'pct_cambio_{horizonte}d'] < -threshold, f'tendencia_futura_{horizonte}d'] = -1  # Bajista
+
+    # Guardar el dataset actualizado
+    output_file = r'../../data/limpieza/cleaned_data.csv'
+    df.to_csv(output_file, index=False)
+
+    # Mostrar las últimas filas
+    print(df.tail(60))
+
+    return df
+
+df_resultado = calcular_tendencia(output_path, 7)
+df_resultado = calcular_tendencia(output_path, 30)
+

@@ -1,6 +1,6 @@
 import pandas as pd
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Cargar el CSV en un DataFrame
     df = pd.read_csv(r"../../data/limpieza/cleaned_data.csv")
 

@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from typing import Optional
 
+
 def calcular_retorno_logaritmico(series: pd.Series):
     """
     Calcula el retorno logarítmico de una serie temporal de precios.
@@ -11,7 +12,10 @@ def calcular_retorno_logaritmico(series: pd.Series):
     """
     return np.log(series / series.shift(1))
 
-def evaluar(column: str, data_source_1: str, data_source_2: str, df: pd.DataFrame) -> tuple[float, float]:
+
+def evaluar(
+    column: str, data_source_1: str, data_source_2: str, df: pd.DataFrame
+) -> tuple[float, float]:
     """
     Evalúa la similitud entre dos fuentes de datos mediante los retornos logarítmicos.
 
@@ -33,20 +37,35 @@ def evaluar(column: str, data_source_1: str, data_source_2: str, df: pd.DataFram
 
     # Calcular retornos logarítmicos
     df_filtered = df_filtered[(df_filtered[column_1] > 0) & (df_filtered[column_2] > 0)]
-    df_filtered[f"{column_1}_retornos"] = calcular_retorno_logaritmico(df_filtered[column_1])
-    df_filtered[f"{column_2}_retornos"] = calcular_retorno_logaritmico(df_filtered[column_2])
+    df_filtered[f"{column_1}_retornos"] = calcular_retorno_logaritmico(
+        df_filtered[column_1]
+    )
+    df_filtered[f"{column_2}_retornos"] = calcular_retorno_logaritmico(
+        df_filtered[column_2]
+    )
 
     # Eliminar NaNs generados por el cálculo de retornos
     df_filtered = df_filtered.dropna()
 
     # Calcular MAE y correlación de Pearson en los retornos
-    mae = np.mean(np.abs(df_filtered[f"{column_1}_retornos"] - df_filtered[f"{column_2}_retornos"]))
-    pearson = np.corrcoef(df_filtered[f"{column_1}_retornos"], df_filtered[f"{column_2}_retornos"])[0, 1]
+    mae = np.mean(
+        np.abs(
+            df_filtered[f"{column_1}_retornos"] - df_filtered[f"{column_2}_retornos"]
+        )
+    )
+    pearson = np.corrcoef(
+        df_filtered[f"{column_1}_retornos"], df_filtered[f"{column_2}_retornos"]
+    )[0, 1]
 
-    print(f"MAE entre {data_source_1.capitalize()} y {data_source_2.capitalize()} ({column}): {mae:.5f}")
-    print(f"Correlación Pearson (r) entre {data_source_1.capitalize()} y {data_source_2.capitalize()} ({column}): {pearson:.5f}")
+    print(
+        f"MAE entre {data_source_1.capitalize()} y {data_source_2.capitalize()} ({column}): {mae:.5f}"
+    )
+    print(
+        f"Correlación Pearson (r) entre {data_source_1.capitalize()} y {data_source_2.capitalize()} ({column}): {pearson:.5f}"
+    )
 
     return mae, pearson
+
 
 def interpretar_metrica(mae: float, r: float, nombre: str):
     """
@@ -72,11 +91,12 @@ def interpretar_metrica(mae: float, r: float, nombre: str):
     else:
         return f"{nombre}: Relación negativa. Parecen moverse en direcciones opuestas. Algo está mal."
 
+
 def calcular_tendencia(
-        df: pd.DataFrame,
-        horizonte: int,
-        threshold: float = 0,
-        output_path: Optional[str] = None
+    df: pd.DataFrame,
+    horizonte: int,
+    threshold: float = 0,
+    output_path: Optional[str] = None,
 ):
     """
     Calcula la tendencia futura basada en la variación porcentual del precio medio.
@@ -89,15 +109,21 @@ def calcular_tendencia(
     """
 
     # Calcular el precio medio en la ventana
-    precio_medio = df['close_binance'].rolling(window=horizonte).mean()
+    precio_medio = df["close_binance"].rolling(window=horizonte).mean()
 
     # Calcular la variación porcentual
-    df[f'pct_cambio_{horizonte}d'] = (precio_medio.shift(-horizonte) - precio_medio) / precio_medio * 100
+    df[f"pct_cambio_{horizonte}d"] = (
+        (precio_medio.shift(-horizonte) - precio_medio) / precio_medio * 100
+    )
 
     # Definir la tendencia futura
-    df[f'tendencia_futura_{horizonte}d'] = 0  # Neutral por defecto
-    df.loc[df[f'pct_cambio_{horizonte}d'] > threshold, f'tendencia_futura_{horizonte}d'] = 1  # Alcista
-    df.loc[df[f'pct_cambio_{horizonte}d'] < -threshold, f'tendencia_futura_{horizonte}d'] = -1  # Bajista
+    df[f"tendencia_futura_{horizonte}d"] = 0  # Neutral por defecto
+    df.loc[
+        df[f"pct_cambio_{horizonte}d"] > threshold, f"tendencia_futura_{horizonte}d"
+    ] = 1  # Alcista
+    df.loc[
+        df[f"pct_cambio_{horizonte}d"] < -threshold, f"tendencia_futura_{horizonte}d"
+    ] = -1  # Bajista
 
     # Guardar CSV si se proporciona una ruta
     if output_path:
@@ -106,34 +132,49 @@ def calcular_tendencia(
 
     return df
 
+
 if __name__ == "__main__":
     # Cargar los datos
-    file = r'../../data/limpieza/merged_data.csv'
+    file = r"../../data/limpieza/merged_data.csv"
     merged = pd.read_csv(file, header=0)
 
     # Convertir timestamp a tipo datetime
-    merged['timestamp'] = pd.to_datetime(merged['timestamp'])
+    merged["timestamp"] = pd.to_datetime(merged["timestamp"])
 
     # Filtrar solo los últimos 3 años
-    fecha_mas_actual = merged['timestamp'].max()
+    fecha_mas_actual = merged["timestamp"].max()
     fecha_limite = fecha_mas_actual - pd.DateOffset(years=3)
-    merged_limpio = merged[merged['timestamp'] >= fecha_limite]
+    merged_limpio = merged[merged["timestamp"] >= fecha_limite]
 
     """
         1. Evaluar Binance comparándolo con Bitget
     """
     # Columnas a evaluar
     columns = [
-        'open', 'high', 'low', 'close', 'volumen',
-        'var_diaria', 'volatilidad_50', 'volatilidad_200', 'rango_dia',
-        'momentum_50', 'momentum_200', 'SMA_50', 'SMA_200',
-        'EMA_50', 'EMA_200', 'RSI'
+        "open",
+        "high",
+        "low",
+        "close",
+        "volumen",
+        "var_diaria",
+        "volatilidad_50",
+        "volatilidad_200",
+        "rango_dia",
+        "momentum_50",
+        "momentum_200",
+        "SMA_50",
+        "SMA_200",
+        "EMA_50",
+        "EMA_200",
+        "RSI",
     ]
 
     # Calcular métricas para cada columna
-    resultados = [evaluar(column, 'binance', 'bitget', merged_limpio) for column in columns]
+    resultados = [
+        evaluar(column, "binance", "bitget", merged_limpio) for column in columns
+    ]
 
-    print('\nInterpretación de las métricas:')
+    print("\nInterpretación de las métricas:")
     for column, mae, r in zip(columns, *zip(*resultados)):
         print(interpretar_metrica(mae, r, column))
     print()
@@ -149,16 +190,27 @@ if __name__ == "__main__":
     """
     # Columnas a evaluar
     columns = [
-        'close', 'volumen',
-        'var_diaria', 'volatilidad_50', 'volatilidad_200', 'rango_dia',
-        'momentum_50', 'momentum_200', 'SMA_50', 'SMA_200',
-        'EMA_50', 'EMA_200', 'RSI'
+        "close",
+        "volumen",
+        "var_diaria",
+        "volatilidad_50",
+        "volatilidad_200",
+        "rango_dia",
+        "momentum_50",
+        "momentum_200",
+        "SMA_50",
+        "SMA_200",
+        "EMA_50",
+        "EMA_200",
+        "RSI",
     ]
 
     # Calcular métricas para cada columna
-    resultados = [evaluar(column, 'binance', 'coingecko', merged_limpio) for column in columns]
+    resultados = [
+        evaluar(column, "binance", "coingecko", merged_limpio) for column in columns
+    ]
 
-    print('\nInterpretación de las métricas:')
+    print("\nInterpretación de las métricas:")
     for column, mae, r in zip(columns, *zip(*resultados)):
         print(interpretar_metrica(mae, r, column))
     print()
@@ -175,16 +227,30 @@ if __name__ == "__main__":
 
     # Columnas a evaluar
     columns = [
-        'mDopen', 'mDhigh', 'mDlow', 'mDclose', 'mDvolume',
-        'mDvar_diaria', 'mDvolatilidad_50', 'mDvolatilidad_200', 'mDrango_dia',
-        'mDmomentum_50', 'mDmomentum_200', 'mDSMA_50', 'mDSMA_200',
-        'mDEMA_50', 'mDEMA_200', 'mD_RSI'
+        "mDopen",
+        "mDhigh",
+        "mDlow",
+        "mDclose",
+        "mDvolume",
+        "mDvar_diaria",
+        "mDvolatilidad_50",
+        "mDvolatilidad_200",
+        "mDrango_dia",
+        "mDmomentum_50",
+        "mDmomentum_200",
+        "mDSMA_50",
+        "mDSMA_200",
+        "mDEMA_50",
+        "mDEMA_200",
+        "mD_RSI",
     ]
 
     # Calcular métricas para cada columna
-    resultados = [evaluar(column, 'mDbinance', 'mDderibit', merged_limpio) for column in columns]
+    resultados = [
+        evaluar(column, "mDbinance", "mDderibit", merged_limpio) for column in columns
+    ]
 
-    print('\nInterpretación de las métricas:')
+    print("\nInterpretación de las métricas:")
     for column, mae, r in zip(columns, *zip(*resultados)):
         print(interpretar_metrica(mae, r, column))
     print()
@@ -202,21 +268,24 @@ if __name__ == "__main__":
         4. Dejar únicamente las columnas de Binance y hashrate, google trends
     """
 
-    eliminar = ['bitget', 'coingecko', 'mDderibit']
+    eliminar = ["bitget", "coingecko", "mDderibit"]
 
     # Filtramos las columnas que no contienen ninguna de las palabras clave
-    merged_limpio = merged_limpio.loc[:, ~merged_limpio.columns.str.contains('|'.join(eliminar))]
+    merged_limpio = merged_limpio.loc[
+        :, ~merged_limpio.columns.str.contains("|".join(eliminar))
+    ]
 
     # Eliminar nulos
     for col in merged_limpio.columns:
         if col != "timestamp":
-            merged_limpio[col] = merged_limpio[col].interpolate(method='linear')  # Interpolación lineal
+            merged_limpio[col] = merged_limpio[col].interpolate(
+                method="linear"
+            )  # Interpolación lineal
 
     # Guardar el dataframe final
-    output_path = r'../../data/limpieza/cleaned_data.csv'
+    output_path = r"../../data/limpieza/cleaned_data.csv"
 
-    df = calcular_tendencia(df= merged_limpio, horizonte= 7)
-    df = calcular_tendencia(df= df, horizonte= 30, output_path= output_path)
+    df = calcular_tendencia(df=merged_limpio, horizonte=7)
+    df = calcular_tendencia(df=df, horizonte=30, output_path=output_path)
 
     print(df.head)
-

@@ -29,7 +29,8 @@ def analyze_tweets(file_path):
     print(df["Sentimiento"].value_counts())
     return df
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # Ruta del archivo (modificar según sea necesario)
     file_path = r"../../data/extraccion/tweets_bitcoin.csv"
     df_resultado = analyze_tweets(file_path)

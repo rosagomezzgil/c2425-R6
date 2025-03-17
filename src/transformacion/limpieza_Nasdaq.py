@@ -1,32 +1,32 @@
 from Calcular_RSI import calcular_rsi
 import pandas as pd
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Cargar datos desde CSV
     nasdaq = pd.read_csv(r"../../data/extraccion/datos_nasdaq.csv")
 
     # Ver si hay valores nulos
-    print(nasdaq.isnull().sum())    #No tiene valores nulos
+    print(nasdaq.isnull().sum())  # No tiene valores nulos
 
-    #Ver el tipo de datos
+    # Ver el tipo de datos
     print(nasdaq.info())
 
     # Convertir timestamp a formato fecha
-    nasdaq['timestamp'] = pd.to_datetime(nasdaq['timestamp'])
-    nasdaq.sort_values('timestamp', inplace=True)  # Ordenar por fecha
+    nasdaq["timestamp"] = pd.to_datetime(nasdaq["timestamp"])
+    nasdaq.sort_values("timestamp", inplace=True)  # Ordenar por fecha
 
     # Convertir todas las columnas excepto 'timestamp' a numéricas e interpolar
     for col in nasdaq.columns:
         if col != "timestamp":
             nasdaq[col] = pd.to_numeric(nasdaq[col], errors="coerce")
-            nasdaq[col] = nasdaq[col].interpolate(method='linear')
+            nasdaq[col] = nasdaq[col].interpolate(method="linear")
 
     #  Agregar variables de análisis técnico
     #  Medias Móviles
-    nasdaq['SMA_50'] = nasdaq['Close'].rolling(window=50).mean()
-    nasdaq['SMA_200'] = nasdaq['Close'].rolling(window=200).mean()
-    nasdaq['EMA_50'] = nasdaq['Close'].ewm(span=50, adjust=False).mean()
-    nasdaq['EMA_200'] = nasdaq['Close'].ewm(span=200, adjust=False).mean()
+    nasdaq["SMA_50"] = nasdaq["Close"].rolling(window=50).mean()
+    nasdaq["SMA_200"] = nasdaq["Close"].rolling(window=200).mean()
+    nasdaq["EMA_50"] = nasdaq["Close"].ewm(span=50, adjust=False).mean()
+    nasdaq["EMA_200"] = nasdaq["Close"].ewm(span=200, adjust=False).mean()
 
     #  Volatilidad (Desviación estándar de los últimos X días)
     nasdaq["volatilidad_50"] = nasdaq["Close"].rolling(window=50).std()
@@ -43,7 +43,7 @@ if __name__ == '__main__':
     nasdaq["rango_dia"] = nasdaq["High"] - nasdaq["Low"]
 
     #  RSI (Relative Strength Index)
-    nasdaq = calcular_rsi(nasdaq, 'Close')
+    nasdaq = calcular_rsi(nasdaq, "Close")
 
     # Guardar el conjunto de datos procesados
     output_path = r"../../data/limpieza/limpios_nasdaq.csv"
@@ -51,4 +51,3 @@ if __name__ == '__main__':
 
     print(f"Archivo guardado en: {output_path}")
     print(nasdaq.head())  # Mostrar primeras filas para verificación
-

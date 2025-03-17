@@ -6,14 +6,16 @@ import os
 import time
 from typing import Optional
 
+
 def download_data(
-        ticker: str,
-        start_date: str,
-        end_date: str,
-        interval: str,
-        columns_rename: Optional[dict] = None,
-        output_filename: Optional[str] = None,
-        max_retries: int = 5):
+    ticker: str,
+    start_date: str,
+    end_date: str,
+    interval: str,
+    columns_rename: Optional[dict] = None,
+    output_filename: Optional[str] = None,
+    max_retries: int = 5,
+):
     """
     Descarga datos de Yahoo Finance, maneja errores y los guarda en un CSV.
 
@@ -56,10 +58,13 @@ def download_data(
             print(f"Error en {ticker}: {e}. Reintentando en {wait_time} segundos...")
             time.sleep(wait_time)
 
-    print(f"Error crítico: No se pudo descargar {ticker} después de {max_retries} intentos.")
+    print(
+        f"Error crítico: No se pudo descargar {ticker} después de {max_retries} intentos."
+    )
     return None
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # Parámetros
     start_date = "2022-01-01"
     end_date = "2025-02-17"
@@ -74,7 +79,7 @@ if __name__ == '__main__':
         end_date=end_date,
         interval=interval,
         columns_rename={"Date": "timestamp"},
-        output_filename=os.path.join(output_dir, "datos_dxy.csv")
+        output_filename=os.path.join(output_dir, "datos_dxy.csv"),
     )
 
     # S&P 500
@@ -84,7 +89,7 @@ if __name__ == '__main__':
         end_date=end_date,
         interval=interval,
         columns_rename={"Date": "timestamp"},
-        output_filename=os.path.join(output_dir, "datos_sp500.csv")
+        output_filename=os.path.join(output_dir, "datos_sp500.csv"),
     )
 
     # Nasdaq
@@ -94,5 +99,5 @@ if __name__ == '__main__':
         end_date=end_date,
         interval=interval,
         columns_rename={"Date": "timestamp"},
-        output_filename=os.path.join(output_dir, "datos_nasdaq.csv")
+        output_filename=os.path.join(output_dir, "datos_nasdaq.csv"),
     )

@@ -1,17 +1,18 @@
-#OHLCV, volumen, precios en vivo de bitcoins
-#Binance
+# OHLCV, volumen, precios en vivo de bitcoins
+# Binance
 
 import requests
 import pandas as pd
 from typing import Optional
 
+
 def get_binance_data(
-        symbol: str = "BTCUSDT",
-        interval: str = "1d",
-        limit: int = 1000,
-        start_time: Optional[int] = None,
-        end_time: Optional[int] = None,
-        output_path: Optional[str] = None
+    symbol: str = "BTCUSDT",
+    interval: str = "1d",
+    limit: int = 1000,
+    start_time: Optional[int] = None,
+    end_time: Optional[int] = None,
+    output_path: Optional[str] = None,
 ):
     """
     Obtiene datos históricos de Binance.
@@ -40,18 +41,30 @@ def get_binance_data(
     response.raise_for_status()  # Lanza un error si la solicitud falla
     data = response.json()
 
-    df = pd.DataFrame(data, columns=[
-        "timestamp", "open", "high", "low", "close", "volume",
-        "close_time", "quote_asset_volume", "trades",
-        "taker_buy_base", "taker_buy_quote", "ignore"
-    ])
+    df = pd.DataFrame(
+        data,
+        columns=[
+            "timestamp",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_asset_volume",
+            "trades",
+            "taker_buy_base",
+            "taker_buy_quote",
+            "ignore",
+        ],
+    )
 
-    #Cambiar los tipos de datos
+    # Cambiar los tipos de datos
     df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
     numeric_cols = ["open", "high", "low", "close", "volume"]
     df[numeric_cols] = df[numeric_cols].astype(float)
 
-    #Seleccionar solo las columnas necesarias
+    # Seleccionar solo las columnas necesarias
     df = df[["timestamp", "open", "high", "low", "close", "volume", "trades"]]
 
     # Guardar CSV si se proporciona una ruta
@@ -61,10 +74,10 @@ def get_binance_data(
 
     return df
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     binance_df = get_binance_data(
-        symbol="BTCUSDT",
-        output_path="../../data/extraccion/datos_bitcoin_binance.csv"
+        symbol="BTCUSDT", output_path="../../data/extraccion/datos_bitcoin_binance.csv"
     )
     print(binance_df.shape)
     print(binance_df.head())

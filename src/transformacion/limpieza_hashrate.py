@@ -1,42 +1,55 @@
 import pandas as pd
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Cargar datos desde un CSV (ajusta la ruta a tu archivo)
     df = pd.read_csv(r"../../data/extraccion/datos_hashrate.csv")
 
     # Ver las primeras filas
     print(df.head())
-    #Comprobar el tipo de las variables
+    # Comprobar el tipo de las variables
     print(df.dtypes)
 
     # Convertir timestamp a datetime
-    df['timestamp'] = pd.to_datetime(df['timestamp'])
+    df["timestamp"] = pd.to_datetime(df["timestamp"])
 
     # Crear un rango de fechas completo con frecuencia diaria
     df_complete = pd.DataFrame(
-        {'timestamp': pd.date_range(start=df['timestamp'].min(), end=df['timestamp'].max(), freq='D')})
+        {
+            "timestamp": pd.date_range(
+                start=df["timestamp"].min(), end=df["timestamp"].max(), freq="D"
+            )
+        }
+    )
 
     # Unir con el dataset original
-    df_merged = pd.merge(df_complete, df, on='timestamp', how='left')
+    df_merged = pd.merge(df_complete, df, on="timestamp", how="left")
 
     # Contar cuántos días faltaban antes de la interpolación
     missing_days = df_complete.shape[0] - df.shape[0]
 
     # Ver cuántos días consecutivos sin datos había antes de la interpolación
-    df['diff'] = df['timestamp'].diff().dt.days  # Diferencia en días entre fechas
-    max_gap = df['diff'].max()  # Mayor hueco de días sin datos
+    df["diff"] = df["timestamp"].diff().dt.days  # Diferencia en días entre fechas
+    max_gap = df["diff"].max()  # Mayor hueco de días sin datos
 
     print(f"Total de fechas faltantes: {missing_days}")
     print(f"Máximo intervalo sin datos: {max_gap} días")
 
     # Aplicar interpolación lineal
-    df_merged['hashrate'] = df_merged['hashrate'].interpolate(method='linear')
+    df_merged["hashrate"] = df_merged["hashrate"].interpolate(method="linear")
 
     # Calcular medias móviles con ventanas de 50 y 200 días
-    df_merged['SMA_50'] = df_merged['hashrate'].rolling(window=50).mean()  # Media móvil simple 50 días
-    df_merged['SMA_200'] = df_merged['hashrate'].rolling(window=200).mean()  # Media móvil simple 200 días
-    df_merged['EMA_50'] = df_merged['hashrate'].ewm(span=50, adjust=False).mean()  # Media móvil exponencial 50 días
-    df_merged['EMA_200'] = df_merged['hashrate'].ewm(span=200, adjust=False).mean()  # Media móvil exponencial 200 días
+    df_merged["SMA_50"] = (
+        df_merged["hashrate"].rolling(window=50).mean()
+    )  # Media móvil simple 50 días
+    df_merged["SMA_200"] = (
+        df_merged["hashrate"].rolling(window=200).mean()
+    )  # Media móvil simple 200 días
+    df_merged["EMA_50"] = (
+        df_merged["hashrate"].ewm(span=50, adjust=False).mean()
+    )  # Media móvil exponencial 50 días
+    df_merged["EMA_200"] = (
+        df_merged["hashrate"].ewm(span=200, adjust=False).mean()
+    )  # Media móvil exponencial 200 días
 
     # Ver si hay valores nulos
     print(df_merged.isnull().sum())  # No tiene valores nulos

@@ -1,14 +1,15 @@
-#DataFrame con precio, market cap y volumen del ultimo anno del bitcoin(mas es de pago)
-#CoinGecko
+# DataFrame con precio, market cap y volumen del ultimo anno del bitcoin(mas es de pago)
+# CoinGecko
 import requests
 import pandas as pd
 from typing import Optional
+
 
 def get_coingecko_data(
     symbol: str = "bitcoin",
     vs_currency: str = "usd",
     days: int = 365,
-    output_path: Optional[str] = None
+    output_path: Optional[str] = None,
 ):
     """
     Obtiene datos históricos de criptomonedas desde CoinGecko.
@@ -25,7 +26,7 @@ def get_coingecko_data(
     params = {"vs_currency": vs_currency, "days": days}
 
     response = requests.get(url, params=params)
-    response.raise_for_status() # Lanza un error si la solicitud falla
+    response.raise_for_status()  # Lanza un error si la solicitud falla
     data = response.json()
 
     # Convertir datos a DataFrame
@@ -42,14 +43,13 @@ def get_coingecko_data(
     return df
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     coingecko_df = get_coingecko_data(
         symbol="bitcoin",
         vs_currency="usd",
         days=365,
-        output_path="../../data/extraccion/datos_coingecko.csv"
+        output_path="../../data/extraccion/datos_coingecko.csv",
     )
 
     print(coingecko_df.shape)
     print(coingecko_df.head())
-

@@ -36,17 +36,20 @@ def preprocesar_datos(df):
 
     return X_scaled, y, scaler
 
-# Función para dividir los datos en entrenamiento y prueba
-def dividir_datos(X, y, test_size=0.2, random_state=42):
+# Función para dividir los datos en train, val y test
+def dividir_datos(X, y, test_size=0.2, val_size=0.2, random_state=42):
     """
-    Divide los datos en conjunto de entrenamiento y prueba.
+    Divide los datos en conjuntos de entrenamiento, validación y prueba.
     :param X: Features escaladas.
     :param y: Target.
     :param test_size: Proporción de datos de prueba.
+    :param val_size: Proporción de datos de validación.
     :param random_state: Semilla aleatoria.
-    :return: Conjuntos X_train, X_test, y_train, y_test.
+    :return: Conjuntos X_train, X_val, X_test, y_train, y_val, y_test.
     """
-    return train_test_split(X, y, test_size=test_size, random_state=random_state)
+    X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=test_size + val_size, random_state=random_state)
+    X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=test_size / (test_size + val_size), random_state=random_state)
+    return X_train, X_val, X_test, y_train, y_val, y_test
 
 # Función para buscar los mejores hiperparámetros para SVC
 def buscar_mejores_hiperparametros(X_train, y_train):
@@ -89,14 +92,17 @@ def evaluar_modelo(modelo, X_test, y_test):
 
 # Función principal
 def main():
+    """
+    Función principal que ejecuta el flujo completo del modelo.
+    """
     ruta_parquet = "ruta/a/tu/dataset.parquet"  # Cambia por la ruta correcta
     df = cargar_datos(ruta_parquet)
 
     # Preprocesamiento de datos
     X, y, scaler = preprocesar_datos(df)
 
-    # División en entrenamiento y prueba
-    X_train, X_test, y_train, y_test = dividir_datos(X, y)
+    # División en entrenamiento, validación y prueba
+    X_train, X_val, X_test, y_train, y_val, y_test = dividir_datos(X, y)
 
     # Buscar mejores hiperparámetros y entrenar el modelo óptimo
     mejor_modelo, mejores_parametros = buscar_mejores_hiperparametros(X_train, y_train)

@@ -7,7 +7,7 @@ El proyecto consiste en un sistema de **predicción de tendencias de Bitcoin**, 
 El objetivo principal es proporcionar una herramienta que ayude a los inversores a tomar decisiones informadas basadas en patrones históricos y tendencias actuales del mercado.
 
 # Indicaciones
-El proyecto está desarrollado en **Python**, utilizando Selenium para la automatización de la extracción de datos. Para ejecutar o modificar el código, se recomienda utilizar **Jupyter Notebook** o un entorno de desarrollo como **VS Code** o **PyCharm**.
+El proyecto está desarrollado en **Python 3.10**, utilizando Selenium para la automatización de la extracción de datos. Para ejecutar o modificar el código, se recomienda utilizar **Jupyter Notebook** o un entorno de desarrollo como **VS Code** o **PyCharm**.
 
 Para la correcta ejecución del proyecto, es necesario instalar las siguientes dependencias:
 
@@ -20,6 +20,16 @@ Para la correcta ejecución del proyecto, es necesario instalar las siguientes d
      ```sh
      pip install selenium
      ```
+4. **CUDA 11.2**: plataforma de computación paralela de NVIDIA que permite ejecutar cálculos en la GPU
+   - Instalación: [https://developer.nvidia.com/cuda-11.2.0-download-archive?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exelocal](https://developer.nvidia.com/cuda-11.2.0-download-archive?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exelocal)
+5. **cuDNN 8.1.0**: biblioteca de NVIDIA optimizada para redes neuronales
+   - Instalación: [https://developer.nvidia.com/rdp/cudnn-archive](https://developer.nvidia.com/rdp/cudnn-archive)
+    **Extrae el ZIP** y copia estos archivos dentro del directorio de instalación de CUDA (normalmente en `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.2`):
+
+     - Copia el contenido de `bin\` a `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.2\bin`
+     - Copia el contenido de `lib\` a `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.2\lib\x64`
+     - Copia el contenido de `include\` a `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.2\include`
+
 
 # Estructura del Proyecto
 

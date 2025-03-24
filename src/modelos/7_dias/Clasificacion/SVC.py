@@ -52,11 +52,13 @@ def dividir_datos(X, y, test_size=0.2, val_size=0.2, random_state=42):
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 # Función para buscar los mejores hiperparámetros para SVC
-def buscar_mejores_hiperparametros(X_train, y_train):
+def buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val):
     """
     Realiza una búsqueda de hiperparámetros óptimos para SVC usando GridSearchCV.
     :param X_train: Datos de entrenamiento.
     :param y_train: Etiquetas de entrenamiento.
+    :param X_val: Datos de validación.
+    :param y_val: Etiquetas de validación.
     :return: Mejor modelo SVC entrenado y los mejores hiperparámetros.
     """
     parametros = {
@@ -74,6 +76,13 @@ def buscar_mejores_hiperparametros(X_train, y_train):
 
     print("Mejores Hiperparámetros:", mejores_parametros)
 
+    # Evaluar el modelo en el conjunto de validación
+    y_val_pred = mejor_modelo.predict(X_val)
+    val_accuracy = accuracy_score(y_val, y_val_pred)
+
+    print(f"Exactitud en validación: {val_accuracy:.4f}")
+    print(classification_report(y_val, y_val_pred))
+
     return mejor_modelo, mejores_parametros
 
 # Función para evaluar el modelo
@@ -87,7 +96,7 @@ def evaluar_modelo(modelo, X_test, y_test):
     y_pred = modelo.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
 
-    print(f"Exactitud: {accuracy:.4f}")
+    print(f"Exactitud en prueba: {accuracy:.4f}")
     print(classification_report(y_test, y_pred))
 
 # Función principal
@@ -105,9 +114,9 @@ def main():
     X_train, X_val, X_test, y_train, y_val, y_test = dividir_datos(X, y)
 
     # Buscar mejores hiperparámetros y entrenar el modelo óptimo
-    mejor_modelo, mejores_parametros = buscar_mejores_hiperparametros(X_train, y_train)
+    mejor_modelo, mejores_parametros = buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val)
 
-    # Evaluar el modelo con los mejores hiperparámetros
+    # Evaluar el modelo con los mejores hiperparámetros en el conjunto de prueba
     evaluar_modelo(mejor_modelo, X_test, y_test)
 
 if __name__ == "__main__":

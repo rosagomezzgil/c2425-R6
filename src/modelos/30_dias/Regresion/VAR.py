@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 from statsmodels.tsa.api import VAR
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error
 
@@ -13,10 +12,10 @@ def cargar_datos(ruta_parquet):
 
 
 # Función para preprocesar los datos
-def preprocesar_datos(df, variables_objetivo=['pct_cambio_30d']):
+def preprocesar_datos(df):
     df = df.drop(columns=['tendencia_futura_7d', 'pct_cambio_7d', 'tendencia_futura_30d'], errors='ignore')
-    X = df.drop(columns=['pct_cambio_30dd'])
-    y = df['pct_cambio_30d']
+    X = df.drop(columns=['pct_cambio_30d'])
+    y = df[['pct_cambio_30d']]
 
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
@@ -26,8 +25,8 @@ def preprocesar_datos(df, variables_objetivo=['pct_cambio_30d']):
     return df_scaled, scaler
 
 
-# Función para dividir los datos en train y test
-def dividir_datos(df, test_size=0.2, val_size=0.2, random_state=42):
+# Función para dividir los datos en train, validación y test
+def dividir_datos(df, test_size=0.2, val_size=0.2):
     train_size = int(len(df) * (1 - test_size - val_size))
     val_size = int(len(df) * val_size)
 
@@ -35,22 +34,46 @@ def dividir_datos(df, test_size=0.2, val_size=0.2, random_state=42):
     return train, val, test
 
 
-# Función para entrenar el modelo VAR
-def entrenar_var(train, max_lags=5):
+# Función para entrenar y validar el modelo VAR
+def entrenar_y_validar_var(train, val, max_lags=5):
     model = VAR(train)
-    model_fitted = model.fit(max_lags)
-    print(f"Número óptimo de rezagos: {model_fitted.k_ar}")
-    return model_fitted
+    best_model = None
+    best_mse = float('inf')
+    best_lag = None
+
+    # Probar diferentes valores de rezagos
+    for lags in range(1, max_lags + 1):
+        try:
+            model_fitted = model.fit(lags)
+            val_pred = model_fitted.forecast(train.values[-lags:], steps=len(val))
+            val_pred_df = pd.DataFrame(val_pred, index=val.index, columns=val.columns)
+            mse = mean_squared_error(val, val_pred_df)
+
+            print(f"Lags: {lags}, MSE de validación: {mse:.4f}")
+
+            if mse < best_mse:
+                best_mse = mse
+                best_model = model_fitted
+                best_lag = lags
+        except Exception as e:
+            print(f"Error con {lags} rezagos: {e}")
+
+    print(f"Mejor número de rezagos: {best_lag} con MSE {best_mse:.4f}")
+    return best_model
 
 
-# Función para hacer predicciones y evaluar
+# Función para evaluar el modelo
 def evaluar_modelo(modelo, test):
+    if modelo is None:
+        print("El modelo no fue entrenado correctamente.")
+        return None
+
     lags = modelo.k_ar
     predicciones = modelo.forecast(test.values[:lags], steps=len(test))
     pred_df = pd.DataFrame(predicciones, index=test.index, columns=test.columns)
 
     mse = mean_squared_error(test, pred_df)
-    print(f"MSE: {mse:.4f}")
+    print(f"MSE en test: {mse:.4f}")
 
     return pred_df
 
@@ -59,14 +82,14 @@ def evaluar_modelo(modelo, test):
 def main():
     ruta_parquet = "ruta/a/tu/dataset.parquet"
     df = cargar_datos(ruta_parquet)
-
     df_scaled, scaler = preprocesar_datos(df)
     train, val, test = dividir_datos(df_scaled)
 
-    modelo_var = entrenar_var(train)
+    modelo_var = entrenar_y_validar_var(train, val)
     predicciones = evaluar_modelo(modelo_var, test)
 
-    print(predicciones.head())
+    if predicciones is not None:
+        print(predicciones.head())
 
 
 if __name__ == "__main__":

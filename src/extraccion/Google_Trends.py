@@ -1,8 +1,8 @@
 import time
 from pytrends.request import TrendReq
 from typing import List, Optional
-import pandas as pd
-
+import argparse
+import requests
 
 def get_google_trends(
     keywords: List[str] = ["bitcoin"],
@@ -10,40 +10,79 @@ def get_google_trends(
     geo: str = "",
     output_path: Optional[str] = None,
 ):
+    """
+    Obtiene los datos de tendencias de Google para las palabras clave especificadas.
+
+    :param keywords: Un conjunto de palabras clave a buscar (por defecto, {'bitcoin'}).
+    :param timeframe: El intervalo de tiempo para los datos de tendencias (por defecto, "today 5-y").
+    :param geo: El código geográfico para restringir los resultados (por defecto, vacío para todos los países).
+    :param output_path: Ruta donde guardar los datos como un archivo CSV (opcional).
+
+    :return: Un DataFrame con los resultados de las tendencias de Google.
+    """
     pytrends = TrendReq()
 
-    # Pausa antes de hacer la solicitud para evitar bloqueos
-    time.sleep(15)
+    try:
+        # Solicitar datos de Google Trends
+        time.sleep(5)
+        pytrends.build_payload(keywords, timeframe=timeframe, geo=geo)
+        df = pytrends.interest_over_time().reset_index()
 
-    pytrends.build_payload(keywords, timeframe=timeframe, geo=geo)
+        if df.empty:
+            raise ValueError("No se recibieron datos. Puede que Google esté bloqueando la solicitud.")
 
-    df = pytrends.interest_over_time().reset_index()
+        # Renombrar y guardar
+        df.rename(columns={"date": "timestamp"}, inplace=True)
+        df = df[["timestamp"] + keywords]
 
-    if df.empty:
-        print(
-            "⚠️ No se recibieron datos. Puede que Google esté bloqueando la solicitud."
-        )
-        return pd.DataFrame()
+        if output_path:
+            df.to_csv(output_path, index=False)
+            print(f"Datos guardados en: {output_path}")
 
-    df.rename(columns={"date": "timestamp"}, inplace=True)
-    df = df[["timestamp"] + keywords]
+        return df
 
-    if output_path:
-        df.to_csv(output_path, index=False)
-        print(f"Datos guardados en: {output_path}")
-
-    return df
+    except (requests.exceptions.RequestException, ValueError) as e:
+        # Captura errores de solicitud y de falta de datos
+        raise e
 
 
-if __name__ == "__main__":
-    google_trends_df = get_google_trends(
-        keywords=["bitcoin"],
-        timeframe="today 5-y",
-        output_path="../../data/extraccion/datos_google_trends.csv",
+def main():
+    parser = argparse.ArgumentParser(description="Obtener datos de tendencias de Google para las palabras clave especificadas.")
+    parser.add_argument(
+        "--keywords", type=str, default="bitcoin",
+        help="Palabras clave a buscar, separadas por coma (por defecto: 'bitcoin')."
+    )
+    parser.add_argument(
+        "--timeframe", type=str, default="today 5-y",
+        help="Intervalo de tiempo para los datos de tendencias (por defecto: 'today 5-y')."
+    )
+    parser.add_argument(
+        "--geo", type=str, default="",
+        help="Código geográfico para restringir los resultados (por defecto: todos los países)."
+    )
+    parser.add_argument(
+        "--output_path", type=str, default="../../data/extraccion/datos_google_trends.csv",
+        help="Ruta donde guardar los datos como CSV (opcional)."
     )
 
-    if not google_trends_df.empty:
-        print(google_trends_df.iloc[0, 0])
-        print(google_trends_df.iloc[-1, 0])
-        print(google_trends_df.shape)
-        print(google_trends_df.head())
+    # Parsear los argumentos
+    args = parser.parse_args()
+
+    # Convertir la cadena de keywords en un list
+    keywords = list(args.keywords.split(","))
+
+    # Llamar a la función con los parámetros proporcionados
+    google_trends_df = get_google_trends(
+        keywords=keywords,
+        timeframe=args.timeframe,
+        geo=args.geo,
+        output_path=args.output_path
+    )
+
+    print(google_trends_df.iloc[0, 0])
+    print(google_trends_df.iloc[-1, 0])
+    print(google_trends_df.shape)
+    print(google_trends_df.head())
+
+if __name__ == "__main__":
+    main()

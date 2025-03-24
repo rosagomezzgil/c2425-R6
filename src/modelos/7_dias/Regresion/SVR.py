@@ -29,7 +29,7 @@ def dividir_datos(X, y, test_size=0.2, val_size=0.2, random_state=42):
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 # Función para buscar los mejores hiperparámetros para SVR
-def buscar_mejores_hiperparametros(X_train, y_train):
+def buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val):
     parametros = {
         'kernel': ['linear', 'poly', 'rbf', 'sigmoid'],
         'C': [0.1, 1, 10, 100],
@@ -44,6 +44,14 @@ def buscar_mejores_hiperparametros(X_train, y_train):
     mejores_parametros = grid_search.best_params_
 
     print("Mejores Hiperparámetros:", mejores_parametros)
+
+    # Evaluar en conjunto de validación
+    y_val_pred = mejor_modelo.predict(X_val)
+    val_mse = mean_squared_error(y_val, y_val_pred)
+    val_r2 = r2_score(y_val, y_val_pred)
+
+    print(f"Validación MSE: {val_mse:.4f}")
+    print(f"Validación R²: {val_r2:.4f}")
 
     return mejor_modelo, mejores_parametros
 
@@ -65,8 +73,9 @@ def main():
 
     X_train, X_val, X_test, y_train, y_val, y_test = dividir_datos(X, y)
 
-    mejor_modelo, mejores_parametros = buscar_mejores_hiperparametros(X_train, y_train)
+    mejor_modelo, mejores_parametros = buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val)
 
+    # Evaluar el modelo final en el conjunto de test
     evaluar_modelo(mejor_modelo, X_test, y_test)
 
 if __name__ == "__main__":

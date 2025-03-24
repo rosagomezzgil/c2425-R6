@@ -1,4 +1,5 @@
 import time
+import argparse
 import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -119,15 +120,35 @@ def scrape_bitget_data(
 
     return df_bitget
 
+def main():
+    parser = argparse.ArgumentParser(description="Extraer datos históricos de Bitcoin desde Bitget")
+    parser.add_argument(
+        "--url", type=str, default="https://www.bitget.com/es/price/bitcoin/historical-data", help="URL de la página de datos históricos de Bitget"
+    )
+    parser.add_argument(
+        "--max_pages", type=int, default=None, help="Número máximo de páginas a recorrer (None para todas)"
+    )
+    parser.add_argument(
+        "--wait_time", type=int, default=3, help="Tiempo de espera entre interacciones para cargar los datos"
+    )
+    parser.add_argument(
+        "--output_path", type=str, default="../../data/extraccion/bitget_scrapping.csv", help="Ruta del archivo CSV de salida"
+    )
 
-if __name__ == "__main__":
-    data_url = "https://www.bitget.com/es/price/bitcoin/historical-data"
+    # Parsear los argumentos
+    args = parser.parse_args()
+
+    # Llamar a la funcion con los datos parseados
     df_bitget = scrape_bitget_data(
-        url=data_url,
-        max_pages=None,
-        wait_time=2,
-        output_path="../../data/extraccion/bitget_scrapping.csv",
+        url=args.url,
+        max_pages=args.max_pages,
+        wait_time=args.wait_time,
+        output_path=args.output_path,
     )
 
     print(df_bitget.shape)
     print(df_bitget.head())
+
+
+if __name__ == "__main__":
+    main()

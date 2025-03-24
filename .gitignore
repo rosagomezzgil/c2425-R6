@@ -1,7 +1,6 @@
 # Archivos de PyCharm
 .venv/
 .idea/
-/uv-312/
 
 # Datos almacenados
 data/

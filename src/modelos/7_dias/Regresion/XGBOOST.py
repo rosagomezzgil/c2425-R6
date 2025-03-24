@@ -29,7 +29,7 @@ def dividir_datos(X, y, test_size=0.2, val_size=0.2, random_state=42):
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 # Función para buscar los mejores hiperparámetros para SVR
-def buscar_mejores_hiperparametros(X_train, y_train):
+def buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val):
     parametros = {
         'n_estimators': [50, 100, 200],
         'learning_rate': [0.01, 0.1, 0.3],
@@ -43,7 +43,15 @@ def buscar_mejores_hiperparametros(X_train, y_train):
     mejor_modelo = grid_search.best_estimator_
     mejores_parametros = grid_search.best_params_
 
-    print("Mejores Hiperparámetros:", mejores_parametros)
+    # Evaluamos el mejor modelo sobre el conjunto de validación
+    val_preds = mejor_modelo.predict(X_val)
+    val_mae = mean_absolute_error(y_val, val_preds)
+    val_rmse = mean_squared_error(y_val, val_preds, squared=False)
+
+    print(f"Mejores Hiperparámetros: {mejores_parametros}")
+    print(f"Evaluación sobre validación - MAE: {val_mae:.4f}, RMSE: {val_rmse:.4f}")
+
+    #print("Mejores Hiperparámetros:", mejores_parametros)
 
     return mejor_modelo, mejores_parametros
 

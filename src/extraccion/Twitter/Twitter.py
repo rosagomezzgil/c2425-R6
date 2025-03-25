@@ -1,8 +1,8 @@
 import tweepy
 import pandas as pd
+import argparse
 import config  # Importar las credenciales
 from typing import Optional
-
 
 def fetch_tweets(
     query: str, max_results: int = 100, output_filename: Optional[str] = None
@@ -46,17 +46,33 @@ def fetch_tweets(
 
     return df
 
+def main():
+    parser = argparse.ArgumentParser("Descargar tweets según una consulta dada y los guarda en un CSV")
+    parser.add_argument(
+        "--query", type=str, default="(Bitcoin OR BTC OR #Bitcoin) -is:retweet lang:en",
+        help="Consulta de búsqueda en Twitter"
+    )
+    parser.add_argument(
+        "--max_results", type=int, default=100, help="Número máximo de tweets a recuperar"
+    )
+    parser.add_argument(
+        "--output_path", type=str, default="../../../data/extraccion/tweets_bitcoin.csv",
+        help="Ruta del archivo CSV donde se guardarán los tweets"
+    )
 
-if __name__ == "__main__":
-    # Parámetros de extracción
-    query = "(Bitcoin OR BTC OR #Bitcoin) -is:retweet lang:en"
-    max_results = 100
-    output_path = "../../../data/extraccion/tweets_bitcoin.csv"
+    # Parsear los argumentos
+    args = parser.parse_args()
 
+    # Llamar a la funcion con los argumentos parseados
     df_twitter = fetch_tweets(
-        query=query, max_results=max_results, output_filename=output_path
+        query=args.query,
+        max_results=args.max_results,
+        output_filename=args.output_path
     )
 
     print(df_twitter.shape)
     print(df_twitter.columns)
     print(df_twitter.head())
+
+if __name__ == "__main__":
+    main()

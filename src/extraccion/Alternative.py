@@ -55,7 +55,7 @@ def main():
         "--date_format", type=str, choices=["world", "us"], default="world", help="Formato de fecha"
     )
     parser.add_argument(
-        "--output_path", type=str, default="../../data/extraccion/datos_bitcoin_fear_greed.csv", help="Ruta donde guardar el CSV"
+        "--output_path", type=str, default=r"../../data/extraccion/datos_bitcoin_fear_greed.csv", help="Ruta donde guardar el CSV"
     )
 
     # Parsear los argumentos

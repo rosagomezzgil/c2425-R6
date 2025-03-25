@@ -132,7 +132,7 @@ def main():
         "--wait_time", type=int, default=3, help="Tiempo de espera entre interacciones para cargar los datos"
     )
     parser.add_argument(
-        "--output_path", type=str, default="../../data/extraccion/bitget_scrapping.csv", help="Ruta del archivo CSV de salida"
+        "--output_path", type=str, default=r"../../data/extraccion/bitget_scrapping.csv", help="Ruta del archivo CSV de salida"
     )
 
     # Parsear los argumentos

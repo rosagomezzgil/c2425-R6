@@ -61,7 +61,7 @@ def main():
         help="Código geográfico para restringir los resultados (por defecto: todos los países)."
     )
     parser.add_argument(
-        "--output_path", type=str, default="../../data/extraccion/datos_google_trends.csv",
+        "--output_path", type=str, default=r"../../data/extraccion/datos_google_trends.csv",
         help="Ruta donde guardar los datos como CSV (opcional)."
     )
 

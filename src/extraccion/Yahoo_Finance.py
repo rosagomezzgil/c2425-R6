@@ -1,11 +1,10 @@
 # Ejecutar en Google Colab, porque en local da error de Too Many Requests
 
 import yfinance as yf
-import pandas as pd
+import argparse
 import os
 import time
 from typing import Optional
-
 
 def download_data(
     ticker: str,
@@ -63,41 +62,34 @@ def download_data(
     )
     return None
 
-
-if __name__ == "__main__":
-    # Parámetros
+def main():
     start_date = "2022-01-01"
     end_date = "2025-02-17"
-    interval = "1d"
-    output_dir = "../../data/extraccion"
-    os.makedirs(output_dir, exist_ok=True)
 
-    # Índice del Dólar (DXY)
-    dxy = download_data(
-        ticker="DX-Y.NYB",
-        start_date=start_date,
-        end_date=end_date,
-        interval=interval,
-        columns_rename={"Date": "timestamp"},
-        output_filename=os.path.join(output_dir, "datos_dxy.csv"),
-    )
+    parser = argparse.ArgumentParser(description="Descargar datos de Yahoo Finance.")
+    parser.add_argument("--start_date", type=str, default=start_date, help="Fecha de inicio en formato YYYY-MM-DD")
+    parser.add_argument("--end_date", type=str, default=end_date, help="Fecha de fin en formato YYYY-MM-DD")
+    parser.add_argument("--interval", type=str, default="1d", help="Intervalo de datos (ej. '1d', '1h')")
+    parser.add_argument("--output_dir", type=str, default="../../data/extraccion", help="Directorio de salida para los archivos CSV")
+    args = parser.parse_args()
 
-    # S&P 500
-    sp500 = download_data(
-        ticker="^GSPC",
-        start_date=start_date,
-        end_date=end_date,
-        interval=interval,
-        columns_rename={"Date": "timestamp"},
-        output_filename=os.path.join(output_dir, "datos_sp500.csv"),
-    )
+    os.makedirs(args.output_dir, exist_ok=True)
 
-    # Nasdaq
-    nasdaq = download_data(
-        ticker="^IXIC",
-        start_date=start_date,
-        end_date=end_date,
-        interval=interval,
-        columns_rename={"Date": "timestamp"},
-        output_filename=os.path.join(output_dir, "datos_nasdaq.csv"),
-    )
+    assets = {
+        "DX-Y.NYB": "datos_dxy.csv",
+        "^GSPC": "datos_sp500.csv",
+        "^IXIC": "datos_nasdaq.csv",
+    }
+
+    for ticker, filename in assets.items():
+        download_data(
+            ticker=ticker,
+            start_date=args.start_date,
+            end_date=args.end_date,
+            interval=args.interval,
+            columns_rename={"Date": "timestamp"},
+            output_filename=os.path.join(args.output_dir, filename),
+        )
+
+if __name__ == "__main__":
+    main()

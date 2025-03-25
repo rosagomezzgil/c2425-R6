@@ -93,7 +93,7 @@ def main():
         "--end_time", type=int, default=None, help="Tiempo de fin en milisegundos"
     )
     parser.add_argument(
-        "--output_path", type=str, default="../../data/extraccion/datos_bitcoin_binance.csv", help="Ruta donde guardar el CSV"
+        "--output_path", type=str, default=r"../../data/extraccion/datos_bitcoin_binance.csv", help="Ruta donde guardar el CSV"
     )
 
     # Parsear los argumentos

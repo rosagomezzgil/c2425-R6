@@ -1,8 +1,8 @@
 import requests
 import pandas as pd
+import argparse
 import time
 from typing import Optional
-
 
 def get_binance_futures_historical_data(
     symbol: str = "BTCUSDT",
@@ -100,14 +100,35 @@ def get_binance_futures_historical_data(
         print("No se obtuvieron datos.")
         return None
 
+def main():
+    parser = argparse.ArgumentParser("Descargar datos históricos de Binance Futures")
+    parser.add_argument(
+        "--symbol", type=str, default="BTCUSDT", help="Par de trading (ej. \"BTCUSDT\")"
+    )
+    parser.add_argument(
+        "--days", type=int, default=365 * 3, help="Número de días a recuperar"
+    )
+    parser.add_argument(
+        "--interval", type=str, default="1d", help="Intervalo de las velas (1m, 5m, 1h, 1d)"
+    )
+    parser.add_argument(
+        "--output_path", type=str, default=r"../../data/extraccion/datos_mercadoDerivados_binance.csv",
+        help="Ruta para guardar los datos en CSV"
+    )
 
-if __name__ == "__main__":
+    # Parsear los argumentos
+    args = parser.parse_args()
+
+    # Llamar a la funcion con los datos parseados
     df = get_binance_futures_historical_data(
-        symbol="BTCUSDT",
-        days=365 * 3,
-        interval="1d",
-        output_path=r"../../data/extraccion/datos_mercadoDerivados_binance.csv",
+        symbol=args.symbol,
+        days=args.days,
+        interval=args.interval,
+        output_path=args.output_path,
     )
 
     print(df.shape)
     print(df.head())
+
+if __name__ == "__main__":
+    main()

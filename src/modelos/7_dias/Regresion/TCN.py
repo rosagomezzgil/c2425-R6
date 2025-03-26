@@ -96,7 +96,7 @@ def buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val):
 
 # Función principal
 def main():
-    ruta_parquet = "ruta/a/tu/dataset.parquet"
+    ruta_parquet = r"../../../../data/parquet/data_7d.parquet"
     df = cargar_datos(ruta_parquet)
     X, y, scaler = preprocesar_datos(df)
     X_train, X_val, X_test, y_train, y_val, y_test = dividir_datos(X, y)

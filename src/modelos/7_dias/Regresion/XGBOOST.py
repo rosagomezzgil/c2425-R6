@@ -56,7 +56,7 @@ def buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val):
     # Evaluamos el mejor modelo sobre el conjunto de validación
     val_preds = mejor_modelo.predict(X_val)
     val_mae = mean_absolute_error(y_val, val_preds)
-    val_rmse = mean_squared_error(y_val, val_preds, squared=False)
+    val_rmse = mean_squared_error(y_val, val_preds)**0.5
 
     print(f"Mejores Hiperparámetros: {mejores_parametros}")
     print(f"Evaluación sobre validación - MAE: {val_mae:.4f}, RMSE: {val_rmse:.4f}")

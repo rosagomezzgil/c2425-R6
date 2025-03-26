@@ -23,10 +23,18 @@ def preprocesar_datos(df):
     return X_scaled, y, scaler
 
 # Función para dividir los datos en train, val y test
-def dividir_datos(X, y, test_size=0.2, val_size=0.2, random_state=42):
-    X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=test_size + val_size, random_state=random_state)
-    X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=test_size / (test_size + val_size), random_state=random_state)
+def dividir_datos_temporalmente(X, y, train_size=0.8, val_size=0.1):
+    n = len(X)
+
+    train_end = int(n * train_size)
+    val_end = int(n * (train_size + val_size))
+
+    X_train, y_train = X[:train_end], y[:train_end]
+    X_val, y_val = X[train_end:val_end], y[train_end:val_end]
+    X_test, y_test = X[val_end:], y[val_end:]
+
     return X_train, X_val, X_test, y_train, y_val, y_test
+
 
 # Función para buscar los mejores hiperparámetros para SVR
 def buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val):
@@ -72,7 +80,8 @@ def main():
 
     X, y, scaler = preprocesar_datos(df)
 
-    X_train, X_val, X_test, y_train, y_val, y_test = dividir_datos(X, y)
+    X_train, X_val, X_test, y_train, y_val, y_test = dividir_datos_temporalmente(X, y)
+
 
     mejor_modelo, mejores_parametros = buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val)
 

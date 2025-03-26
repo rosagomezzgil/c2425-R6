@@ -32,11 +32,14 @@ def load_and_preprocess_data(file_path):
 
 def prepare_datasets(df):
     """
-    Dividir el dataset en train, val, test y preparar el DataLoader.
+    Divide el dataset en train (80%), val (10%) y test (10%), respetando la serie temporal.
     """
-    # Dividir en train, validation, test
-    train_df, test_df = train_test_split(df, test_size=0.2, shuffle=False)
-    train_df, val_df = train_test_split(train_df, test_size=0.25, shuffle=False)  # 0.25 de 0.8 es el 20%
+    train_size = int(len(df) * 0.8)
+    val_size = int(len(df) * 0.1)
+
+    train_df = df[:train_size]
+    val_df = df[train_size:train_size + val_size]
+    test_df = df[train_size + val_size:]
 
     # Definir un TimeSeriesDataSet para el modelo TFT
     max_encoder_length = 50  # Usar los últimos 60 días como entrada

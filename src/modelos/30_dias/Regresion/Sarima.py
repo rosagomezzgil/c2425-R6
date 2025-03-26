@@ -17,7 +17,7 @@ def preprocesar_datos(df, variable_objetivo='pct_cambio_30d'):
 
 
 # Función para dividir los datos en train y test
-def dividir_datos(df, test_size=0.2, val_size=0.2):
+def dividir_datos(df, test_size=0.1, val_size=0.1):
     train_size = int(len(df) * (1 - test_size - val_size))
     val_size = int(len(df) * val_size)
 
@@ -26,7 +26,7 @@ def dividir_datos(df, test_size=0.2, val_size=0.2):
 
 
 # Función para entrenar el modelo SARIMA
-def entrenar_sarima(train, order=(1, 1, 1), seasonal_order=(1, 1, 1, 7)):
+def entrenar_sarima(train, order=(1, 1, 1), seasonal_order=(1, 1, 1, 30)):
     model = SARIMAX(train, order=order, seasonal_order=seasonal_order, enforce_stationarity=False,
                     enforce_invertibility=False)
     model_fitted = model.fit(disp=False)
@@ -45,7 +45,7 @@ def evaluar_modelo(modelo, test):
 
 # Función principal
 def main():
-    ruta_parquet = r"../../../../data/parquet/data_7d.parquet"
+    ruta_parquet = r"../../../../data/parquet/data_30d.parquet"
     df = cargar_datos(ruta_parquet)
 
     df_preprocesado = preprocesar_datos(df)

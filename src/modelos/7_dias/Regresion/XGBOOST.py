@@ -14,7 +14,7 @@ def cargar_datos(ruta_parquet):
 
 # Función para preprocesar los datos
 def preprocesar_datos(df):
-    df = df.drop(columns=['tendencia_futura_7d', 'pct_cambio_30d', 'tendencia_futura_30d'], errors='ignore')
+    df = df.drop(columns=['tendencia_futura_7d'], errors='ignore')
     X = df.drop(columns=['pct_cambio_7d'])
     y = df['pct_cambio_7d']
 
@@ -84,7 +84,7 @@ def main():
 
     X_train, X_val, X_test, y_train, y_val, y_test = dividir_datos(X, y)
 
-    mejor_modelo, mejores_parametros = buscar_mejores_hiperparametros(X_train, y_train)
+    mejor_modelo, mejores_parametros = buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val)
 
     evaluar_modelo(mejor_modelo, X_test, y_test)
 

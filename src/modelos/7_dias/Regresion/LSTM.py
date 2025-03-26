@@ -29,9 +29,9 @@ def load_data(parquet_file: str):
 
     :return: pd.DataFrame
     """
-    df = pd.read_parquet(r"../../../../data/parquet/data_7d.parquet")
-    df['date'] = pd.to_datetime(df['date'])  # Asegurar que la fecha esté en formato datetime
-    df.set_index('date', inplace=True)
+    df = pd.read_parquet(parquet_file)
+    # df['timestamp'] = pd.to_datetime(df['timestamp'])  # Asegurar que la fecha esté en formato datetime
+    # df.set_index('timestamp', inplace=True)
     return df
 
 # 2. Preprocesar los datos
@@ -159,7 +159,12 @@ def main(
     fijar_semillas()
     df = load_data(parquet_file)
 
+    print(df.head())
+
     X, y, scaler = preprocess_data(df, horizonte, target_col)
+
+    print(X.shape)
+    print(y.shape)
 
     # shuffle=False --> asegura que los datos se dividan en orden cronológico
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
@@ -170,7 +175,7 @@ def main(
 
 if __name__ == "__main__":
     # Parámetros para ejecutar el modelo
-    parquet_file = ''  # TODO
-    horizonte = 7  # Número de días a predecir
-    target_col = 'bitcoin_change_7d'  # Columna objetivo, porcentaje de cambio en 7 días
+    parquet_file = '../../../../data/parquet/data_7d.parquet'
+    horizonte = 7
+    target_col = 'pct_cambio_7d'  # Columna objetivo, porcentaje de cambio en 7 días
     main(parquet_file, horizonte, target_col)

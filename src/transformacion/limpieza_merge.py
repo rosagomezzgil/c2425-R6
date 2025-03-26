@@ -285,7 +285,8 @@ if __name__ == "__main__":
     # Guardar el dataframe final
     output_path = r"../../data/limpieza/cleaned_data.csv"
 
-    df = calcular_tendencia(df=merged_limpio, horizonte=7)
+    df = calcular_tendencia(df=merged_limpio.dropna(), horizonte=7)
     df = calcular_tendencia(df=df, horizonte=30, output_path=output_path)
 
     print(df.head)
+

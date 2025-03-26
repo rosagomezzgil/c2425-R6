@@ -122,4 +122,4 @@ def main(file_path):
 
 # Llamar a la función principal
 if __name__ == "__main__":
-    main("ruta/a/tu/archivo.parquet")
+    main(r"../../../../data/parquet/data_7d.parquet")

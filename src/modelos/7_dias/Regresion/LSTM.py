@@ -29,7 +29,7 @@ def load_data(parquet_file: str):
 
     :return: pd.DataFrame
     """
-    df = pd.read_parquet(parquet_file)
+    df = pd.read_parquet(r"../../../../data/parquet/data_7d.parquet")
     df['date'] = pd.to_datetime(df['date'])  # Asegurar que la fecha esté en formato datetime
     df.set_index('date', inplace=True)
     return df

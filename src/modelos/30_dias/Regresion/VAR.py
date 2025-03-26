@@ -80,7 +80,7 @@ def evaluar_modelo(modelo, test):
 
 # Función principal
 def main():
-    ruta_parquet = "ruta/a/tu/dataset.parquet"
+    ruta_parquet = r"../../../../data/parquet/data_7d.parquet"
     df = cargar_datos(ruta_parquet)
     df_scaled, scaler = preprocesar_datos(df)
     train, val, test = dividir_datos(df_scaled)

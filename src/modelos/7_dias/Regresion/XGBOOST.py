@@ -14,9 +14,9 @@ def cargar_datos(ruta_parquet):
 
 # Función para preprocesar los datos
 def preprocesar_datos(df):
-    df = df.drop(columns=['tendencia_futura_7d'], errors='ignore')
-    X = df.drop(columns=['pct_cambio_7d'])
-    y = df['pct_cambio_7d']
+    df = df.drop(columns=["tendencia_futura_7d"], errors="ignore")
+    X = df.drop(columns=["pct_cambio_7d"])
+    y = df["pct_cambio_7d"]
 
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
@@ -41,13 +41,15 @@ def dividir_datos(X, y, test_size=0.1, val_size=0.1):
 # Función para buscar los mejores hiperparámetros para SVR
 def buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val):
     parametros = {
-        'n_estimators': [50, 100, 200],
-        'learning_rate': [0.01, 0.1, 0.3],
-        'max_depth': [3, 5, 7]
+        "n_estimators": [50, 100, 200],
+        "learning_rate": [0.01, 0.1, 0.3],
+        "max_depth": [3, 5, 7],
     }
 
-    xgb_model = xgb.XGBRegressor(objective='reg:squarederror')
-    grid_search = GridSearchCV(xgb_model, parametros, cv=5, scoring='neg_mean_squared_error', n_jobs=-1)
+    xgb_model = xgb.XGBRegressor(objective="reg:squarederror")
+    grid_search = GridSearchCV(
+        xgb_model, parametros, cv=5, scoring="neg_mean_squared_error", n_jobs=-1
+    )
     grid_search.fit(X_train, y_train)
 
     mejor_modelo = grid_search.best_estimator_
@@ -56,14 +58,15 @@ def buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val):
     # Evaluamos el mejor modelo sobre el conjunto de validación
     val_preds = mejor_modelo.predict(X_val)
     val_mae = mean_absolute_error(y_val, val_preds)
-    val_rmse = mean_squared_error(y_val, val_preds)**0.5
+    val_rmse = mean_squared_error(y_val, val_preds) ** 0.5
 
     print(f"Mejores Hiperparámetros: {mejores_parametros}")
     print(f"Evaluación sobre validación - MAE: {val_mae:.4f}, RMSE: {val_rmse:.4f}")
 
-    #print("Mejores Hiperparámetros:", mejores_parametros)
+    # print("Mejores Hiperparámetros:", mejores_parametros)
 
     return mejor_modelo, mejores_parametros
+
 
 # Función para evaluar el modelo
 def evaluar_modelo(modelo, X_test, y_test):
@@ -84,9 +87,12 @@ def main():
 
     X_train, X_val, X_test, y_train, y_val, y_test = dividir_datos(X, y)
 
-    mejor_modelo, mejores_parametros = buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val)
+    mejor_modelo, mejores_parametros = buscar_mejores_hiperparametros(
+        X_train, y_train, X_val, y_val
+    )
 
     evaluar_modelo(mejor_modelo, X_test, y_test)
+
 
 if __name__ == "__main__":
     main()

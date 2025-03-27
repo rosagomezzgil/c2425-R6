@@ -10,17 +10,26 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
 from torch.nn.utils import weight_norm
 
+
 # Definir el modelo TCN
 class TemporalConvNet(nn.Module):
     def __init__(self, input_size, num_channels, kernel_size=2, dropout=0.2):
         super(TemporalConvNet, self).__init__()
         layers = []
         for i in range(len(num_channels)):
-            dilation = 2 ** i
+            dilation = 2**i
             padding = (kernel_size - 1) * dilation
-            layers.append(weight_norm(nn.Conv1d(input_size if i == 0 else num_channels[i - 1],
-                                                 num_channels[i], kernel_size,
-                                                 padding=padding, dilation=dilation)))
+            layers.append(
+                weight_norm(
+                    nn.Conv1d(
+                        input_size if i == 0 else num_channels[i - 1],
+                        num_channels[i],
+                        kernel_size,
+                        padding=padding,
+                        dilation=dilation,
+                    )
+                )
+            )
             layers.append(nn.ReLU())
             layers.append(nn.Dropout(dropout))
         self.network = nn.Sequential(*layers)
@@ -31,19 +40,25 @@ class TemporalConvNet(nn.Module):
         x = x[:, :, -1]  # Último valor de la secuencia
         return self.fc(x)
 
+
 # Cargar los datos
 def cargar_datos(ruta_parquet):
     df = pd.read_parquet(ruta_parquet)
     return df
 
+
 # Preprocesar datos
 def preprocesar_datos(df):
-    df = df.drop(columns=['tendencia_futura_7d', 'pct_cambio_30d', 'tendencia_futura_30d'], errors='ignore')
-    X = df.drop(columns=['pct_cambio_7d'])
-    y = df['pct_cambio_7d']
+    df = df.drop(
+        columns=["tendencia_futura_7d", "pct_cambio_30d", "tendencia_futura_30d"],
+        errors="ignore",
+    )
+    X = df.drop(columns=["pct_cambio_7d"])
+    y = df["pct_cambio_7d"]
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
     return X_scaled, y.values, scaler
+
 
 # Dividir los datos
 def dividir_datos_temporalmente(X, y, train_size=0.8, val_size=0.1):
@@ -55,11 +70,12 @@ def dividir_datos_temporalmente(X, y, train_size=0.8, val_size=0.1):
     X_test, y_test = X[val_end:], y[val_end:]
     return X_train, X_val, X_test, y_train, y_val, y_test
 
+
 def objective(trial, X_train, y_train, X_val, y_val):
-    num_channels = [trial.suggest_int(f'num_channels_{i}', 8, 64) for i in range(3)]
-    kernel_size = trial.suggest_int('kernel_size', 2, 5)
-    dropout = trial.suggest_float('dropout', 0.1, 0.5)
-    lr = trial.suggest_loguniform('lr', 1e-4, 1e-2)
+    num_channels = [trial.suggest_int(f"num_channels_{i}", 8, 64) for i in range(3)]
+    kernel_size = trial.suggest_int("kernel_size", 2, 5)
+    dropout = trial.suggest_float("dropout", 0.1, 0.5)
+    lr = trial.suggest_loguniform("lr", 1e-4, 1e-2)
 
     model = TemporalConvNet(X_train.shape[1], num_channels, kernel_size, dropout)
     criterion = nn.MSELoss()
@@ -90,20 +106,26 @@ def objective(trial, X_train, y_train, X_val, y_val):
     mse = mean_squared_error(val_true, val_preds)
     return mse  # Optuna buscará minimizar este valor
 
+
 # Función para encontrar los mejores hiperparámetros
 def buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val):
-    study = optuna.create_study(direction='minimize')
-    study.optimize(lambda trial: objective(trial, X_train, y_train, X_val, y_val), n_trials=20)
+    study = optuna.create_study(direction="minimize")
+    study.optimize(
+        lambda trial: objective(trial, X_train, y_train, X_val, y_val), n_trials=20
+    )
     print("Mejores hiperparámetros:", study.best_params)
     return study.best_params
 
+
 def entrenar_y_evaluar(X_train, X_val, X_test, y_train, y_val, y_test, mejores_params):
-    model = TemporalConvNet(X_train.shape[1],
-                             [mejores_params[f'num_channels_{i}'] for i in range(3)],
-                             mejores_params['kernel_size'],
-                             mejores_params['dropout'])
+    model = TemporalConvNet(
+        X_train.shape[1],
+        [mejores_params[f"num_channels_{i}"] for i in range(3)],
+        mejores_params["kernel_size"],
+        mejores_params["dropout"],
+    )
     criterion = nn.MSELoss()
-    optimizer = optim.Adam(model.parameters(), lr=mejores_params['lr'])
+    optimizer = optim.Adam(model.parameters(), lr=mejores_params["lr"])
 
     X_train_tensor = torch.tensor(X_train, dtype=torch.float32).unsqueeze(2)
     X_val_tensor = torch.tensor(X_val, dtype=torch.float32).unsqueeze(2)
@@ -138,6 +160,7 @@ def entrenar_y_evaluar(X_train, X_val, X_test, y_train, y_val, y_test, mejores_p
     print(f"MAE en test: {mae:.4f}")
     print(f"R2 en test: {r2:.4f}")
 
+
 # Función principal
 def main():
     ruta_parquet = r"../../../../data/parquet/data_7d.parquet"
@@ -147,6 +170,7 @@ def main():
     mejores_params = buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val)
     print("Hiperparámetros óptimos obtenidos:", mejores_params)
     entrenar_y_evaluar(X_train, X_val, X_test, y_train, y_val, y_test, mejores_params)
+
 
 if __name__ == "__main__":
     main()

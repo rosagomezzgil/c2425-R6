@@ -12,16 +12,21 @@ def cargar_datos(ruta_parquet):
     df = pd.read_parquet(ruta_parquet)
     return df
 
+
 # Función para preprocesar los datos
 def preprocesar_datos(df):
-    df = df.drop(columns=['tendencia_futura_7d', 'pct_cambio_30d', 'tendencia_futura_30d'], errors='ignore')
-    X = df.drop(columns=['pct_cambio_7d'])
-    y = df['pct_cambio_7d']
+    df = df.drop(
+        columns=["tendencia_futura_7d", "pct_cambio_30d", "tendencia_futura_30d"],
+        errors="ignore",
+    )
+    X = df.drop(columns=["pct_cambio_7d"])
+    y = df["pct_cambio_7d"]
 
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
     return X_scaled, y, scaler
+
 
 # Función para dividir los datos en train, val y test
 def dividir_datos(X, y, test_size=0.1, val_size=0.1):
@@ -34,6 +39,7 @@ def dividir_datos(X, y, test_size=0.1, val_size=0.1):
     X_test, y_test = X[val_end:], y[val_end:]
 
     return X_train, X_val, X_test, y_train, y_val, y_test
+
 
 # Función para buscar los mejores hiperparámetros (p,d,q)
 def buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val):
@@ -64,7 +70,9 @@ def buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val):
                 except:
                     continue
 
-    print(f"Mejores hiperparámetros: p={mejores_parametros[0]}, d={mejores_parametros[1]}, q={mejores_parametros[2]}")
+    print(
+        f"Mejores hiperparámetros: p={mejores_parametros[0]}, d={mejores_parametros[1]}, q={mejores_parametros[2]}"
+    )
     return mejor_modelo
 
 

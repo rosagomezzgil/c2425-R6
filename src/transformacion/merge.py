@@ -3,6 +3,7 @@ import numpy as np
 from typing import Optional
 import os
 
+
 def calcular_retorno_logaritmico(series: pd.Series):
     """
     Calcula el retorno logarítmico de una serie temporal de precios.
@@ -11,6 +12,7 @@ def calcular_retorno_logaritmico(series: pd.Series):
     :return: Serie de retornos logarítmicos.
     """
     return np.log(series / series.shift(1))
+
 
 def evaluar(
     column: str, data_source_1: str, data_source_2: str, df: pd.DataFrame
@@ -65,6 +67,7 @@ def evaluar(
 
     return mae, pearson
 
+
 def interpretar_metrica(mae: float, r: float, nombre: str):
     """
     Evalúa la relación entre los datos según el error absoluto medio (MAE)
@@ -88,6 +91,7 @@ def interpretar_metrica(mae: float, r: float, nombre: str):
         return f"{nombre}: Casi sin relación. Tienen diferencias importantes aquí."
     else:
         return f"{nombre}: Relación negativa. Parecen moverse en direcciones opuestas. Algo está mal."
+
 
 def calcular_tendencia(
     df: pd.DataFrame,
@@ -128,6 +132,7 @@ def calcular_tendencia(
         print(f"Datos guardados en: {output_path}")
 
     return df
+
 
 if __name__ == "__main__":
 
@@ -343,8 +348,8 @@ if __name__ == "__main__":
 
     # Filtramos las columnas que no contienen ninguna de las palabras clave
     merged_limpio = merged_limpio.loc[
-                    :, ~merged_limpio.columns.str.contains("|".join(eliminar))
-                    ]
+        :, ~merged_limpio.columns.str.contains("|".join(eliminar))
+    ]
 
     # Eliminar nulos
     for col in merged_limpio.columns:
@@ -367,4 +372,3 @@ if __name__ == "__main__":
     # Guardar el dataframe final
     output_path = r"../../data/limpieza/cleaned_data.csv"
     df.to_csv(output_path)
-

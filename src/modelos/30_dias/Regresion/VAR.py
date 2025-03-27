@@ -13,14 +13,19 @@ def cargar_datos(ruta_parquet):
 
 # Función para preprocesar los datos
 def preprocesar_datos(df):
-    df = df.drop(columns=['tendencia_futura_7d', 'pct_cambio_7d', 'tendencia_futura_30d'], errors='ignore')
-    X = df.drop(columns=['pct_cambio_30d'])
-    y = df[['pct_cambio_30d']]
+    df = df.drop(
+        columns=["tendencia_futura_7d", "pct_cambio_7d", "tendencia_futura_30d"],
+        errors="ignore",
+    )
+    X = df.drop(columns=["pct_cambio_30d"])
+    y = df[["pct_cambio_30d"]]
 
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
     df_scaled = pd.DataFrame(X_scaled, columns=X.columns, index=df.index)
-    df_scaled = pd.concat([df_scaled, y], axis=1)  # Agregar variables objetivo sin escalar
+    df_scaled = pd.concat(
+        [df_scaled, y], axis=1
+    )  # Agregar variables objetivo sin escalar
 
     return df_scaled, scaler
 
@@ -30,7 +35,11 @@ def dividir_datos(df, test_size=0.2, val_size=0.2):
     train_size = int(len(df) * (1 - test_size - val_size))
     val_size = int(len(df) * val_size)
 
-    train, val, test = df.iloc[:train_size], df.iloc[train_size:train_size + val_size], df.iloc[train_size + val_size:]
+    train, val, test = (
+        df.iloc[:train_size],
+        df.iloc[train_size : train_size + val_size],
+        df.iloc[train_size + val_size :],
+    )
     return train, val, test
 
 
@@ -38,7 +47,7 @@ def dividir_datos(df, test_size=0.2, val_size=0.2):
 def entrenar_y_validar_var(train, val, max_lags=5):
     model = VAR(train)
     best_model = None
-    best_mse = float('inf')
+    best_mse = float("inf")
     best_lag = None
 
     # Probar diferentes valores de rezagos

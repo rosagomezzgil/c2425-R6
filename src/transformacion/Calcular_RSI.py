@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 
+
 def calcular_rsi(df, columna: str, window: int = 14):
     """
     Calcula el Índice de Fuerza Relativa (RSI) para una serie de precios.

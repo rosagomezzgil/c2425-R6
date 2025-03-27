@@ -4,6 +4,7 @@ import argparse
 import time
 from typing import Optional
 
+
 def get_deribit_historical_data(
     instrument: str = "BTC-PERPETUAL",
     days: int = 365,
@@ -90,23 +91,30 @@ def get_deribit_historical_data(
         print("No se obtuvieron datos.")
         return None
 
+
 def main():
     parser = argparse.ArgumentParser("Descargar datos históricos de Deribit")
-    parser.add_argument(
-        "--instrument", type=str, default="BTC-PERPETUAL"
-    )
+    parser.add_argument("--instrument", type=str, default="BTC-PERPETUAL")
     parser.add_argument(
         "--days", type=int, default=365 * 3, help="Número de días a recuperar"
     )
     parser.add_argument(
-        "--interval", type=str, default="1d", help="Intervalo de las velas (1m, 5m, 1h, 1d)"
+        "--interval",
+        type=str,
+        default="1d",
+        help="Intervalo de las velas (1m, 5m, 1h, 1d)",
     )
     parser.add_argument(
-        "--resolution", type=str, default="60", help="Resolución: \"1\", \"5\", \"15\", \"60\", etc"
+        "--resolution",
+        type=str,
+        default="60",
+        help='Resolución: "1", "5", "15", "60", etc',
     )
     parser.add_argument(
-        "--output_path", type=str, default=r"../../data/extraccion/datos_mercadoDerivados_deribit.csv",
-        help="Ruta para guardar los datos en CSV"
+        "--output_path",
+        type=str,
+        default=r"../../data/extraccion/datos_mercadoDerivados_deribit.csv",
+        help="Ruta para guardar los datos en CSV",
     )
 
     # Parsear los argumentos
@@ -123,6 +131,7 @@ def main():
 
     print(df.shape)
     print(df.head())
+
 
 if __name__ == "__main__":
     main()

@@ -1,18 +1,18 @@
 import pandas as pd
-from sklearn.metrics import confusion_matrix,\
-    mean_absolute_error,\
-    mean_squared_error,\
-    r2_score,\
-    accuracy_score,\
-    recall_score
+from sklearn.metrics import (
+    confusion_matrix,
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score,
+    accuracy_score,
+    recall_score,
+)
 from typing import Tuple
 import numpy as np
 
 
 def baseline_persistencia_categorica(
-        df: pd.DataFrame,
-        target_col: str,
-        horizon: int
+    df: pd.DataFrame, target_col: str, horizon: int
 ) -> Tuple[pd.DataFrame, pd.DataFrame, float, float, float]:
     """
     Implementa un modelo baseline de persistencia para variables categóricas.
@@ -34,22 +34,23 @@ def baseline_persistencia_categorica(
     df = df.copy()
     df["baseline_pred"] = df[target_col].shift(horizon)
     df = df.dropna()  # Elimina los valores nulos creados por el shift
-    cm = pd.DataFrame(confusion_matrix(df[target_col], df["baseline_pred"], labels=[-1, 1]),
-                      index=["Real -1", "Real 1"],
-                      columns=["Pred -1", "Pred 1"])
+    cm = pd.DataFrame(
+        confusion_matrix(df[target_col], df["baseline_pred"], labels=[-1, 1]),
+        index=["Real -1", "Real 1"],
+        columns=["Pred -1", "Pred 1"],
+    )
 
     # Cálculo de las métricas de clasificación
     accuracy = accuracy_score(df[target_col], df["baseline_pred"])
-    recall = recall_score(df[target_col], df["baseline_pred"],
-                          average='weighted')  # Average weighted para manejo de clases desbalanceadas
+    recall = recall_score(
+        df[target_col], df["baseline_pred"], average="weighted"
+    )  # Average weighted para manejo de clases desbalanceadas
 
     return df, cm, accuracy, recall
 
 
 def baseline_persistencia_numerica(
-        df: pd.DataFrame,
-        target_col: str,
-        horizon: int
+    df: pd.DataFrame, target_col: str, horizon: int
 ) -> Tuple[pd.DataFrame, float, float, float, float]:
     """
     Implementa un modelo baseline de persistencia para variables numéricas.
@@ -79,15 +80,17 @@ def baseline_persistencia_numerica(
     return df, mae, mse, rmse, r2
 
 
-if __name__ == '__main__':
-    df = pd.read_parquet(r'../../data/parquet/data_7d.parquet')
+if __name__ == "__main__":
+    df = pd.read_parquet(r"../../data/parquet/data_7d.parquet")
 
     # Categórica
-    _, cm, accuracy, recall = baseline_persistencia_categorica(df, 'tendencia_futura_7d', 7)
+    _, cm, accuracy, recall = baseline_persistencia_categorica(
+        df, "tendencia_futura_7d", 7
+    )
     print("Matriz de Confusión:\n", cm)
     print(f"Accuracy: {accuracy}")
     print(f"Recall: {recall}")
 
     # Numérica
-    _, mae, mse, rmse, r2 = baseline_persistencia_numerica(df, 'pct_cambio_7d', 7)
+    _, mae, mse, rmse, r2 = baseline_persistencia_numerica(df, "pct_cambio_7d", 7)
     print(f"MAE: {mae}, MSE: {mse}, RMSE: {rmse}, R^2: {r2}")

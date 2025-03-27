@@ -6,6 +6,7 @@ import os
 import time
 from typing import Optional
 
+
 def download_data(
     ticker: str,
     start_date: str,
@@ -62,15 +63,33 @@ def download_data(
     )
     return None
 
+
 def main():
     start_date = "2022-01-01"
     end_date = "2025-02-17"
 
     parser = argparse.ArgumentParser(description="Descargar datos de Yahoo Finance.")
-    parser.add_argument("--start_date", type=str, default=start_date, help="Fecha de inicio en formato YYYY-MM-DD")
-    parser.add_argument("--end_date", type=str, default=end_date, help="Fecha de fin en formato YYYY-MM-DD")
-    parser.add_argument("--interval", type=str, default="1d", help="Intervalo de datos (ej. '1d', '1h')")
-    parser.add_argument("--output_dir", type=str, default="../../data/extraccion", help="Directorio de salida para los archivos CSV")
+    parser.add_argument(
+        "--start_date",
+        type=str,
+        default=start_date,
+        help="Fecha de inicio en formato YYYY-MM-DD",
+    )
+    parser.add_argument(
+        "--end_date",
+        type=str,
+        default=end_date,
+        help="Fecha de fin en formato YYYY-MM-DD",
+    )
+    parser.add_argument(
+        "--interval", type=str, default="1d", help="Intervalo de datos (ej. '1d', '1h')"
+    )
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        default="../../data/extraccion",
+        help="Directorio de salida para los archivos CSV",
+    )
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
@@ -90,6 +109,7 @@ def main():
             columns_rename={"Date": "timestamp"},
             output_filename=os.path.join(args.output_dir, filename),
         )
+
 
 if __name__ == "__main__":
     main()

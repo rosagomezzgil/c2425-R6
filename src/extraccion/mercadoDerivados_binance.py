@@ -4,6 +4,7 @@ import argparse
 import time
 from typing import Optional
 
+
 def get_binance_futures_historical_data(
     symbol: str = "BTCUSDT",
     days: int = 365,
@@ -100,20 +101,26 @@ def get_binance_futures_historical_data(
         print("No se obtuvieron datos.")
         return None
 
+
 def main():
     parser = argparse.ArgumentParser("Descargar datos históricos de Binance Futures")
     parser.add_argument(
-        "--symbol", type=str, default="BTCUSDT", help="Par de trading (ej. \"BTCUSDT\")"
+        "--symbol", type=str, default="BTCUSDT", help='Par de trading (ej. "BTCUSDT")'
     )
     parser.add_argument(
         "--days", type=int, default=365 * 3, help="Número de días a recuperar"
     )
     parser.add_argument(
-        "--interval", type=str, default="1d", help="Intervalo de las velas (1m, 5m, 1h, 1d)"
+        "--interval",
+        type=str,
+        default="1d",
+        help="Intervalo de las velas (1m, 5m, 1h, 1d)",
     )
     parser.add_argument(
-        "--output_path", type=str, default=r"../../data/extraccion/datos_mercadoDerivados_binance.csv",
-        help="Ruta para guardar los datos en CSV"
+        "--output_path",
+        type=str,
+        default=r"../../data/extraccion/datos_mercadoDerivados_binance.csv",
+        help="Ruta para guardar los datos en CSV",
     )
 
     # Parsear los argumentos
@@ -129,6 +136,7 @@ def main():
 
     print(df.shape)
     print(df.head())
+
 
 if __name__ == "__main__":
     main()

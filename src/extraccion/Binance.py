@@ -75,13 +75,17 @@ def get_binance_data(
 
     return df
 
+
 def main():
     parser = argparse.ArgumentParser(description="Obtener datos históricos de Binance")
     parser.add_argument(
         "--symbol", type=str, default="BTCUSDT", help="Par de trading (ej. 'BTCUSDT')"
     )
     parser.add_argument(
-        "--interval", type=str, default="1d", help="Intervalo de tiempo ('1m', '1h', '1d', etc.)"
+        "--interval",
+        type=str,
+        default="1d",
+        help="Intervalo de tiempo ('1m', '1h', '1d', etc.)",
     )
     parser.add_argument(
         "--limit", type=int, default=1000, help="Número de registros a obtener"
@@ -93,7 +97,10 @@ def main():
         "--end_time", type=int, default=None, help="Tiempo de fin en milisegundos"
     )
     parser.add_argument(
-        "--output_path", type=str, default=r"../../data/extraccion/datos_bitcoin_binance.csv", help="Ruta donde guardar el CSV"
+        "--output_path",
+        type=str,
+        default=r"../../data/extraccion/datos_bitcoin_binance.csv",
+        help="Ruta donde guardar el CSV",
     )
 
     # Parsear los argumentos
@@ -101,12 +108,17 @@ def main():
 
     # Llamar a la funcion con los datos parseados
     binance_df = get_binance_data(
-        symbol=args.symbol, interval=args.interval, limit=args.limit,
-        start_time=args.start_time, end_time=args.end_time, output_path=args.output_path
+        symbol=args.symbol,
+        interval=args.interval,
+        limit=args.limit,
+        start_time=args.start_time,
+        end_time=args.end_time,
+        output_path=args.output_path,
     )
 
     print(binance_df.shape)
     print(binance_df.head())
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

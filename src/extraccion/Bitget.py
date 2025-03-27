@@ -120,19 +120,34 @@ def scrape_bitget_data(
 
     return df_bitget
 
+
 def main():
-    parser = argparse.ArgumentParser(description="Extraer datos históricos de Bitcoin desde Bitget")
-    parser.add_argument(
-        "--url", type=str, default="https://www.bitget.com/es/price/bitcoin/historical-data", help="URL de la página de datos históricos de Bitget"
+    parser = argparse.ArgumentParser(
+        description="Extraer datos históricos de Bitcoin desde Bitget"
     )
     parser.add_argument(
-        "--max_pages", type=int, default=None, help="Número máximo de páginas a recorrer (None para todas)"
+        "--url",
+        type=str,
+        default="https://www.bitget.com/es/price/bitcoin/historical-data",
+        help="URL de la página de datos históricos de Bitget",
     )
     parser.add_argument(
-        "--wait_time", type=int, default=3, help="Tiempo de espera entre interacciones para cargar los datos"
+        "--max_pages",
+        type=int,
+        default=None,
+        help="Número máximo de páginas a recorrer (None para todas)",
     )
     parser.add_argument(
-        "--output_path", type=str, default=r"../../data/extraccion/bitget_scrapping.csv", help="Ruta del archivo CSV de salida"
+        "--wait_time",
+        type=int,
+        default=3,
+        help="Tiempo de espera entre interacciones para cargar los datos",
+    )
+    parser.add_argument(
+        "--output_path",
+        type=str,
+        default=r"../../data/extraccion/bitget_scrapping.csv",
+        help="Ruta del archivo CSV de salida",
     )
 
     # Parsear los argumentos

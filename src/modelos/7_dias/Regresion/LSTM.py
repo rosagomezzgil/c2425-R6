@@ -8,6 +8,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
+
 # Fijar semillas
 def fijar_semillas(seed: int = 123):
     """
@@ -34,12 +35,11 @@ def load_data(parquet_file: str):
     # df.set_index('timestamp', inplace=True)
     return df
 
+
 # 2. Preprocesar los datos
 def preprocess_data(
-        df: pd.DataFrame,
-        horizonte: int,
-        target_col: str,
-        sequence_length: int = 30):
+    df: pd.DataFrame, horizonte: int, target_col: str, sequence_length: int = 30
+):
     """
     Preprocesa los datos para LSTM (normalización y creación de secuencias)
 
@@ -57,9 +57,17 @@ def preprocess_data(
     assert target_col in df.columns
 
     X, y = [], []
-    for i in range(len(df_scaled) - sequence_length - horizonte + 1):  # Ajustar el rango para las secuencias
-        X.append(df_scaled[i:i + sequence_length])  # Se usa sequence_length para definir la secuencia
-        y.append(df_scaled[i + sequence_length + horizonte - 1][df.columns.get_loc(target_col)])
+    for i in range(
+        len(df_scaled) - sequence_length - horizonte + 1
+    ):  # Ajustar el rango para las secuencias
+        X.append(
+            df_scaled[i : i + sequence_length]
+        )  # Se usa sequence_length para definir la secuencia
+        y.append(
+            df_scaled[i + sequence_length + horizonte - 1][
+                df.columns.get_loc(target_col)
+            ]
+        )
 
     # Convertir listas a arrays de numpy
     X, y = np.array(X), np.array(y)
@@ -69,12 +77,13 @@ def preprocess_data(
 
 # 3. Crear y entrenar el modelo LSTM
 def train_lstm(
-        X_train: np.array,
-        y_train: np.array,
-        horizonte: int,
-        units: int = 50,
-        epochs: int = 50,
-        batch_size: int = 32):
+    X_train: np.array,
+    y_train: np.array,
+    horizonte: int,
+    units: int = 50,
+    epochs: int = 50,
+    batch_size: int = 32,
+):
     """
     Crea y entrena un modelo LSTM
 
@@ -87,24 +96,32 @@ def train_lstm(
 
     :return: Modelo entrenado
     """
-    model = Sequential([
-        LSTM(units, return_sequences=True, input_shape=(horizonte, X_train.shape[2])),
-        Dropout(0.2),
-        LSTM(units),
-        Dense(1)
-    ])
+    model = Sequential(
+        [
+            LSTM(
+                units, return_sequences=True, input_shape=(horizonte, X_train.shape[2])
+            ),
+            Dropout(0.2),
+            LSTM(units),
+            Dense(1),
+        ]
+    )
 
-    model.compile(optimizer='adam', loss='mse')
-    model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2)
+    model.compile(optimizer="adam", loss="mse")
+    model.fit(
+        X_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2
+    )
 
     return model
 
+
 def predict_and_plot(
-        model: Sequential,
-        X_test: np.array,
-        y_test: np.array,
-        scaler: MinMaxScaler,
-        target_col: str):
+    model: Sequential,
+    X_test: np.array,
+    y_test: np.array,
+    scaler: MinMaxScaler,
+    target_col: str,
+):
     """
     Realiza predicciones y las grafica junto con los valores reales.
 
@@ -120,32 +137,37 @@ def predict_and_plot(
     # Desescalar las predicciones
     predictions = scaler.inverse_transform(
         np.concatenate([X_test[:, -1, :-1], predictions], axis=-1)
-    )[:, -1]  # Sólo tomamos la columna correspondiente al target (target_col)
+    )[
+        :, -1
+    ]  # Sólo tomamos la columna correspondiente al target (target_col)
 
     # Desescalar los valores reales (y_test)
     y_test_rescaled = scaler.inverse_transform(
         np.concatenate([X_test[:, -1, :-1], y_test.reshape(-1, 1)], axis=-1)
-    )[:, -1]  # Sólo tomamos la columna correspondiente al target (target_col)
+    )[
+        :, -1
+    ]  # Sólo tomamos la columna correspondiente al target (target_col)
 
     # Graficar resultados
     plt.figure(figsize=(12, 6))
-    plt.plot(y_test_rescaled, label='Real')
-    plt.plot(predictions, label='Predicción')
+    plt.plot(y_test_rescaled, label="Real")
+    plt.plot(predictions, label="Predicción")
     plt.legend()
-    plt.xlabel('Días')
-    plt.ylabel(f'{target_col} Predicción')
-    plt.title(f'Predicción vs Real: {target_col}')
+    plt.xlabel("Días")
+    plt.ylabel(f"{target_col} Predicción")
+    plt.title(f"Predicción vs Real: {target_col}")
     plt.show()
 
 
 # 5. Ejecutar el flujo
 def main(
-        parquet_file: str,
-        horizonte: int = 7,
-        target_col: str = '', # TODO
-        units: int = 50,
-        epochs: int = 50,
-        batch_size: int = 32):
+    parquet_file: str,
+    horizonte: int = 7,
+    target_col: str = "",  # TODO
+    units: int = 50,
+    epochs: int = 50,
+    batch_size: int = 32,
+):
     """
     Ejecuta el flujo completo del modelo LSTM
 
@@ -167,7 +189,9 @@ def main(
     print(y.shape)
 
     # shuffle=False --> asegura que los datos se dividan en orden cronológico
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, shuffle=False
+    )
 
     model = train_lstm(X_train, y_train, horizonte, units, epochs, batch_size)
     predict_and_plot(model, X_test, y_test, scaler, target_col)
@@ -175,7 +199,7 @@ def main(
 
 if __name__ == "__main__":
     # Parámetros para ejecutar el modelo
-    parquet_file = '../../../../data/parquet/data_7d.parquet'
+    parquet_file = "../../../../data/parquet/data_7d.parquet"
     horizonte = 7
-    target_col = 'pct_cambio_7d'  # Columna objetivo, porcentaje de cambio en 7 días
+    target_col = "pct_cambio_7d"  # Columna objetivo, porcentaje de cambio en 7 días
     main(parquet_file, horizonte, target_col)

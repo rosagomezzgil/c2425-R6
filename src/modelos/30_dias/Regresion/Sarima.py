@@ -11,8 +11,10 @@ def cargar_datos(ruta_parquet):
 
 
 # Función para preprocesar los datos
-def preprocesar_datos(df, variable_objetivo='pct_cambio_30d'):
-    df = df[[variable_objetivo]].dropna()  # Solo mantenemos la variable objetivo y eliminamos valores nulos
+def preprocesar_datos(df, variable_objetivo="pct_cambio_30d"):
+    df = df[
+        [variable_objetivo]
+    ].dropna()  # Solo mantenemos la variable objetivo y eliminamos valores nulos
     return df
 
 
@@ -21,14 +23,23 @@ def dividir_datos(df, test_size=0.1, val_size=0.1):
     train_size = int(len(df) * (1 - test_size - val_size))
     val_size = int(len(df) * val_size)
 
-    train, val, test = df.iloc[:train_size], df.iloc[train_size:train_size + val_size], df.iloc[train_size + val_size:]
+    train, val, test = (
+        df.iloc[:train_size],
+        df.iloc[train_size : train_size + val_size],
+        df.iloc[train_size + val_size :],
+    )
     return train, val, test
 
 
 # Función para entrenar el modelo SARIMA
 def entrenar_sarima(train, order=(1, 1, 1), seasonal_order=(1, 1, 1, 30)):
-    model = SARIMAX(train, order=order, seasonal_order=seasonal_order, enforce_stationarity=False,
-                    enforce_invertibility=False)
+    model = SARIMAX(
+        train,
+        order=order,
+        seasonal_order=seasonal_order,
+        enforce_stationarity=False,
+        enforce_invertibility=False,
+    )
     model_fitted = model.fit(disp=False)
     print(model_fitted.summary())
     return model_fitted

@@ -1,7 +1,6 @@
 from Calcular_RSI import calcular_rsi
 import pandas as pd
 
-
 def convertir_euros(valor):
     """
     Función para convertir valores monetarios en float

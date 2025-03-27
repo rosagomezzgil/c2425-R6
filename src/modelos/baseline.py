@@ -12,8 +12,10 @@ import numpy as np
 
 
 def baseline_persistencia_categorica(
-    df: pd.DataFrame, target_col: str, horizon: int
-) -> Tuple[pd.DataFrame, pd.DataFrame, float, float, float]:
+    df: pd.DataFrame,
+    target_col: str,
+    horizon: int
+) -> Tuple[pd.DataFrame, pd.DataFrame, float, float]:
     """
     Implementa un modelo baseline de persistencia para variables categóricas.
     Predice que la tendencia será igual a la de `horizon` días atrás, permitiendo solo horizontes de 7 o 30 días.

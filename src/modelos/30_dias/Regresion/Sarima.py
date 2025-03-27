@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from statsmodels.tsa.statespace.sarimax import SARIMAX
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 
 # Función para cargar datos desde un archivo Parquet
@@ -37,8 +37,18 @@ def entrenar_sarima(train, order=(1, 1, 1), seasonal_order=(1, 1, 1, 30)):
 # Función para hacer predicciones y evaluar
 def evaluar_modelo(modelo, test):
     predicciones = modelo.forecast(steps=len(test))
+
+    # Calcular métricas
     mse = mean_squared_error(test, predicciones)
+    mae = mean_absolute_error(test, predicciones)
+    rmse = np.sqrt(mse)
+    r2 = r2_score(test, predicciones)
+
+    print(f"\nEvaluación del modelo SARIMA:")
     print(f"MSE: {mse:.4f}")
+    print(f"RMSE: {rmse:.4f}")
+    print(f"MAE: {mae:.4f}")
+    print(f"R²: {r2:.4f}")
 
     return predicciones
 
@@ -54,6 +64,7 @@ def main():
     modelo_sarima = entrenar_sarima(train)
     predicciones = evaluar_modelo(modelo_sarima, test)
 
+    print("\nPrimeras predicciones:")
     print(predicciones.head())
 
 

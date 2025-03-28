@@ -1,13 +1,15 @@
+import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Input, LSTM, Dense, Dropout
 from tensorflow.random import set_seed
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+import itertools
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import random
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.model_selection import train_test_split
-import matplotlib.pyplot as plt
-
 
 # Fijar semillas
 def fijar_semillas(seed: int = 123):
@@ -20,7 +22,6 @@ def fijar_semillas(seed: int = 123):
     np.random.seed(seed)
     random.seed(seed)
 
-
 # 1. Cargar los datos
 def load_data(parquet_file: str):
     """
@@ -31,17 +32,14 @@ def load_data(parquet_file: str):
     :return: pd.DataFrame
     """
     df = pd.read_parquet(parquet_file)
-    # df['timestamp'] = pd.to_datetime(df['timestamp'])  # Asegurar que la fecha esté en formato datetime
-    # df.set_index('timestamp', inplace=True)
+    df['timestamp'] = pd.to_datetime(df['timestamp'])  # Asegurar que la fecha esté en formato datetime
+    df.set_index('timestamp', inplace=True)
     return df
 
-
 # 2. Preprocesar los datos
-def preprocess_data(
-    df: pd.DataFrame, horizonte: int, target_col: str, sequence_length: int = 30
-):
+def preprocess_data(df: pd.DataFrame, horizonte: int, target_col: str, sequence_length: int = 30):
     """
-    Preprocesa los datos para LSTM (normalización y creación de secuencias)
+    Preprocesa los datos para LSTM (normalización de X con StandardScaler y creación de secuencias)
 
     :param df: pd.DataFrame con los datos para el modelo
     :param horizonte: días de la predicción
@@ -50,36 +48,35 @@ def preprocess_data(
 
     :return: X, y, scaler
     """
-    # Escalado de los datos
-    scaler = MinMaxScaler()
-    df_scaled = scaler.fit_transform(df)
+    assert target_col in df.columns, f"La columna {target_col} no está en el DataFrame"
+    assert target_col == f'pct_cambio_{horizonte}d', "El nombre de la columna objetivo no coincide con el horizonte"
 
-    assert target_col in df.columns
+    col_categorica = f'tendencia_futura_{horizonte}d'
+    assert col_categorica in df.columns, f"La columna {col_categorica} no está en el DataFrame"
 
-    X, y = [], []
-    for i in range(
-        len(df_scaled) - sequence_length - horizonte + 1
-    ):  # Ajustar el rango para las secuencias
-        X.append(
-            df_scaled[i : i + sequence_length]
-        )  # Se usa sequence_length para definir la secuencia
-        y.append(
-            df_scaled[i + sequence_length + horizonte - 1][
-                df.columns.get_loc(target_col)
-            ]
-        )
+    # Separar X y y antes de escalar
+    features = df.drop(columns=[target_col, col_categorica])
+    y = df[target_col].values  # Mantener y en su escala original
 
-    # Convertir listas a arrays de numpy
-    X, y = np.array(X), np.array(y)
+    # Escalar solo las características de entrada con StandardScaler
+    scaler = StandardScaler()
+    features_scaled = scaler.fit_transform(features)
+    features_scaled = pd.DataFrame(features_scaled, columns=features.columns)
 
-    return X, y, scaler
+    X = []
+    for i in range(len(features_scaled) - sequence_length - horizonte + 1):
+        X.append(features_scaled.iloc[i: i + sequence_length].values)
 
+    X = np.array(X)  # Convertir a numpy array
+
+    return X, y[: len(X)], scaler  # Asegurar que y tenga la misma longitud que X
 
 # 3. Crear y entrenar el modelo LSTM
 def train_lstm(
     X_train: np.array,
     y_train: np.array,
     horizonte: int,
+    sequence_length: int = 30,
     units: int = 50,
     epochs: int = 50,
     batch_size: int = 32,
@@ -96,10 +93,14 @@ def train_lstm(
 
     :return: Modelo entrenado
     """
+
+    print("GPUs disponibles:", tf.config.list_physical_devices('GPU'))
+    print("Dispositivo en uso:", tf.test.gpu_device_name())
+
     model = Sequential(
         [
             LSTM(
-                units, return_sequences=True, input_shape=(horizonte, X_train.shape[2])
+                units, return_sequences=True, input_shape=(sequence_length, X_train.shape[2])
             ),
             Dropout(0.2),
             LSTM(units),
@@ -114,12 +115,10 @@ def train_lstm(
 
     return model
 
-
 def predict_and_plot(
     model: Sequential,
     X_test: np.array,
     y_test: np.array,
-    scaler: MinMaxScaler,
     target_col: str,
 ):
     """
@@ -127,37 +126,70 @@ def predict_and_plot(
 
     :param model: Modelo entrenado.
     :param X_test: Datos de prueba.
-    :param y_test: Etiquetas de prueba.
-    :param scaler: Escalador para desescalar los datos.
+    :param y_test: Etiquetas de prueba (sin escalar).
     :param target_col: Columna objetivo a predecir.
     """
     # Realizar predicciones
-    predictions = model.predict(X_test)
-
-    # Desescalar las predicciones
-    predictions = scaler.inverse_transform(
-        np.concatenate([X_test[:, -1, :-1], predictions], axis=-1)
-    )[
-        :, -1
-    ]  # Sólo tomamos la columna correspondiente al target (target_col)
-
-    # Desescalar los valores reales (y_test)
-    y_test_rescaled = scaler.inverse_transform(
-        np.concatenate([X_test[:, -1, :-1], y_test.reshape(-1, 1)], axis=-1)
-    )[
-        :, -1
-    ]  # Sólo tomamos la columna correspondiente al target (target_col)
+    predictions = model.predict(X_test).flatten()  # Asegurar que sea un array 1D
 
     # Graficar resultados
     plt.figure(figsize=(12, 6))
-    plt.plot(y_test_rescaled, label="Real")
-    plt.plot(predictions, label="Predicción")
+    plt.plot(y_test, label="Real", color="blue")
+    plt.plot(predictions, label="Predicción", color="red", linestyle="dashed")
     plt.legend()
     plt.xlabel("Días")
-    plt.ylabel(f"{target_col} Predicción")
+    plt.ylabel(f"Valor de {target_col}")
     plt.title(f"Predicción vs Real: {target_col}")
     plt.show()
 
+def evaluate_model(model, X_test, y_test):
+    """
+    Calcula y muestra las métricas de evaluación del modelo.
+    """
+    predictions = model.predict(X_test).flatten()
+    mse = mean_squared_error(y_test, predictions)
+    mae = mean_absolute_error(y_test, predictions)
+    rmse = np.sqrt(mse)
+    r2 = r2_score(y_test, predictions)
+
+    print("\nMétricas del modelo:")
+    print(f"MSE: {mse:.4f}")
+    print(f"MAE: {mae:.4f}")
+    print(f"RMSE: {rmse:.4f}")
+    print(f"R²: {r2:.4f}")
+
+    return mse, mae, rmse, r2
+
+
+def optimize_hyperparameters(X_train, y_train, X_test, y_test, param_grid):
+    """
+    Realiza una búsqueda de hiperparámetros evaluando diferentes combinaciones.
+    """
+    best_score = float("inf")
+    best_params = None
+
+    for params in itertools.product(*param_grid.values()):
+        param_dict = dict(zip(param_grid.keys(), params))
+        print(f"Probando configuración: {param_dict}")
+
+        model = train_lstm(
+            X_train, y_train,
+            horizonte=param_dict['horizonte'],
+            units=param_dict['units'],
+            epochs=param_dict['epochs'],
+            batch_size=param_dict['batch_size']
+        )
+
+        mse, _, _, _ = evaluate_model(model, X_test, y_test)
+
+        if mse < best_score:
+            best_score = mse
+            best_params = param_dict
+            print("Nuevo mejor modelo encontrado!")
+
+    print("\nMejores hiperparámetros encontrados:")
+    print(best_params)
+    return best_params
 
 # 5. Ejecutar el flujo
 def main(
@@ -183,7 +215,9 @@ def main(
 
     print(df.head())
 
-    X, y, scaler = preprocess_data(df, horizonte, target_col)
+    sequence_length = 7
+
+    X, y, scaler = preprocess_data(df, horizonte, target_col, sequence_length)
 
     print(X.shape)
     print(y.shape)
@@ -193,8 +227,9 @@ def main(
         X, y, test_size=0.2, shuffle=False
     )
 
-    model = train_lstm(X_train, y_train, horizonte, units, epochs, batch_size)
-    predict_and_plot(model, X_test, y_test, scaler, target_col)
+    model = train_lstm(X_train, y_train, horizonte, sequence_length, units, epochs, batch_size)
+    predict_and_plot(model, X_test, y_test, target_col)
+    mse, mae, rmse, r2 = evaluate_model(model, X_test, y_test)
 
 
 if __name__ == "__main__":

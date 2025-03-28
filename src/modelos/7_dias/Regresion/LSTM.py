@@ -75,8 +75,6 @@ def preprocess_data(df: pd.DataFrame, horizonte: int, target_col: str, sequence_
 def train_lstm(
     X_train: np.array,
     y_train: np.array,
-    horizonte: int,
-    sequence_length: int = 30,
     units: int = 50,
     epochs: int = 50,
     batch_size: int = 32,
@@ -86,7 +84,6 @@ def train_lstm(
 
     :param X_train: Datos de entrada para el entrenamiento
     :param y_train: Datos para el entrenamiento
-    :param horizonte: Días de predicción
     :param units: Número de unidades LSTM
     :param epochs: Número de épocas de entrenamiento
     :param batch_size: Tamaño del batch de entrenamiento
@@ -100,7 +97,7 @@ def train_lstm(
     model = Sequential(
         [
             LSTM(
-                units, return_sequences=True, input_shape=(sequence_length, X_train.shape[2])
+                units, return_sequences=True, input_shape=(X_train.shape[1], X_train.shape[2])
             ),
             Dropout(0.2),
             LSTM(units),
@@ -110,7 +107,7 @@ def train_lstm(
 
     model.compile(optimizer="adam", loss="mse")
     model.fit(
-        X_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2
+        X_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2, verbose=0
     )
 
     return model
@@ -174,7 +171,6 @@ def optimize_hyperparameters(X_train, y_train, X_test, y_test, param_grid):
 
         model = train_lstm(
             X_train, y_train,
-            horizonte=param_dict['horizonte'],
             units=param_dict['units'],
             epochs=param_dict['epochs'],
             batch_size=param_dict['batch_size']
@@ -192,49 +188,72 @@ def optimize_hyperparameters(X_train, y_train, X_test, y_test, param_grid):
     return best_params
 
 # 5. Ejecutar el flujo
-def main(
-    parquet_file: str,
-    horizonte: int = 7,
-    target_col: str = "",  # TODO
-    units: int = 50,
-    epochs: int = 50,
-    batch_size: int = 32,
-):
-    """
-    Ejecuta el flujo completo del modelo LSTM
+def main():
+    # 1. Definir hiperparámetros a probar
+    param_grid = {
+        "units": [32, 64, 128],
+        "epochs": [30, 50, 100, 1000],
+        "batch_size": [1, 16, 32, 64],
+    }
 
-    :param parquet_file: Ruta del archivo parquet
-    :param horizonte: Número de días a predecir
-    :param target_col: Columna de la variable objetivo
-    :param units: Número de unidades LSTM
-    :param epochs: Número de épocas de entrenamiento
-    :param batch_size: Tamaño del batch
-    """
+    # 2. Preparar datos
+    parquet_file = "../../../../data/parquet/data_7d.parquet"
+    horizonte = 7
+    target_col = "pct_cambio_7d"
+    sequences_length = [1, 7, 30, 60]
+
     fijar_semillas()
     df = load_data(parquet_file)
 
-    print(df.head())
+    best_best_model = {
+        "sequence_lenght": None,
+        "best_params": {},
+        "X": (None, None),
+        "Y": (None, None),
+        "mse": float("inf")
+    }
 
-    sequence_length = 7
+    for sequence_length in sequences_length:
+        X, y, scaler = preprocess_data(df, horizonte, target_col, sequence_length)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
+        print(f"Datos preparados para sequence_length: {sequence_length}\n")
 
-    X, y, scaler = preprocess_data(df, horizonte, target_col, sequence_length)
+        # 3. Optimizar hiperparámetros
+        best_params = optimize_hyperparameters(X_train, y_train, X_test, y_test, param_grid)
 
-    print(X.shape)
-    print(y.shape)
+        # 4. Entrenar el modelo final con los mejores parámetros
+        best_model = train_lstm(
+            X_train, y_train,
+            units=best_params['units'],
+            epochs=best_params['epochs'],
+            batch_size=best_params['batch_size']
+        )
 
-    # shuffle=False --> asegura que los datos se dividan en orden cronológico
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, shuffle=False
+        # 5. Evaluar y visualizar resultados
+        mse, _, _, _ = evaluate_model(best_model, X_test, y_test)
+
+        if mse < best_best_model['mse']:
+            best_best_model['sequence_lenght'] = sequence_length
+            best_best_model['mse'] = mse
+            best_best_model['best_param'] = best_params
+            best_best_model['X'] = (X_train, X_test)
+            best_best_model['Y'] = (y_train, y_test)
+            print("Nuevo mejor modelo encontrado!")
+
+    X_train, X_test = best_best_model['X']
+    y_train, y_test = best_best_model['Y']
+    best_params = best_best_model['best_params']
+
+    best_model = train_lstm(
+        X_train, y_train,
+        units=best_params['units'],
+        epochs=best_params['epochs'],
+        batch_size=best_params['batch_size']
     )
 
-    model = train_lstm(X_train, y_train, horizonte, sequence_length, units, epochs, batch_size)
-    predict_and_plot(model, X_test, y_test, target_col)
-    mse, mae, rmse, r2 = evaluate_model(model, X_test, y_test)
-
+    # 5. Evaluar y visualizar resultados
+    evaluate_model(best_model, X_test, y_test)
+    predict_and_plot(best_model, X_test, y_test, target_col)
 
 if __name__ == "__main__":
-    # Parámetros para ejecutar el modelo
-    parquet_file = "../../../../data/parquet/data_7d.parquet"
-    horizonte = 7
-    target_col = "pct_cambio_7d"  # Columna objetivo, porcentaje de cambio en 7 días
-    main(parquet_file, horizonte, target_col)
+    main()

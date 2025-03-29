@@ -1,15 +1,29 @@
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Input, LSTM, Dense, Dropout
+from tensorflow.keras.layers import LSTM, Dense, Dropout
 from tensorflow.random import set_seed
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+import mlflow
+import mlflow.tensorflow
 import itertools
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import random
+import os
+
+# iniciar servidor de MLflow
+def ini_mlflow():
+    # Verificar si el servidor MLflow ya está corriendo
+    tasklist = os.popen('tasklist').read()
+    if "mlflow.exe" not in tasklist:
+        os.system(
+            'start /B mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns --host 127.0.0.1 --port 5000'
+        )
+        print("MLflow iniciado en segundo plano.")
+
 
 # Fijar semillas
 def fijar_semillas(seed: int = 123):
@@ -107,7 +121,7 @@ def train_lstm(
 
     model.compile(optimizer="adam", loss="mse")
     model.fit(
-        X_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2, verbose=0
+        X_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2, verbose=1
     )
 
     return model
@@ -183,17 +197,23 @@ def optimize_hyperparameters(X_train, y_train, X_test, y_test, param_grid):
             best_params = param_dict
             print("Nuevo mejor modelo encontrado!")
 
+        print('\n\n')
+
     print("\nMejores hiperparámetros encontrados:")
     print(best_params)
     return best_params
 
 # 5. Ejecutar el flujo
 def main():
+    # Configurar MLflow en local
+    mlflow.set_tracking_uri("sqlite:///../../../../mlflow.db") # base de datos SQLite
+    mlflow.set_experiment("LSTM Optimization")
+
     # 1. Definir hiperparámetros a probar
     param_grid = {
         "units": [32, 64, 128],
-        "epochs": [30, 50, 100, 1000],
-        "batch_size": [1, 16, 32, 64],
+        "epochs": [30, 50, 100, 500],
+        "batch_size": [16, 32, 64],
     }
 
     # 2. Preparar datos
@@ -222,15 +242,21 @@ def main():
         best_params = optimize_hyperparameters(X_train, y_train, X_test, y_test, param_grid)
 
         # 4. Entrenar el modelo final con los mejores parámetros
-        best_model = train_lstm(
-            X_train, y_train,
-            units=best_params['units'],
-            epochs=best_params['epochs'],
-            batch_size=best_params['batch_size']
-        )
+        with mlflow.start_run():
+            best_model = train_lstm(
+                X_train, y_train,
+                units=best_params['units'],
+                epochs=best_params['epochs'],
+                batch_size=best_params['batch_size']
+            )
 
-        # 5. Evaluar y visualizar resultados
-        mse, _, _, _ = evaluate_model(best_model, X_test, y_test)
+            # 5. Evaluar
+            mse, mae, rmse, r2 = evaluate_model(best_model, X_test, y_test)
+
+            # Registrar en MLflow
+            mlflow.log_params(best_params)
+            mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2})
+            mlflow.tensorflow.log_model(best_model, artifact_path=f"models/seq_{sequence_length}")
 
         if mse < best_best_model['mse']:
             best_best_model['sequence_lenght'] = sequence_length
@@ -238,21 +264,29 @@ def main():
             best_best_model['best_param'] = best_params
             best_best_model['X'] = (X_train, X_test)
             best_best_model['Y'] = (y_train, y_test)
-            print("Nuevo mejor modelo encontrado!")
+            print("Nuevo mejor mejor modelo encontrado!")
+
+        print('\n\n')
 
     X_train, X_test = best_best_model['X']
     y_train, y_test = best_best_model['Y']
     best_params = best_best_model['best_params']
 
-    best_model = train_lstm(
-        X_train, y_train,
-        units=best_params['units'],
-        epochs=best_params['epochs'],
-        batch_size=best_params['batch_size']
-    )
+    with mlflow.start_run():
+        best_model = train_lstm(
+            X_train, y_train,
+            units=best_params['units'],
+            epochs=best_params['epochs'],
+            batch_size=best_params['batch_size']
+        )
 
-    # 5. Evaluar y visualizar resultados
-    evaluate_model(best_model, X_test, y_test)
+        # 6. Evaluar y visualizar resultados
+        mse, mae, rmse, r2 = evaluate_model(best_model, X_test, y_test)
+
+        mlflow.log_params(best_params)
+        mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2})
+        mlflow.tensorflow.log_model(best_model, artifact_path="models/best_overall")
+
     predict_and_plot(best_model, X_test, y_test, target_col)
 
 if __name__ == "__main__":

@@ -7,23 +7,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import mlflow
 import mlflow.tensorflow
+from mlflow.models import infer_signature
 import itertools
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import random
-import os
-
-# iniciar servidor de MLflow
-def ini_mlflow():
-    # Verificar si el servidor MLflow ya está corriendo
-    tasklist = os.popen('tasklist').read()
-    if "mlflow.exe" not in tasklist:
-        os.system(
-            'start /B mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./mlruns --host 127.0.0.1 --port 5000'
-        )
-        print("MLflow iniciado en segundo plano.")
-
 
 # Fijar semillas
 def fijar_semillas(seed: int = 123):
@@ -197,7 +186,7 @@ def optimize_hyperparameters(X_train, y_train, X_test, y_test, param_grid):
             best_params = param_dict
             print("Nuevo mejor modelo encontrado!")
 
-        print('\n\n')
+        print('\n')
 
     print("\nMejores hiperparámetros encontrados:")
     print(best_params)
@@ -206,7 +195,7 @@ def optimize_hyperparameters(X_train, y_train, X_test, y_test, param_grid):
 # 5. Ejecutar el flujo
 def main():
     # Configurar MLflow en local
-    mlflow.set_tracking_uri("sqlite:///../../../../mlflow.db") # base de datos SQLite
+    mlflow.set_tracking_uri(f"sqlite:///../../../../mlflow.db") # base de datos SQLite
     mlflow.set_experiment("LSTM Optimization")
 
     # 1. Definir hiperparámetros a probar
@@ -220,58 +209,20 @@ def main():
     parquet_file = "../../../../data/parquet/data_7d.parquet"
     horizonte = 7
     target_col = "pct_cambio_7d"
-    sequences_length = [1, 7, 30, 60]
+    # sequences_length = [1, 7, 30, 60]
+    sequence_length = 7
 
     fijar_semillas()
     df = load_data(parquet_file)
 
-    best_best_model = {
-        "sequence_lenght": None,
-        "best_params": {},
-        "X": (None, None),
-        "Y": (None, None),
-        "mse": float("inf")
-    }
+    X, y, scaler = preprocess_data(df, horizonte, target_col, sequence_length)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
+    print(f"Datos preparados para sequence_length: {sequence_length}\n")
 
-    for sequence_length in sequences_length:
-        X, y, scaler = preprocess_data(df, horizonte, target_col, sequence_length)
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
-        print(f"Datos preparados para sequence_length: {sequence_length}\n")
+    # 3. Optimizar hiperparámetros
+    best_params = optimize_hyperparameters(X_train, y_train, X_test, y_test, param_grid)
 
-        # 3. Optimizar hiperparámetros
-        best_params = optimize_hyperparameters(X_train, y_train, X_test, y_test, param_grid)
-
-        # 4. Entrenar el modelo final con los mejores parámetros
-        with mlflow.start_run():
-            best_model = train_lstm(
-                X_train, y_train,
-                units=best_params['units'],
-                epochs=best_params['epochs'],
-                batch_size=best_params['batch_size']
-            )
-
-            # 5. Evaluar
-            mse, mae, rmse, r2 = evaluate_model(best_model, X_test, y_test)
-
-            # Registrar en MLflow
-            mlflow.log_params(best_params)
-            mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2})
-            mlflow.tensorflow.log_model(best_model, artifact_path=f"models/seq_{sequence_length}")
-
-        if mse < best_best_model['mse']:
-            best_best_model['sequence_lenght'] = sequence_length
-            best_best_model['mse'] = mse
-            best_best_model['best_param'] = best_params
-            best_best_model['X'] = (X_train, X_test)
-            best_best_model['Y'] = (y_train, y_test)
-            print("Nuevo mejor mejor modelo encontrado!")
-
-        print('\n\n')
-
-    X_train, X_test = best_best_model['X']
-    y_train, y_test = best_best_model['Y']
-    best_params = best_best_model['best_params']
-
+    # 4. Entrenar el modelo final con los mejores parámetros
     with mlflow.start_run():
         best_model = train_lstm(
             X_train, y_train,
@@ -280,12 +231,19 @@ def main():
             batch_size=best_params['batch_size']
         )
 
-        # 6. Evaluar y visualizar resultados
+        # 5. Evaluar
         mse, mae, rmse, r2 = evaluate_model(best_model, X_test, y_test)
 
+        # Registrar en MLflow
+        signature = infer_signature(X_test, best_model.predict(X_test))
         mlflow.log_params(best_params)
         mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2})
-        mlflow.tensorflow.log_model(best_model, artifact_path="models/best_overall")
+        mlflow.tensorflow.log_model(
+            best_model,
+            artifact_path=f"models/seq_{sequence_length}",
+            signature=signature,
+            input_example=X_test
+        )
 
     predict_and_plot(best_model, X_test, y_test, target_col)
 

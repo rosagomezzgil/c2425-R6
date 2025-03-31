@@ -4,7 +4,7 @@ import itertools
 from statsmodels.tsa.arima.model import ARIMA
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import mean_absolute_error, mean_squared_error
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 
 # Función para cargar datos desde un archivo Parquet
@@ -16,11 +16,11 @@ def cargar_datos(ruta_parquet):
 # Función para preprocesar los datos
 def preprocesar_datos(df):
     df = df.drop(
-        columns=["tendencia_futura_7d", "pct_cambio_30d", "tendencia_futura_30d"],
+        columns=["tendencia_futura_7d", "pct_cambio_7d", "tendencia_futura_30d"],
         errors="ignore",
     )
-    X = df.drop(columns=["pct_cambio_7d"])
-    y = df["pct_cambio_7d"]
+    X = df.drop(columns=["pct_cambio_30d"])
+    y = df["pct_cambio_30d"]
 
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
@@ -80,10 +80,14 @@ def buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val):
 def evaluar_modelo(modelo, X_test, y_test):
     y_pred = modelo.forecast(steps=len(y_test))
     mae = mean_absolute_error(y_test, y_pred)
-    rmse = mean_squared_error(y_test, y_pred, squared=False)
+    rmse = mean_squared_error(y_test, y_pred)**0.5
+    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
 
     print(f"Evaluación sobre test - MAE: {mae:.4f}")
+    print(f"Evaluación sobre test - MSE: {mse:.4f}")
     print(f"Evaluación sobre test - RMSE: {rmse:.4f}")
+    print(f"Evaluación sobre test - R²: {r2:.4f}")
 
 
 # Función principal

@@ -14,15 +14,19 @@ def load_data(csv_file):
 
 # Separar características (X) y etiquetas (y)
 def preprocess_data(df):
-    x = df.iloc[:, :-4]  # Asegúrate de seleccionar correctamente las columnas de características
-    y = df['pct_cambio_7d']  # Variable objetivo para regresión
+    x = df.iloc[
+        :, :-4
+    ]  # Asegúrate de seleccionar correctamente las columnas de características
+    y = df["pct_cambio_7d"]  # Variable objetivo para regresión
     return x, y
 
 
 # Crear y entrenar el modelo de regresión
 def train(x, y, max_depth):
     # Dividir los datos en conjunto de entrenamiento y prueba
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+    x_train, x_test, y_train, y_test = train_test_split(
+        x, y, test_size=0.2, random_state=42
+    )
 
     # Crear el modelo de árbol de decisión para regresión
     model = DecisionTreeRegressor(max_depth=max_depth, random_state=42)
@@ -37,8 +41,8 @@ def train(x, y, max_depth):
 def predict_and_plot(model, x_test, y_test):
     predictions = model.predict(x_test)
     plt.figure(figsize=(12, 6))
-    plt.plot(y_test.values, label='Real')
-    plt.plot(predictions, label='Predicción', linestyle='dashed')
+    plt.plot(y_test.values, label="Real")
+    plt.plot(predictions, label="Predicción", linestyle="dashed")
     plt.legend()
     plt.xlabel("Índice de muestra")
     plt.ylabel("Valor Predicho")
@@ -48,9 +52,18 @@ def predict_and_plot(model, x_test, y_test):
 
 # Ejecutar el flujo
 def main():
-    parser = argparse.ArgumentParser(description="Entrenar y evaluar un modelo de regresión con DecisionTreeRegressor")
-    parser.add_argument("--csv_file", type=str, required=True, help="Ruta del archivo CSV de entrada")
-    parser.add_argument("--max_depth", type=int, default=5, help="Profundidad máxima del árbol de decisión")
+    parser = argparse.ArgumentParser(
+        description="Entrenar y evaluar un modelo de regresión con DecisionTreeRegressor"
+    )
+    parser.add_argument(
+        "--csv_file", type=str, required=True, help="Ruta del archivo CSV de entrada"
+    )
+    parser.add_argument(
+        "--max_depth",
+        type=int,
+        default=5,
+        help="Profundidad máxima del árbol de decisión",
+    )
 
     args = parser.parse_args()
 

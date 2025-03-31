@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 # Datos de Halving
 def get_halving_dates():
     halvings = [

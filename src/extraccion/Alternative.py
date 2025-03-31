@@ -3,6 +3,7 @@ import pandas as pd
 import argparse
 from typing import Optional
 
+
 def get_fear_greed_index(
     limit: int = 0, date_format: str = "world", output_path: Optional[str] = None
 ):
@@ -47,15 +48,27 @@ def get_fear_greed_index(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Obtener el índice de Miedo y Codicia de Bitcoin")
-    parser.add_argument(
-        "--limit", type=int, default=0, help="Número de registros a obtener (0 para todos)"
+    parser = argparse.ArgumentParser(
+        description="Obtener el índice de Miedo y Codicia de Bitcoin"
     )
     parser.add_argument(
-        "--date_format", type=str, choices=["world", "us"], default="world", help="Formato de fecha"
+        "--limit",
+        type=int,
+        default=0,
+        help="Número de registros a obtener (0 para todos)",
     )
     parser.add_argument(
-        "--output_path", type=str, default=r"../../data/extraccion/datos_bitcoin_fear_greed.csv", help="Ruta donde guardar el CSV"
+        "--date_format",
+        type=str,
+        choices=["world", "us"],
+        default="world",
+        help="Formato de fecha",
+    )
+    parser.add_argument(
+        "--output_path",
+        type=str,
+        default=r"../../data/extraccion/datos_bitcoin_fear_greed.csv",
+        help="Ruta donde guardar el CSV",
     )
 
     # Parsear los argumentos

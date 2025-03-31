@@ -4,6 +4,7 @@ from typing import List, Optional
 import argparse
 import requests
 
+
 def get_google_trends(
     keywords: List[str] = ["bitcoin"],
     timeframe: str = "today 5-y",
@@ -29,7 +30,9 @@ def get_google_trends(
         df = pytrends.interest_over_time().reset_index()
 
         if df.empty:
-            raise ValueError("No se recibieron datos. Puede que Google esté bloqueando la solicitud.")
+            raise ValueError(
+                "No se recibieron datos. Puede que Google esté bloqueando la solicitud."
+            )
 
         # Renombrar y guardar
         df.rename(columns={"date": "timestamp"}, inplace=True)
@@ -47,22 +50,32 @@ def get_google_trends(
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Obtener datos de tendencias de Google para las palabras clave especificadas.")
-    parser.add_argument(
-        "--keywords", type=str, default="bitcoin",
-        help="Palabras clave a buscar, separadas por coma (por defecto: 'bitcoin')."
+    parser = argparse.ArgumentParser(
+        description="Obtener datos de tendencias de Google para las palabras clave especificadas."
     )
     parser.add_argument(
-        "--timeframe", type=str, default="today 5-y",
-        help="Intervalo de tiempo para los datos de tendencias (por defecto: 'today 5-y')."
+        "--keywords",
+        type=str,
+        default="bitcoin",
+        help="Palabras clave a buscar, separadas por coma (por defecto: 'bitcoin').",
     )
     parser.add_argument(
-        "--geo", type=str, default="",
-        help="Código geográfico para restringir los resultados (por defecto: todos los países)."
+        "--timeframe",
+        type=str,
+        default="today 5-y",
+        help="Intervalo de tiempo para los datos de tendencias (por defecto: 'today 5-y').",
     )
     parser.add_argument(
-        "--output_path", type=str, default=r"../../data/extraccion/datos_google_trends.csv",
-        help="Ruta donde guardar los datos como CSV (opcional)."
+        "--geo",
+        type=str,
+        default="",
+        help="Código geográfico para restringir los resultados (por defecto: todos los países).",
+    )
+    parser.add_argument(
+        "--output_path",
+        type=str,
+        default=r"../../data/extraccion/datos_google_trends.csv",
+        help="Ruta donde guardar los datos como CSV (opcional).",
     )
 
     # Parsear los argumentos
@@ -76,13 +89,14 @@ def main():
         keywords=keywords,
         timeframe=args.timeframe,
         geo=args.geo,
-        output_path=args.output_path
+        output_path=args.output_path,
     )
 
     print(google_trends_df.iloc[0, 0])
     print(google_trends_df.iloc[-1, 0])
     print(google_trends_df.shape)
     print(google_trends_df.head())
+
 
 if __name__ == "__main__":
     main()

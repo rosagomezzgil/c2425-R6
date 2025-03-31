@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 import time
 
+
 # Función para obtener Market Data
 def get_market_data(symbol="BTCUSDT"):
     url = f"https://api.binance.com/api/v3/ticker/24hr?symbol={symbol}"

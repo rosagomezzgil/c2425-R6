@@ -5,6 +5,7 @@ import argparse
 import pandas as pd
 from typing import Optional
 
+
 def get_coingecko_data(
     symbol: str = "bitcoin",
     vs_currency: str = "usd",
@@ -42,19 +43,32 @@ def get_coingecko_data(
 
     return df
 
+
 def main():
-    parser = argparse.ArgumentParser(description="Obtener datos históricos de criptomonedas desde CoinGecko")
-    parser.add_argument(
-        "--symbol", type=str, default="bitcoin", help="criptomoneda a consultar (ej. ['bitcoin', 'ethereum'])"
+    parser = argparse.ArgumentParser(
+        description="Obtener datos históricos de criptomonedas desde CoinGecko"
     )
     parser.add_argument(
-        "--vs_currency", type=str, choices=["usd", "eur"], default="usd", help="Moneda base ('usd', 'eur')"
+        "--symbol",
+        type=str,
+        default="bitcoin",
+        help="criptomoneda a consultar (ej. ['bitcoin', 'ethereum'])",
+    )
+    parser.add_argument(
+        "--vs_currency",
+        type=str,
+        choices=["usd", "eur"],
+        default="usd",
+        help="Moneda base ('usd', 'eur')",
     )
     parser.add_argument(
         "--days", type=int, default=365, help="Número de días de datos a obtener"
     )
     parser.add_argument(
-        "--output_path", type=str, default=r"../../data/extraccion/datos_coingecko.csv", help="Ruta donde guardar el CSV"
+        "--output_path",
+        type=str,
+        default=r"../../data/extraccion/datos_coingecko.csv",
+        help="Ruta donde guardar el CSV",
     )
 
     # Parsear los argumentos
@@ -70,6 +84,7 @@ def main():
 
     print(coingecko_df.shape)
     print(coingecko_df.head())
+
 
 if __name__ == "__main__":
     main()

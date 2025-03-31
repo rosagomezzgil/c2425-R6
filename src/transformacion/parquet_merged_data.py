@@ -1,3 +1,5 @@
+# EJECUTAR PRIMERO LOS NOTEBOOKS DE ANALISIS
+
 import pandas as pd
 
 if __name__ == "__main__":

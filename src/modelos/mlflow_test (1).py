@@ -1,10 +1,10 @@
-'''
+"""
 Instalación
     > pip install mlflow  
 
 Ejecutar servidor local (por defecto escucha en http://localhost:5000):
     > mlflow server        
-'''
+"""
 
 from sklearn import datasets
 from sklearn.linear_model import LogisticRegression
@@ -16,10 +16,12 @@ from mlflow.models import infer_signature
 
 # Conexión al servidor
 # MLFlow puede trabajar con muchos backends distintos
-mlflow.set_tracking_uri(uri="http://127.0.0.1:5000")  # servidor local y archivos de texto
-#mlflow.set_tracking_uri("sqlite:///mlruns.db") # base de datos SQLite
+mlflow.set_tracking_uri(
+    uri="http://127.0.0.1:5000"
+)  # servidor local y archivos de texto
+# mlflow.set_tracking_uri("sqlite:///mlruns.db") # base de datos SQLite
 
-# Crear un experimento MLFlow. Un experimento consiste en varios "runs" y cada uno 
+# Crear un experimento MLFlow. Un experimento consiste en varios "runs" y cada uno
 # de ellos registra una configuración de hiperparámetros
 mlflow.set_experiment("MLflow Quickstart")
 
@@ -27,7 +29,9 @@ mlflow.set_experiment("MLflow Quickstart")
 X, y = datasets.load_iris(return_X_y=True)
 
 # Partición en train y test
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
 
 # Hiperparámetros
 params = {"solver": "lbfgs", "max_iter": 1000, "random_state": 8888}
@@ -42,7 +46,7 @@ accuracy = accuracy_score(y_test, y_pred)
 
 # Empezar un "run" de MLFlow nuevo
 with mlflow.start_run():
-    # Registrar hiperparámetros 
+    # Registrar hiperparámetros
     mlflow.log_params(params)
 
     # Registrar el error
@@ -63,9 +67,9 @@ with mlflow.start_run():
     )
 
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 
-# Cargar un modelo registrado previamente en MLFlow 
+# Cargar un modelo registrado previamente en MLFlow
 # Se puede cargar desde la URL del modelo, con nombre del modelo, con el ID del run, etc.
 loaded_model = mlflow.pyfunc.load_model(model_info.model_uri)
 

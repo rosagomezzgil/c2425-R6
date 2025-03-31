@@ -6,6 +6,7 @@ from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import GridSearchCV
 
+
 # Función para cargar datos desde un archivo Parquet
 def cargar_datos(ruta_parquet):
     """
@@ -16,6 +17,7 @@ def cargar_datos(ruta_parquet):
     df = pd.read_parquet(ruta_parquet)
     return df
 
+
 # Función para preprocesar los datos (elimina columnas irrelevantes y escala)
 def preprocesar_datos(df):
     """
@@ -24,17 +26,21 @@ def preprocesar_datos(df):
     :return: X (features), y (target) escalados y el scaler.
     """
     # Eliminar columnas no necesarias
-    df = df.drop(columns=['pct_cambio_7d', 'pct_cambio_30d', 'tendencia_futura_30d'], errors='ignore')
+    df = df.drop(
+        columns=["pct_cambio_7d", "pct_cambio_30d", "tendencia_futura_30d"],
+        errors="ignore",
+    )
 
     # Separar variables independientes (X) y variable objetivo (y)
-    X = df.drop(columns=['tendencia_futura_7d'])
-    y = df['tendencia_futura_7d']
+    X = df.drop(columns=["tendencia_futura_7d"])
+    y = df["tendencia_futura_7d"]
 
     # Escalado de los datos
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
     return X_scaled, y, scaler
+
 
 # Función para dividir los datos en train, val y test
 def dividir_datos_temporalmente(X, y, train_size=0.8, val_size=0.1):
@@ -49,6 +55,7 @@ def dividir_datos_temporalmente(X, y, train_size=0.8, val_size=0.1):
 
     return X_train, X_val, X_test, y_train, y_val, y_test
 
+
 # Función para buscar los mejores hiperparámetros para SVC
 def buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val):
     """
@@ -60,13 +67,13 @@ def buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val):
     :return: Mejor modelo SVC entrenado y los mejores hiperparámetros.
     """
     parametros = {
-        'kernel': ['linear', 'poly', 'rbf', 'sigmoid'],
-        'C': [0.1, 1, 10, 100],
-        'gamma': ['scale', 'auto']
+        "kernel": ["linear", "poly", "rbf", "sigmoid"],
+        "C": [0.1, 1, 10, 100],
+        "gamma": ["scale", "auto"],
     }
 
     svc = SVC()
-    grid_search = GridSearchCV(svc, parametros, cv=5, scoring='accuracy', n_jobs=-1)
+    grid_search = GridSearchCV(svc, parametros, cv=5, scoring="accuracy", n_jobs=-1)
     grid_search.fit(X_train, y_train)
 
     mejor_modelo = grid_search.best_estimator_
@@ -83,6 +90,7 @@ def buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val):
 
     return mejor_modelo, mejores_parametros
 
+
 # Función para evaluar el modelo
 def evaluar_modelo(modelo, X_test, y_test):
     """
@@ -96,6 +104,7 @@ def evaluar_modelo(modelo, X_test, y_test):
 
     print(f"Exactitud en prueba: {accuracy:.4f}")
     print(classification_report(y_test, y_pred))
+
 
 # Función principal
 def main():
@@ -112,10 +121,13 @@ def main():
     X_train, X_val, X_test, y_train, y_val, y_test = dividir_datos_temporalmente(X, y)
 
     # Buscar mejores hiperparámetros y entrenar el modelo óptimo
-    mejor_modelo, mejores_parametros = buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val)
+    mejor_modelo, mejores_parametros = buscar_mejores_hiperparametros(
+        X_train, y_train, X_val, y_val
+    )
 
     # Evaluar el modelo con los mejores hiperparámetros en el conjunto de prueba
     evaluar_modelo(mejor_modelo, X_test, y_test)
+
 
 if __name__ == "__main__":
     main()

@@ -8,6 +8,7 @@ from pytorch_forecasting.models import TemporalFusionTransformer
 from pytorch_forecasting.data import GroupNormalizer
 from pytorch_forecasting import Trainer
 
+
 def load_and_preprocess_data(file_path):
     """
     Cargar y preprocesar el archivo parquet.
@@ -16,19 +17,25 @@ def load_and_preprocess_data(file_path):
     df = pd.read_parquet(file_path)
 
     # Eliminar columnas no necesarias
-    columns_to_drop = ['tendencia_futura_7d', 'pct_cambio_30d', 'tendencia_futura_30d']  # Columnas no necesarias
+    columns_to_drop = [
+        "tendencia_futura_7d",
+        "pct_cambio_30d",
+        "tendencia_futura_30d",
+    ]  # Columnas no necesarias
     df = df.drop(columns=columns_to_drop)
 
     # Escalar o normalizar las características
     scaler = StandardScaler()
-    columns_to_scale = df.select_dtypes(include=['float64', 'int64']).columns
+    columns_to_scale = df.select_dtypes(include=["float64", "int64"]).columns
     df[columns_to_scale] = scaler.fit_transform(df[columns_to_scale])
 
     # Crear la variable respuesta pct_cambio_7d
-    df['pct_cambio_7d'] = df['pct_cambio_7d'].shift(-7)  # Desplazar para predecir el cambio futuro
-
+    df["pct_cambio_7d"] = df["pct_cambio_7d"].shift(
+        -7
+    )  # Desplazar para predecir el cambio futuro
 
     return df
+
 
 def prepare_datasets(df):
     """
@@ -38,8 +45,8 @@ def prepare_datasets(df):
     val_size = int(len(df) * 0.1)
 
     train_df = df[:train_size]
-    val_df = df[train_size:train_size + val_size]
-    test_df = df[train_size + val_size:]
+    val_df = df[train_size : train_size + val_size]
+    test_df = df[train_size + val_size :]
 
     # Definir un TimeSeriesDataSet para el modelo TFT
     max_encoder_length = 50  # Usar los últimos 60 días como entrada
@@ -57,16 +64,23 @@ def prepare_datasets(df):
         static_categoricals=[],  # No usamos variables categóricas estáticas
         static_reals=[],  # No usamos variables estáticas continuas
         time_varying_known_categoricals=[],
-        time_varying_known_reals=[col for col in df.columns if col != 'pct_cambio_7d'],
+        time_varying_known_reals=[col for col in df.columns if col != "pct_cambio_7d"],
         time_varying_unknown_categoricals=[],
         time_varying_unknown_reals=["pct_cambio_7d"],  # La variable a predecir
-        target_normalizer=GroupNormalizer(groups=["timestamp"], transformation="softplus"),  # Normalizar el target
+        target_normalizer=GroupNormalizer(
+            groups=["timestamp"], transformation="softplus"
+        ),  # Normalizar el target
     )
 
-    validation = TimeSeriesDataSet.from_dataset(training, val_df, predict=True, stop_randomization=True)
-    test = TimeSeriesDataSet.from_dataset(training, test_df, predict=True, stop_randomization=True)
+    validation = TimeSeriesDataSet.from_dataset(
+        training, val_df, predict=True, stop_randomization=True
+    )
+    test = TimeSeriesDataSet.from_dataset(
+        training, test_df, predict=True, stop_randomization=True
+    )
 
     return training, validation, test
+
 
 def train_model(training, validation):
     """
@@ -97,6 +111,7 @@ def train_model(training, validation):
 
     return tft
 
+
 def evaluate_model(tft, test):
     """
     Evaluar el modelo en el conjunto de prueba.
@@ -106,6 +121,7 @@ def evaluate_model(tft, test):
     # Calcular las métricas de evaluación
     rmse = RMSE()(raw_predictions, x["target"])
     print(f"RMSE en el conjunto de prueba: {rmse.item()}")
+
 
 def main(file_path):
     """
@@ -122,6 +138,7 @@ def main(file_path):
 
     # Evaluar el modelo
     evaluate_model(tft, test)
+
 
 # Llamar a la función principal
 if __name__ == "__main__":

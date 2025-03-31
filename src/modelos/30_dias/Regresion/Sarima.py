@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from statsmodels.tsa.statespace.sarimax import SARIMAX
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 
 # Función para cargar datos desde un archivo Parquet
@@ -11,24 +11,35 @@ def cargar_datos(ruta_parquet):
 
 
 # Función para preprocesar los datos
-def preprocesar_datos(df, variable_objetivo='pct_cambio_30d'):
-    df = df[[variable_objetivo]].dropna()  # Solo mantenemos la variable objetivo y eliminamos valores nulos
+def preprocesar_datos(df, variable_objetivo="pct_cambio_30d"):
+    df = df[
+        [variable_objetivo]
+    ].dropna()  # Solo mantenemos la variable objetivo y eliminamos valores nulos
     return df
 
 
 # Función para dividir los datos en train y test
-def dividir_datos(df, test_size=0.2, val_size=0.2):
+def dividir_datos(df, test_size=0.1, val_size=0.1):
     train_size = int(len(df) * (1 - test_size - val_size))
     val_size = int(len(df) * val_size)
 
-    train, val, test = df.iloc[:train_size], df.iloc[train_size:train_size + val_size], df.iloc[train_size + val_size:]
+    train, val, test = (
+        df.iloc[:train_size],
+        df.iloc[train_size : train_size + val_size],
+        df.iloc[train_size + val_size :],
+    )
     return train, val, test
 
 
 # Función para entrenar el modelo SARIMA
-def entrenar_sarima(train, order=(1, 1, 1), seasonal_order=(1, 1, 1, 7)):
-    model = SARIMAX(train, order=order, seasonal_order=seasonal_order, enforce_stationarity=False,
-                    enforce_invertibility=False)
+def entrenar_sarima(train, order=(1, 1, 1), seasonal_order=(1, 1, 1, 30)):
+    model = SARIMAX(
+        train,
+        order=order,
+        seasonal_order=seasonal_order,
+        enforce_stationarity=False,
+        enforce_invertibility=False,
+    )
     model_fitted = model.fit(disp=False)
     print(model_fitted.summary())
     return model_fitted
@@ -37,8 +48,18 @@ def entrenar_sarima(train, order=(1, 1, 1), seasonal_order=(1, 1, 1, 7)):
 # Función para hacer predicciones y evaluar
 def evaluar_modelo(modelo, test):
     predicciones = modelo.forecast(steps=len(test))
+
+    # Calcular métricas
     mse = mean_squared_error(test, predicciones)
+    mae = mean_absolute_error(test, predicciones)
+    rmse = np.sqrt(mse)
+    r2 = r2_score(test, predicciones)
+
+    print(f"\nEvaluación del modelo SARIMA:")
     print(f"MSE: {mse:.4f}")
+    print(f"RMSE: {rmse:.4f}")
+    print(f"MAE: {mae:.4f}")
+    print(f"R²: {r2:.4f}")
 
     return predicciones
 
@@ -54,6 +75,7 @@ def main():
     modelo_sarima = entrenar_sarima(train)
     predicciones = evaluar_modelo(modelo_sarima, test)
 
+    print("\nPrimeras predicciones:")
     print(predicciones.head())
 
 

@@ -7,7 +7,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import mlflow
 import mlflow.tensorflow
-from mlflow.models import infer_signature
 import itertools
 import matplotlib.pyplot as plt
 import numpy as np
@@ -195,7 +194,7 @@ def optimize_hyperparameters(X_train, y_train, X_test, y_test, param_grid):
 # 5. Ejecutar el flujo
 def main():
     # Configurar MLflow en local
-    mlflow.set_tracking_uri(f"sqlite:///../../../../mlflow.db") # base de datos SQLite
+    mlflow.set_tracking_uri(r"file:../../mlruns")
     mlflow.set_experiment("LSTM Optimization")
 
     # 1. Definir hiperparámetros a probar
@@ -216,14 +215,14 @@ def main():
     df = load_data(parquet_file)
 
     X, y, scaler = preprocess_data(df, horizonte, target_col, sequence_length)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, shuffle=False)
     print(f"Datos preparados para sequence_length: {sequence_length}\n")
 
     # 3. Optimizar hiperparámetros
     best_params = optimize_hyperparameters(X_train, y_train, X_test, y_test, param_grid)
 
     # 4. Entrenar el modelo final con los mejores parámetros
-    with mlflow.start_run():
+    with mlflow.start_run(run_name=f"LSTM_seq{sequence_length}"):
         best_model = train_lstm(
             X_train, y_train,
             units=best_params['units'],
@@ -235,15 +234,8 @@ def main():
         mse, mae, rmse, r2 = evaluate_model(best_model, X_test, y_test)
 
         # Registrar en MLflow
-        signature = infer_signature(X_test, best_model.predict(X_test))
         mlflow.log_params(best_params)
         mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2})
-        mlflow.tensorflow.log_model(
-            best_model,
-            artifact_path=f"models/seq_{sequence_length}",
-            signature=signature,
-            input_example=X_test
-        )
 
     predict_and_plot(best_model, X_test, y_test, target_col)
 

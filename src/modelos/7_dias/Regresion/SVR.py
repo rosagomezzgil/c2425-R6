@@ -1,11 +1,10 @@
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVR
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.model_selection import GridSearchCV
-
+import mlflow
 
 # Función para cargar datos desde un archivo Parquet
 def cargar_datos(ruta_parquet):
@@ -89,9 +88,14 @@ def evaluar_modelo(modelo, X_test, y_test):
     print(f"MAE: {mae:.4f}")
     print(f"R²: {r2:.4f}")
 
+    return mae, mse, rmse, r2
+
 
 # Función principal
 def main():
+    mlflow.set_tracking_uri(r"file:../../mlruns")
+    mlflow.set_experiment("SVR Optimization")
+
     ruta_parquet = r"../../../../data/parquet/data_7d.parquet"
     df = cargar_datos(ruta_parquet)
 
@@ -99,12 +103,17 @@ def main():
 
     X_train, X_val, X_test, y_train, y_val, y_test = dividir_datos_temporalmente(X, y)
 
-    mejor_modelo, mejores_parametros = buscar_mejores_hiperparametros(
-        X_train, y_train, X_val, y_val
-    )
+    with mlflow.start_run(run_name=f"SVR"):
+        mejor_modelo, mejores_parametros = buscar_mejores_hiperparametros(
+            X_train, y_train, X_val, y_val
+        )
 
-    # Evaluar el modelo final en el conjunto de test
-    evaluar_modelo(mejor_modelo, X_test, y_test)
+        # Evaluar el modelo final en el conjunto de test
+        mae, mse, rmse, r2 = evaluar_modelo(mejor_modelo, X_test, y_test)
+
+        # Registrar en MLflow
+        mlflow.log_params(mejores_parametros)
+        mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2})
 
 
 if __name__ == "__main__":

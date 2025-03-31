@@ -1,77 +1,99 @@
 import pandas as pd
 import numpy as np
-import argparse
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeRegressor
-import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from sklearn.model_selection import GridSearchCV
 
 
-# Cargar los datos
-def load_data(csv_file):
-    df = pd.read_csv(csv_file)
+def cargar_datos(ruta_parquet):
+    df = pd.read_parquet(ruta_parquet)
     return df
 
 
-# Separar características (X) y etiquetas (y)
-def preprocess_data(df):
-    x = df.iloc[
-        :, :-4
-    ]  # Asegúrate de seleccionar correctamente las columnas de características
-    y = df["pct_cambio_7d"]  # Variable objetivo para regresión
-    return x, y
-
-
-# Crear y entrenar el modelo de regresión
-def train(x, y, max_depth):
-    # Dividir los datos en conjunto de entrenamiento y prueba
-    x_train, x_test, y_train, y_test = train_test_split(
-        x, y, test_size=0.2, random_state=42
+def preprocesar_datos(df):
+    df = df.drop(
+        columns=["tendencia_futura_7d", "pct_cambio_30d", "tendencia_futura_30d"],
+        errors="ignore",
     )
+    X = df.drop(columns=["pct_cambio_7d"])
+    y = df["pct_cambio_7d"]
 
-    # Crear el modelo de árbol de decisión para regresión
-    model = DecisionTreeRegressor(max_depth=max_depth, random_state=42)
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
 
-    # Entrenar el modelo
-    model.fit(x_train, y_train)
-
-    return model, x_test, y_test
-
-
-# Hacer predicciones y visualizar
-def predict_and_plot(model, x_test, y_test):
-    predictions = model.predict(x_test)
-    plt.figure(figsize=(12, 6))
-    plt.plot(y_test.values, label="Real")
-    plt.plot(predictions, label="Predicción", linestyle="dashed")
-    plt.legend()
-    plt.xlabel("Índice de muestra")
-    plt.ylabel("Valor Predicho")
-    plt.title("Comparación entre valores reales y predichos")
-    plt.show()
+    return X_scaled, y, scaler
 
 
-# Ejecutar el flujo
+def dividir_datos_temporalmente(X, y, train_size=0.8, val_size=0.1):
+    n = len(X)
+    train_end = int(n * train_size)
+    val_end = int(n * (train_size + val_size))
+
+    X_train, y_train = X[:train_end], y[:train_end]
+    X_val, y_val = X[train_end:val_end], y[train_end:val_end]
+    X_test, y_test = X[val_end:], y[val_end:]
+
+    return X_train, X_val, X_test, y_train, y_val, y_test
+
+
+def buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val):
+    parametros = {
+        "max_depth": [3, 5, 10, None],
+        "min_samples_split": [2, 5, 10],
+        "min_samples_leaf": [1, 2, 4],
+    }
+
+    dt = DecisionTreeRegressor()
+    grid_search = GridSearchCV(dt, parametros, cv=5, scoring="neg_mean_squared_error", n_jobs=-1)
+    grid_search.fit(X_train, y_train)
+
+    mejor_modelo = grid_search.best_estimator_
+    mejores_parametros = grid_search.best_params_
+
+    print("Mejores Hiperparámetros:", mejores_parametros)
+
+    y_val_pred = mejor_modelo.predict(X_val)
+    val_mse = mean_squared_error(y_val, y_val_pred)
+    val_r2 = r2_score(y_val, y_val_pred)
+    val_mae = mean_absolute_error(y_val, y_val_pred)
+    val_rmse = np.sqrt(val_mse)
+
+    print(f"Validación MSE: {val_mse:.4f}")
+    print(f"Validación RMSE: {val_rmse:.4f}")
+    print(f"Validación MAE: {val_mae:.4f}")
+    print(f"Validación R²: {val_r2:.4f}")
+
+    return mejor_modelo, mejores_parametros
+
+
+def evaluar_modelo(modelo, X_test, y_test):
+    y_pred = modelo.predict(X_test)
+    mse = mean_squared_error(y_test, y_pred)
+    rmse = np.sqrt(mse)
+    mae = mean_absolute_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+
+    print(f"MSE: {mse:.4f}")
+    print(f"RMSE: {rmse:.4f}")
+    print(f"MAE: {mae:.4f}")
+    print(f"R²: {r2:.4f}")
+
+
 def main():
-    parser = argparse.ArgumentParser(
-        description="Entrenar y evaluar un modelo de regresión con DecisionTreeRegressor"
-    )
-    parser.add_argument(
-        "--csv_file", type=str, required=True, help="Ruta del archivo CSV de entrada"
-    )
-    parser.add_argument(
-        "--max_depth",
-        type=int,
-        default=5,
-        help="Profundidad máxima del árbol de decisión",
+    ruta_parquet = r"../../../../data/parquet/data_7d.parquet"
+    df = cargar_datos(ruta_parquet)
+
+    X, y, scaler = preprocesar_datos(df)
+
+    X_train, X_val, X_test, y_train, y_val, y_test = dividir_datos_temporalmente(X, y)
+
+    mejor_modelo, mejores_parametros = buscar_mejores_hiperparametros(
+        X_train, y_train, X_val, y_val
     )
 
-    args = parser.parse_args()
-
-    df = load_data(args.csv_file)
-    x, y = preprocess_data(df)
-
-    model, x_test, y_test = train(x, y, args.max_depth)
-    predict_and_plot(model, x_test, y_test)
+    evaluar_modelo(mejor_modelo, X_test, y_test)
 
 
 if __name__ == "__main__":

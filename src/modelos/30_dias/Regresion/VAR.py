@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from statsmodels.tsa.api import VAR
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 
 # Función para cargar datos desde un archivo Parquet
@@ -81,8 +81,16 @@ def evaluar_modelo(modelo, test):
     predicciones = modelo.forecast(test.values[:lags], steps=len(test))
     pred_df = pd.DataFrame(predicciones, index=test.index, columns=test.columns)
 
+    # Cálculo de métricas
     mse = mean_squared_error(test, pred_df)
+    rmse = np.sqrt(mse)
+    mae = mean_absolute_error(test, pred_df)
+    r2 = r2_score(test, pred_df)
+
     print(f"MSE en test: {mse:.4f}")
+    print(f"RMSE en test: {rmse:.4f}")
+    print(f"MAE en test: {mae:.4f}")
+    print(f"R² en test: {r2:.4f}")
 
     return pred_df
 

@@ -1,14 +1,22 @@
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.model_selection import GridSearchCV
+import mlflow
 
+def cargar_datos(parquet_file: str):
+    """
+    Carga los datos de un fichero parquet a un DataFrame de pandas
 
-def cargar_datos(ruta_parquet):
-    df = pd.read_parquet(ruta_parquet)
+    :param parquet_file: URL del fichero parquet
+
+    :return: pd.DataFrame
+    """
+    df = pd.read_parquet(parquet_file)
+    df['timestamp'] = pd.to_datetime(df['timestamp'])  # Asegurar que la fecha esté en formato datetime
+    df.set_index('timestamp', inplace=True)
     return df
 
 
@@ -69,19 +77,25 @@ def buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val):
 
 
 def evaluar_modelo(modelo, X_test, y_test):
-    y_pred = modelo.predict(X_test)
-    mse = mean_squared_error(y_test, y_pred)
-    rmse = np.sqrt(mse)
-    mae = mean_absolute_error(y_test, y_pred)
-    r2 = r2_score(y_test, y_pred)
+    predictions = modelo.predict(X_test)
+    mse = mean_squared_error(y_test, predictions)
+    mae = mean_absolute_error(y_test, predictions)
+    rmse = mse ** 0.5
+    r2 = r2_score(y_test, predictions)
 
+    print("\nMétricas del modelo:")
     print(f"MSE: {mse:.4f}")
-    print(f"RMSE: {rmse:.4f}")
     print(f"MAE: {mae:.4f}")
+    print(f"RMSE: {rmse:.4f}")
     print(f"R²: {r2:.4f}")
+
+    return mse, mae, rmse, r2
 
 
 def main():
+    mlflow.set_tracking_uri(r"file:../../mlruns")
+    mlflow.set_experiment("Arboles Decision")
+
     ruta_parquet = r"../../../../data/parquet/data_7d.parquet"
     df = cargar_datos(ruta_parquet)
 
@@ -89,12 +103,15 @@ def main():
 
     X_train, X_val, X_test, y_train, y_val, y_test = dividir_datos_temporalmente(X, y)
 
-    mejor_modelo, mejores_parametros = buscar_mejores_hiperparametros(
-        X_train, y_train, X_val, y_val
-    )
+    with mlflow.start_run(run_name=f"Arbol Decision 7d regresion"):
+        mejor_modelo, mejores_parametros = buscar_mejores_hiperparametros(
+            X_train, y_train, X_val, y_val
+        )
 
-    evaluar_modelo(mejor_modelo, X_test, y_test)
+        mse, mae, rmse, r2 = evaluar_modelo(mejor_modelo, X_test, y_test)
 
+        mlflow.log_params(mejores_parametros)
+        mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2})
 
 if __name__ == "__main__":
     main()

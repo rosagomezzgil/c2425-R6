@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/Daniel/Universidad/PD/c2425-R6/src/modelos/30_dias/Regresion/../../mlruns/956345076145451734/135a82636b244113a1462912bfa80175/artifacts
+end_time: 1743528587657
+entry_point_name: ''
+experiment_id: '956345076145451734'
+lifecycle_stage: active
+run_id: 135a82636b244113a1462912bfa80175
+run_name: skillful-mare-249
+run_uuid: 135a82636b244113a1462912bfa80175
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743528587584
+status: 3
+tags: []
+user_id: Daniel

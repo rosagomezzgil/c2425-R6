@@ -3,13 +3,21 @@ import numpy as np
 from statsmodels.tsa.api import VAR
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-
+import mlflow
 
 # Función para cargar datos desde un archivo Parquet
-def cargar_datos(ruta_parquet):
-    df = pd.read_parquet(ruta_parquet)
-    return df
+def cargar_datos(parquet_file: str):
+    """
+    Carga los datos de un fichero parquet a un DataFrame de pandas
 
+    :param parquet_file: URL del fichero parquet
+
+    :return: pd.DataFrame
+    """
+    df = pd.read_parquet(parquet_file)
+    df['timestamp'] = pd.to_datetime(df['timestamp'])  # Asegurar que la fecha esté en formato datetime
+    df.set_index('timestamp', inplace=True)
+    return df
 
 # Función para preprocesar los datos
 def preprocesar_datos(df):
@@ -28,7 +36,6 @@ def preprocesar_datos(df):
     )  # Agregar variables objetivo sin escalar
 
     return df_scaled, scaler
-
 
 # Función para dividir los datos en train, validación y test
 def dividir_datos(df, test_size=0.2, val_size=0.2):
@@ -68,7 +75,7 @@ def entrenar_y_validar_var(train, val, max_lags=5):
             print(f"Error con {lags} rezagos: {e}")
 
     print(f"Mejor número de rezagos: {best_lag} con MSE {best_mse:.4f}")
-    return best_model
+    return best_model, {'best lag': best_lag}
 
 
 # Función para evaluar el modelo
@@ -92,21 +99,25 @@ def evaluar_modelo(modelo, test):
     print(f"MAE en test: {mae:.4f}")
     print(f"R² en test: {r2:.4f}")
 
-    return pred_df
+    return mse, rmse, mae, r2
 
 
 # Función principal
 def main():
+    mlflow.set_tracking_uri(r"file:../../mlruns")
+    mlflow.set_experiment("VAR 30d")
+
     ruta_parquet = r"../../../../data/parquet/data_30d.parquet"
     df = cargar_datos(ruta_parquet)
     df_scaled, scaler = preprocesar_datos(df)
     train, val, test = dividir_datos(df_scaled)
 
-    modelo_var = entrenar_y_validar_var(train, val)
-    predicciones = evaluar_modelo(modelo_var, test)
+    with mlflow.start_run(run_name="VAR"):
+        modelo_var, best_params = entrenar_y_validar_var(train, val)
+        mse, rmse, mae, r2 = evaluar_modelo(modelo_var, test)
 
-    if predicciones is not None:
-        print(predicciones.head())
+        mlflow.log_params(best_params)
+        mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2})
 
 
 if __name__ == "__main__":

@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/Daniel/Universidad/PD/c2425-R6/src/modelos/mlruns/164898545274919683/0a01fa5d61954e48962321a64967415a/artifacts
+end_time: 1743525649352
+entry_point_name: ''
+experiment_id: '164898545274919683'
+lifecycle_stage: active
+run_id: 0a01fa5d61954e48962321a64967415a
+run_name: Baseline 7d categorica
+run_uuid: 0a01fa5d61954e48962321a64967415a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743525648044
+status: 3
+tags: []
+user_id: Daniel

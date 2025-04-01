@@ -3,11 +3,20 @@ import numpy as np
 from itertools import product
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-
+import mlflow
 
 # Función para cargar datos
-def cargar_datos(ruta_parquet):
-    df = pd.read_parquet(ruta_parquet)
+def cargar_datos(parquet_file: str):
+    """
+    Carga los datos de un fichero parquet a un DataFrame de pandas
+
+    :param parquet_file: URL del fichero parquet
+
+    :return: pd.DataFrame
+    """
+    df = pd.read_parquet(parquet_file)
+    df['timestamp'] = pd.to_datetime(df['timestamp'])  # Asegurar que la fecha esté en formato datetime
+    df.set_index('timestamp', inplace=True)
     return df
 
 
@@ -89,7 +98,7 @@ def optimizar_sarima(train, val, p_vals=[0, 1], d_vals=[0, 1], q_vals=[0, 1],
             print(f"⚠️ Error con SARIMA{order} x {seasonal_order}: {e}")
 
     print(f"\n✅ Mejor modelo: SARIMA{mejor_params[0]} x {mejor_params[1]} con MSE {mejor_mse:.4f}")
-    return mejor_modelo
+    return mejor_modelo, {'order':order, 'seasonal_order':seasonal_order}
 
 
 # Función para evaluar el modelo
@@ -108,22 +117,26 @@ def evaluar_modelo(modelo, test):
     print(f"MAE: {mae:.4f}")
     print(f"R²: {r2:.4f}")
 
-    return predicciones
+    return mse, mae, rmse, r2
 
 
 # Función principal
 def main():
+    mlflow.set_tracking_uri(r"file:../../mlruns")
+    mlflow.set_experiment("Sarima 30d")
+
     ruta_parquet = r"../../../../data/parquet/data_30d.parquet"
     df = cargar_datos(ruta_parquet)
 
     df_preprocesado = preprocesar_datos(df)
     train, val, test = dividir_datos(df_preprocesado)
 
-    modelo_sarima = optimizar_sarima(train, val)
-    predicciones = evaluar_modelo(modelo_sarima, test)
+    with mlflow.start_run(run_name=f"Sarima walk forward"):
+        modelo_sarima, best_params = optimizar_sarima(train, val)
+        mse, mae, rmse, r2 = evaluar_modelo(modelo_sarima, test)
 
-    print("\n📈 Primeras predicciones:")
-    print(predicciones.head())
+        mlflow.log_params(best_params)
+        mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2})
 
 
 if __name__ == "__main__":

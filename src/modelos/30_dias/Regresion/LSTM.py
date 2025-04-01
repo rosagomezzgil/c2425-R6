@@ -265,7 +265,7 @@ def main():
         mlflow.log_params(best_params)
         mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2})
 
-    # predict_and_plot(best_model, X_test, y_test, target_col)
+    predict_and_plot(best_model, X_test, y_test, target_col)
 
 if __name__ == "__main__":
     main()

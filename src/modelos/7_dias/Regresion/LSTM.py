@@ -4,7 +4,7 @@ from tensorflow.keras.layers import LSTM, Dense, Dropout
 from tensorflow.random import set_seed
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, accuracy_score
 import mlflow
 import mlflow.tensorflow
 import itertools
@@ -178,14 +178,19 @@ def evaluate_model(model, X_test, y_test):
     mae = mean_absolute_error(y_test, predictions)
     rmse = np.sqrt(mse)
     r2 = r2_score(y_test, predictions)
+    # Accuracy direccional (comparar signo de la predicción y del valor real)
+    pred_sign = np.sign(predictions)
+    real_sign = np.sign(y_test)
+    directional_acc = accuracy_score(real_sign, pred_sign)
 
     print("\nMétricas del modelo:")
     print(f"MSE: {mse:.4f}")
     print(f"MAE: {mae:.4f}")
     print(f"RMSE: {rmse:.4f}")
     print(f"R²: {r2:.4f}")
+    print(f"Accuracy Direccional: {directional_acc:.4f}")
 
-    return mse, mae, rmse, r2
+    return mse, mae, rmse, r2, directional_acc
 
 
 def optimize_hyperparameters(X_train, y_train, X_val, y_val, param_grid):
@@ -259,11 +264,11 @@ def main():
         )
 
         # 5. Evaluar
-        mse, mae, rmse, r2 = evaluate_model(best_model, X_test, y_test)
+        mse, mae, rmse, r2, directional_acc = evaluate_model(best_model, X_test, y_test)
 
         # Registrar en MLflow
         mlflow.log_params(best_params)
-        mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2})
+        mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2, "directional_acc" : directional_acc})
 
     predict_and_plot(best_model, X_test, y_test, target_col)
 

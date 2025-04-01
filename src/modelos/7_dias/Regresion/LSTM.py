@@ -225,7 +225,7 @@ def optimize_hyperparameters(X_train, y_train, X_val, y_val, param_grid):
 def main():
     # Configurar MLflow en local
     mlflow.set_tracking_uri(r"file:../../mlruns")
-    mlflow.set_experiment("LSTM Optimization")
+    mlflow.set_experiment("LSTM Optimization 7d")
 
     # 1. Definir hiperparámetros a probar
     param_grid = {

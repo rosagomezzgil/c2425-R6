@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeRegressor
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, accuracy_score
 from sklearn.model_selection import GridSearchCV
 import mlflow
 
@@ -82,14 +82,20 @@ def evaluar_modelo(modelo, X_test, y_test):
     mae = mean_absolute_error(y_test, predictions)
     rmse = mse ** 0.5
     r2 = r2_score(y_test, predictions)
+    # Accuracy direccional (comparar signo de la predicción y del valor real)
+    pred_sign = np.sign(predictions)
+    real_sign = np.sign(y_test)
+    directional_acc = accuracy_score(real_sign, pred_sign)
+
 
     print("\nMétricas del modelo:")
     print(f"MSE: {mse:.4f}")
     print(f"MAE: {mae:.4f}")
     print(f"RMSE: {rmse:.4f}")
     print(f"R²: {r2:.4f}")
+    print(f"Accuracy Direccional: {directional_acc:.4f}")
 
-    return mse, mae, rmse, r2
+    return mse, mae, rmse, r2, directional_acc
 
 
 def main():
@@ -108,10 +114,10 @@ def main():
             X_train, y_train, X_val, y_val
         )
 
-        mse, mae, rmse, r2 = evaluar_modelo(mejor_modelo, X_test, y_test)
+        mse, mae, rmse, r2, directional_acc = evaluar_modelo(mejor_modelo, X_test, y_test)
 
         mlflow.log_params(mejores_parametros)
-        mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2})
+        mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2, "directional_acc":directional_acc})
 
 if __name__ == "__main__":
     main()

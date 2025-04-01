@@ -1,3 +1,5 @@
+from random import shuffle
+
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout
@@ -72,6 +74,34 @@ def preprocess_data(df: pd.DataFrame, horizonte: int, target_col: str, sequence_
     X = np.array(X)  # Convertir a numpy array
 
     return X, y[: len(X)], scaler  # Asegurar que y tenga la misma longitud que X
+
+
+def split_data(
+        X: np.array,
+        y: np.array,
+        test_size: float = 0.1,
+        val_size: float = 0.1,
+        shuffle: bool = False
+):
+    """
+    Divide los datos en conjuntos de entrenamiento, validación y prueba.
+
+    :param X: Características
+    :param y: Etiquetas
+    :param test_size: Proporción de datos para prueba
+    :param val_size: Proporción de datos para validación (sobre el total)
+    :param shuffle: Si se deben mezclar los datos antes de dividir
+    :return: X_train, X_val, X_test, y_train, y_val, y_test
+    """
+    # Primero, dividir en entrenamiento y prueba
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, shuffle=shuffle)
+
+    # Luego, dividir el conjunto de entrenamiento para extraer validación
+    val_relative_size = val_size / (1 - test_size)  # Ajuste relativo al tamaño de entrenamiento
+    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_relative_size, shuffle=shuffle)
+
+    return X_train, X_val, X_test, y_train, y_val, y_test
+
 
 # 3. Crear y entrenar el modelo LSTM
 def train_lstm(
@@ -160,7 +190,7 @@ def evaluate_model(model, X_test, y_test):
     return mse, mae, rmse, r2
 
 
-def optimize_hyperparameters(X_train, y_train, X_test, y_test, param_grid):
+def optimize_hyperparameters(X_train, y_train, X_val, y_val, param_grid):
     """
     Realiza una búsqueda de hiperparámetros evaluando diferentes combinaciones.
     """
@@ -178,7 +208,7 @@ def optimize_hyperparameters(X_train, y_train, X_test, y_test, param_grid):
             batch_size=param_dict['batch_size']
         )
 
-        mse, _, _, _ = evaluate_model(model, X_test, y_test)
+        mse, _, _, _ = evaluate_model(model, X_val, y_val)
 
         if mse < best_score:
             best_score = mse
@@ -215,11 +245,11 @@ def main():
     df = load_data(parquet_file)
 
     X, y, scaler = preprocess_data(df, horizonte, target_col, sequence_length)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, shuffle=False)
+    X_train, X_val, X_test, y_train, y_val, y_test = split_data(X, y, 0.1, 0.1, shuffle=False)
     print(f"Datos preparados para sequence_length: {sequence_length}\n")
 
     # 3. Optimizar hiperparámetros
-    best_params = optimize_hyperparameters(X_train, y_train, X_test, y_test, param_grid)
+    best_params = optimize_hyperparameters(X_train, y_train, X_val, y_val, param_grid)
 
     # 4. Entrenar el modelo final con los mejores parámetros
     with mlflow.start_run(run_name=f"LSTM_seq{sequence_length}"):
@@ -237,7 +267,7 @@ def main():
         mlflow.log_params(best_params)
         mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2})
 
-    predict_and_plot(best_model, X_test, y_test, target_col)
+    # predict_and_plot(best_model, X_test, y_test, target_col)
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/Daniel/Universidad/PD/c2425-R6/src/modelos/30_dias/Regresion/../../mlruns/324479206176708047/1d4a14a02d7d438c95b839e2487a523c/artifacts
+end_time: 1743490331216
+entry_point_name: ''
+experiment_id: '324479206176708047'
+lifecycle_stage: active
+run_id: 1d4a14a02d7d438c95b839e2487a523c
+run_name: LSTM_seq30
+run_uuid: 1d4a14a02d7d438c95b839e2487a523c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743490313667
+status: 3
+tags: []
+user_id: Daniel

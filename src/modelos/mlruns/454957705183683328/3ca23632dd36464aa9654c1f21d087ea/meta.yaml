@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/Daniel/Universidad/PD/c2425-R6/src/modelos/7_dias/Regresion/../../mlruns/454957705183683328/3ca23632dd36464aa9654c1f21d087ea/artifacts
+end_time: 1743513563243
+entry_point_name: ''
+experiment_id: '454957705183683328'
+lifecycle_stage: active
+run_id: 3ca23632dd36464aa9654c1f21d087ea
+run_name: XGBOOST
+run_uuid: 3ca23632dd36464aa9654c1f21d087ea
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743513550723
+status: 3
+tags: []
+user_id: Daniel

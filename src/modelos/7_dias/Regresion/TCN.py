@@ -7,9 +7,9 @@ import optuna
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-from sklearn.model_selection import train_test_split
 from torch.nn.utils import weight_norm
-
+import matplotlib.pyplot as plt
+import mlflow
 
 # Definir el modelo TCN
 class TemporalConvNet(nn.Module):
@@ -42,10 +42,18 @@ class TemporalConvNet(nn.Module):
 
 
 # Cargar los datos
-def cargar_datos(ruta_parquet):
-    df = pd.read_parquet(ruta_parquet)
-    return df
+def cargar_datos(parquet_file: str):
+    """
+    Carga los datos de un fichero parquet a un DataFrame de pandas
 
+    :param parquet_file: URL del fichero parquet
+
+    :return: pd.DataFrame
+    """
+    df = pd.read_parquet(parquet_file)
+    df['timestamp'] = pd.to_datetime(df['timestamp'])  # Asegurar que la fecha esté en formato datetime
+    df.set_index('timestamp', inplace=True)
+    return df
 
 # Preprocesar datos
 def preprocesar_datos(df):
@@ -59,15 +67,38 @@ def preprocesar_datos(df):
     X_scaled = scaler.fit_transform(X)
     return X_scaled, y.values, scaler
 
+# Función para dividir los datos en train, val y test
+def dividir_datos_temporalmente(
+        X: np.ndarray,
+        y: np.ndarray,
+        train_size: float = 0.8,
+        val_size: float = 0.1
+):
+    """
+    Divide los datos temporalmente en conjuntos de entrenamiento, validación y prueba.
 
-# Dividir los datos
-def dividir_datos_temporalmente(X, y, train_size=0.8, val_size=0.1):
+    :param X: Matriz de características escaladas.
+    :param y: Serie con la variable objetivo.
+    :param train_size: Proporción de datos para entrenamiento (por defecto 0.8).
+    :param val_size: Proporción de datos para validación (por defecto 0.1).
+
+    :returns: Tupla con los conjuntos de datos divididos:
+        - X_train: Características de entrenamiento.
+        - X_val: Características de validación.
+        - X_test: Características de prueba.
+        - y_train: Objetivo de entrenamiento.
+        - y_val: Objetivo de validación.
+        - y_test: Objetivo de prueba.
+    """
     n = len(X)
+
     train_end = int(n * train_size)
     val_end = int(n * (train_size + val_size))
+
     X_train, y_train = X[:train_end], y[:train_end]
     X_val, y_val = X[train_end:val_end], y[train_end:val_end]
     X_test, y_test = X[val_end:], y[val_end:]
+
     return X_train, X_val, X_test, y_train, y_val, y_test
 
 
@@ -117,7 +148,7 @@ def buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val):
     return study.best_params
 
 
-def entrenar_y_evaluar(X_train, X_val, X_test, y_train, y_val, y_test, mejores_params):
+def entrenar_y_evaluar(X_train, X_test, y_train, y_test, mejores_params):
     model = TemporalConvNet(
         X_train.shape[1],
         [mejores_params[f"num_channels_{i}"] for i in range(3)],
@@ -128,7 +159,6 @@ def entrenar_y_evaluar(X_train, X_val, X_test, y_train, y_val, y_test, mejores_p
     optimizer = optim.Adam(model.parameters(), lr=mejores_params["lr"])
 
     X_train_tensor = torch.tensor(X_train, dtype=torch.float32).unsqueeze(2)
-    X_val_tensor = torch.tensor(X_val, dtype=torch.float32).unsqueeze(2)
     X_test_tensor = torch.tensor(X_test, dtype=torch.float32).unsqueeze(2)
     y_train_tensor = torch.tensor(y_train, dtype=torch.float32).unsqueeze(1)
     y_test_tensor = torch.tensor(y_test, dtype=torch.float32).unsqueeze(1)
@@ -150,6 +180,8 @@ def entrenar_y_evaluar(X_train, X_val, X_test, y_train, y_val, y_test, mejores_p
         test_preds = model(X_test_tensor).squeeze().numpy()
         test_true = y_test_tensor.squeeze().numpy()
 
+    predict_and_plot(test_preds, test_true)
+
     mse = mean_squared_error(test_true, test_preds)
     rmse = np.sqrt(mse)
     mae = mean_absolute_error(test_true, test_preds)
@@ -160,16 +192,47 @@ def entrenar_y_evaluar(X_train, X_val, X_test, y_train, y_val, y_test, mejores_p
     print(f"MAE en test: {mae:.4f}")
     print(f"R2 en test: {r2:.4f}")
 
+    return mae, mse, rmse, r2
+
+def predict_and_plot(
+    predictions: np.ndarray,
+    y_test: np.ndarray,
+):
+    """
+    Realiza predicciones y las grafica junto con los valores reales.
+
+    :param predictions: Datos predecidos.
+    :param y_test: Etiquetas de prueba (sin escalar).
+    """
+
+    # Graficar resultados
+    plt.figure(figsize=(12, 6))
+    plt.plot(y_test, label="Real", color="blue")
+    plt.plot(predictions, label="Predicción", color="red", linestyle="dashed")
+    plt.legend()
+    plt.xlabel("Días")
+    plt.ylabel("Valor de pct_cambio_7d")
+    plt.title("Predicción vs Real: pct_cambio_7d")
+    plt.show()
+
 
 # Función principal
 def main():
+    mlflow.set_tracking_uri(r"file:../../mlruns")
+    mlflow.set_experiment("TCN Optimization 7d")
+
     ruta_parquet = r"../../../../data/parquet/data_7d.parquet"
     df = cargar_datos(ruta_parquet)
     X, y, scaler = preprocesar_datos(df)
     X_train, X_val, X_test, y_train, y_val, y_test = dividir_datos_temporalmente(X, y)
     mejores_params = buscar_mejores_hiperparametros(X_train, y_train, X_val, y_val)
     print("Hiperparámetros óptimos obtenidos:", mejores_params)
-    entrenar_y_evaluar(X_train, X_val, X_test, y_train, y_val, y_test, mejores_params)
+
+    with mlflow.start_run(run_name="TCN"):
+        mae, mse, rmse, r2 = entrenar_y_evaluar(X_train, X_test, y_train, y_test, mejores_params)
+
+        mlflow.log_params(mejores_params)
+        mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2})
 
 
 if __name__ == "__main__":

@@ -7,9 +7,11 @@ from sklearn.metrics import (
     accuracy_score,
     recall_score,
 )
+import matplotlib.pyplot as plt
 from typing import Tuple
+import seaborn as sns
 import numpy as np
-
+import mlflow
 
 def baseline_persistencia_categorica(
     df: pd.DataFrame,
@@ -36,6 +38,7 @@ def baseline_persistencia_categorica(
     df = df.copy()
     df["baseline_pred"] = df[target_col].shift(horizon)
     df = df.dropna()  # Elimina los valores nulos creados por el shift
+
     cm = pd.DataFrame(
         confusion_matrix(df[target_col], df["baseline_pred"], labels=[-1, 1]),
         index=["Real -1", "Real 1"],
@@ -83,16 +86,68 @@ def baseline_persistencia_numerica(
 
 
 if __name__ == "__main__":
+    mlflow.set_tracking_uri(r"file:mlruns")
+    mlflow.set_experiment("Baseline")
+
+    # Datos para 7 días
     df = pd.read_parquet(r"../../data/parquet/data_7d.parquet")
 
+    print("BASELINE PARA 7 DIAS:\n")
+
     # Categórica
-    _, cm, accuracy, recall = baseline_persistencia_categorica(
-        df, "tendencia_futura_7d", 7
-    )
-    print("Matriz de Confusión:\n", cm)
-    print(f"Accuracy: {accuracy}")
-    print(f"Recall: {recall}")
+    with mlflow.start_run(run_name=f"Baseline 7d categorica"):
+        _, cm, accuracy, recall = baseline_persistencia_categorica(
+            df, "tendencia_futura_7d", 7
+        )
+        print("Matriz de Confusión:\n", cm)
+        print(f"Accuracy: {accuracy}")
+        print(f"Recall: {recall}")
+
+        # Log confusion matrix as a figure or artifact
+        fig, ax = plt.subplots(figsize=(10, 8))
+        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=ax)
+        plt.ylabel('Actual')
+        plt.xlabel('Predicted')
+        plt.title('Confusion Matrix')
+
+        mlflow.log_metrics({"accuracy": accuracy, "recall": recall})
+        mlflow.log_figure(fig, "confusion_matrix.png")
 
     # Numérica
-    _, mae, mse, rmse, r2 = baseline_persistencia_numerica(df, "pct_cambio_7d", 7)
-    print(f"MAE: {mae}, MSE: {mse}, RMSE: {rmse}, R^2: {r2}")
+    with mlflow.start_run(run_name=f"Baseline 7d regresion"):
+        _, mae, mse, rmse, r2 = baseline_persistencia_numerica(df, "pct_cambio_7d", 7)
+        print(f"MAE: {mae}, MSE: {mse}, RMSE: {rmse}, R^2: {r2}")
+        print('\n\n')
+
+        mlflow.log_metrics({"mae": mae, "mse": mse, "rmse": rmse, "r2":r2})
+
+    # Datos para 30 días
+    df = pd.read_parquet(r"../../data/parquet/data_30d.parquet")
+
+    print("BASELINE PARA 30 DIAS:\n")
+
+    # Categórica
+    with mlflow.start_run(run_name=f"Baseline 30d categorica"):
+        _, cm, accuracy, recall = baseline_persistencia_categorica(
+            df, "tendencia_futura_30d", 30
+        )
+        print("Matriz de Confusión:\n", cm)
+        print(f"Accuracy: {accuracy}")
+        print(f"Recall: {recall}")
+
+        # Log confusion matrix as a figure or artifact
+        fig, ax = plt.subplots(figsize=(10, 8))
+        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", ax=ax)
+        plt.ylabel('Actual')
+        plt.xlabel('Predicted')
+        plt.title('Confusion Matrix')
+
+        mlflow.log_metrics({"accuracy": accuracy, "recall": recall})
+        mlflow.log_figure(fig, "confusion_matrix.png")
+
+    # Numérica
+    with mlflow.start_run(run_name=f"Baseline 30d regresion"):
+        _, mae, mse, rmse, r2 = baseline_persistencia_numerica(df, "pct_cambio_30d", 30)
+        print(f"MAE: {mae}, MSE: {mse}, RMSE: {rmse}, R^2: {r2}")
+
+        mlflow.log_metrics({"mae": mae, "mse": mse, "rmse": rmse, "r2": r2})

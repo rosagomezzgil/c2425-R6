@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/Daniel/Universidad/PD/c2425-R6/src/modelos/7_dias/Regresion/../../mlruns/987414872854857482/39e0ab85fc1d4d92b347f5260d091d4f/artifacts
+end_time: 1743495189972
+entry_point_name: ''
+experiment_id: '987414872854857482'
+lifecycle_stage: active
+run_id: 39e0ab85fc1d4d92b347f5260d091d4f
+run_name: SVR
+run_uuid: 39e0ab85fc1d4d92b347f5260d091d4f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1743495189873
+status: 3
+tags: []
+user_id: Daniel

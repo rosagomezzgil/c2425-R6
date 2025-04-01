@@ -1,5 +1,3 @@
-from random import shuffle
-
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout
@@ -77,8 +75,8 @@ def preprocess_data(df: pd.DataFrame, horizonte: int, target_col: str, sequence_
 
 
 def split_data(
-        X: np.array,
-        y: np.array,
+        X: np.ndarray,
+        y: np.ndarray,
         test_size: float = 0.1,
         val_size: float = 0.1,
         shuffle: bool = False
@@ -105,8 +103,8 @@ def split_data(
 
 # 3. Crear y entrenar el modelo LSTM
 def train_lstm(
-    X_train: np.array,
-    y_train: np.array,
+    X_train: np.ndarray,
+    y_train: np.ndarray,
     units: int = 50,
     epochs: int = 50,
     batch_size: int = 32,
@@ -146,8 +144,8 @@ def train_lstm(
 
 def predict_and_plot(
     model: Sequential,
-    X_test: np.array,
-    y_test: np.array,
+    X_test: np.ndarray,
+    y_test: np.ndarray,
     target_col: str,
 ):
     """

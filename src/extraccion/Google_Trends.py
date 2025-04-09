@@ -1,3 +1,17 @@
+"""
+Este script obtiene los datos de las tendencias de Google para un conjunto de palabras clave especificadas. Utiliza la librería `pytrends` para interactuar con la API de Google Trends y obtiene información sobre la popularidad de búsqueda de las palabras clave a lo largo del tiempo. Los resultados se pueden guardar en un archivo CSV si se especifica una ruta de salida.
+
+Parámetros:
+    - keywords: Lista de palabras clave para buscar en Google Trends (por defecto, "bitcoin").
+    - timeframe: Intervalo de tiempo para los datos de tendencias (por defecto, "today 5-y").
+    - geo: Código geográfico para restringir los resultados (por defecto, vacío para todos los países).
+    - output_path: Ruta donde guardar los datos como archivo CSV (opcional).
+
+Funciones principales:
+    - get_google_trends: Solicita los datos de Google Trends para las palabras clave y devuelve un DataFrame con los resultados.
+    - main: Función principal que maneja la interacción con el usuario a través de la línea de comandos, solicitando los parámetros de entrada y llamando a `get_google_trends` para obtener los datos.
+"""
+
 import time
 from pytrends.request import TrendReq
 from typing import List, Optional

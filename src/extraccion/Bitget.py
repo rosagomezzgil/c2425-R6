@@ -1,3 +1,23 @@
+#Bitget
+"""
+Módulo: extracción de datos históricos de Bitcoin desde la web de Bitget mediante scraping.
+
+Este script automatiza la navegación del sitio web de Bitget para recopilar datos históricos de precios
+de Bitcoin. Utiliza Selenium con Chrome en modo headless para recorrer las distintas páginas de la tabla
+de datos, capturar el contenido y convertirlo en un DataFrame.
+
+Se puede configurar:
+- la URL de origen (por defecto, Bitget Bitcoin historical data),
+- el número máximo de páginas a recorrer,
+- el tiempo de espera entre acciones (para asegurar que los elementos carguen correctamente),
+- y la ruta de salida para guardar los datos en formato CSV.
+
+Uso:
+    python script.py --max_pages 5 --output_path ./bitget.csv
+
+Este script forma parte del módulo de extracción de datos para análisis de criptomonedas.
+"""
+
 import time
 import argparse
 import pandas as pd

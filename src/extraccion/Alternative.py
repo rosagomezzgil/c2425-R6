@@ -1,3 +1,17 @@
+"""
+Módulo: extracción del índice de Miedo y Codicia (Fear & Greed Index) de Bitcoin.
+
+Este script se conecta a la API pública de alternative.me para obtener datos históricos
+del índice de Miedo y Codicia relacionado con el mercado de criptomonedas (principalmente Bitcoin).
+Permite configurar el número de registros a recuperar, el formato de fechas y la ruta de salida
+para guardar los datos en formato CSV.
+
+Uso:
+    python script.py --limit 100 --date_format world --output_path ./salida.csv
+
+Este módulo forma parte de un conjunto de scripts dedicados a la extracción de datos para análisis financiero y de criptomonedas.
+"""
+
 import requests
 import pandas as pd
 import argparse

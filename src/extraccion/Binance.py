@@ -1,5 +1,20 @@
-# OHLCV, volumen, precios en vivo de bitcoins
 # Binance
+"""
+Módulo: extracción de datos OHLCV históricos de Bitcoin desde Binance.
+
+Este script se conecta a la API pública de Binance para obtener datos históricos
+de precios en formato OHLCV (Open, High, Low, Close, Volume), junto con el número de transacciones.
+Se puede especificar el par de trading (por defecto BTCUSDT), el intervalo de tiempo,
+el número de registros a recuperar, y opcionalmente un rango temporal específico.
+
+Los datos se pueden guardar automáticamente en un archivo CSV para su posterior análisis
+financiero, modelado o visualización.
+
+Uso:
+    python script.py --symbol BTCUSDT --interval 1d --limit 500 --output_path ./binance.csv
+
+Este script forma parte del conjunto de herramientas de extracción de datos para análisis del mercado de criptomonedas.
+"""
 
 import requests
 import pandas as pd

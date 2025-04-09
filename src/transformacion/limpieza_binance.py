@@ -1,3 +1,16 @@
+"""
+    Este script realiza una limpieza de los datos históricos de Bitcoin
+    obtenidos desde Binance. Comienza cargando el dataset, transformando el timestamp a
+    formato de fecha, y calculando nuevas métricas relevantes para el análisis técnico:
+    volumen en dólares, medias móviles simples (SMA) y exponenciales (EMA), variación diaria,
+    volatilidad, rango diario y momentum. También se calcula el RSI utilizando la función
+    definida previamente. Finalmente, los datos procesados se guardan en un nuevo archivo CSV.
+    Además, se genera un gráfico para visualizar las medias móviles junto con el precio de cierre,
+    lo cual ayuda a evaluar visualmente las tendencias del mercado.
+
+    """
+
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from Calcular_RSI import calcular_rsi

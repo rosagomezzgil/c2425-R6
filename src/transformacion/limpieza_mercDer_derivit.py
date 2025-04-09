@@ -1,3 +1,18 @@
+"""
+    Este script procesa el dataset de mercado de derivados de Deribit.
+    Para ello se carga del archivo CSV y se hace una conversión del timestamp a formato fecha (si
+    es necesario) y re-muestreo de los datos para obtener los valores diarios y un renombrado de
+    las columnas para diferenciar métricas específicas del mercado de derivados (prefijo 'mD').
+
+    Además, se calculan nuevas métricas como variación diaria, volatilidad, momentum, medias móviles
+    (SMA y EMA) y el RSI utilizando la función ya definida, preparando los datos para su uso en modelos
+    de predicción.
+
+    Por úlimo, se extrae el dataset limpio a un nuevo archivo CSV, listo para su integración con datos
+    del mercado spot.
+
+    """
+
 from Calcular_RSI import calcular_rsi
 import pandas as pd
 

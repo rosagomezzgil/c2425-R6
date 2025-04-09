@@ -1,3 +1,27 @@
+"""
+
+    Este script procesa y analiza datos de múltiples fuentes relacionadas con el mercado de Bitcoin.
+
+    1. Carga y combina archivos CSV provenientes de distintas fuentes (como Binance, Bitget, CoinGecko,
+     entre otros), con datos sobre precios, volumen, volatilidad, indicadores técnicos, etc.
+
+    2. Filtra los datos para considerar solo los últimos 3 años.
+
+    3. Compara la similitud de los datos entre diferentes plataformas de intercambio (por ejemplo,
+     Binance vs Bitget, Binance vs Coingecko) usando métricas como el Error Absoluto Medio (MAE) y la
+     correlación de Pearson de los retornos logarítmicos.
+
+    4. Calcula la tendencia futura del mercado basado en la variación porcentual del precio medio en
+     diferentes horizontes temporales (7 días, 30 días).
+
+    5. Elimina columnas irrelevantes y realiza limpieza de los datos (interpolación de valores nulos).
+
+    6. Guarda el conjunto de datos final procesado en un archivo CSV.
+
+    """
+
+
+
 import pandas as pd
 import numpy as np
 from typing import Optional

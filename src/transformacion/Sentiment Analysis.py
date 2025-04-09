@@ -1,3 +1,20 @@
+"""
+    Este script realiza un análisis de sentimiento sobre un conjunto de tweets relacionados con Bitcoin.
+
+    1. Carga un archivo CSV que contiene los tweets.
+    
+    2. Utiliza la librería TextBlob para analizar el sentimiento de cada tweet, clasificándolos como 'Positivo',
+     'Negativo' o 'Neutral'.
+
+    3. Muestra las estadísticas del análisis de sentimiento (conteo de cada tipo de sentimiento).
+
+    4. Guarda el conjunto de datos con la columna adicional de sentimiento en un nuevo archivo CSV para su
+     posterior uso.
+
+    """
+
+
+
 import pandas as pd
 from textblob import TextBlob
 

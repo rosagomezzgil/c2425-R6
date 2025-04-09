@@ -1,3 +1,21 @@
+"""
+    Este script se encarga de limpiar y transformar los datos de Bitcoin obtenidos a través
+    de scraping desde la plataforma Bitget. Primero convierte los formatos de fecha y
+    valores monetarios (incluyendo volúmenes expresados en billones) a tipos numéricos.
+
+    También se renombran columnas para mantener consistencia con otros datasets.
+    Se eliminan duplicados y valores nulos, y se detectan outliers usando el método IQR,
+    aunque no se eliminan porque pueden ser muy relevantes en análisis predictivos.
+
+    Además, se calculan nuevas métricas como variación diaria, volatilidad,
+    momentum, medias móviles (SMA y EMA) y el RSI utilizando la función
+    ya definida, preparando los datos para su uso en modelos de predicción.
+
+    Finalmente, el dataset limpio se guarda en un nuevo archivo CSV.
+
+    """
+
+
 from Calcular_RSI import calcular_rsi
 import pandas as pd
 

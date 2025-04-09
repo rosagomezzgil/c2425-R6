@@ -1,3 +1,16 @@
+"""
+    Este script limpia y organiza los datos del índice de "Miedo y Codicia" (Fear & Greed Index)
+    relacionado con Bitcoin.
+
+    Se carga el archivo CSV, se convierte la columna `timestamp` a formato de fecha y se ordenan
+    los registros cronológicamente. No se detectan valores nulos, por lo que no se requiere imputación
+    ni eliminación.
+
+    Finalmente, los datos se guardan en un nuevo archivo CSV para su uso en análisis posteriores.
+
+    """
+
+
 import pandas as pd
 
 if __name__ == "__main__":

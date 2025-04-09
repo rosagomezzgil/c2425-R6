@@ -1,3 +1,23 @@
+"""
+    Este script procesa datos históricos del índice NASDAQ obtenidos de un archivo CSV.
+
+    Realiza las siguientes operaciones sobre los datos:
+    - Convierte la columna 'timestamp' a formato de fecha y ordena los datos cronológicamente.
+    - Interpola los valores faltantes en todas las columnas numéricas, excepto 'timestamp'.
+    - Calcula métricas de análisis técnico, tales como:
+       - Medias Móviles (SMA, EMA) de 50 y 200 días.
+       - Volatilidad (desviación estándar) de 50 y 200 días.
+       - Momentum (diferencia entre precios actuales y de hace 50/200 días).
+       - Variación diaria en porcentaje.
+       - Rango diario (diferencia entre el precio más alto y el más bajo).
+       - Índice de Fuerza Relativa (RSI) basado en el precio de cierre.
+    - Guarda el DataFrame procesado con las métricas calculadas en un archivo CSV de salida.
+
+    Con esto conseguimos preparar los datos del NASDAQ para su posterior análisis y modelado.
+
+    """
+
+
 from Calcular_RSI import calcular_rsi
 import pandas as pd
 

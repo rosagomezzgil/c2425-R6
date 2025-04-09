@@ -1,3 +1,16 @@
+"""
+    Este script procesa el dataset de hashrate de la red Bitcoin.
+    Convierte la columna de fechas a formato datetime y crea un rango completo de fechas diarias.
+
+    Luego interpola los valores faltantes en el hashrate de forma lineal, estimando los días sin datos.
+    Más tarde, se calculan medias móviles simples (SMA) y exponenciales (EMA) para ventanas de 50 y 200 días,
+    útiles para análisis de tendencias.
+
+    Finalmente, se guarda el conjunto de datos limpio y enriquecido para su uso posterior en análisis y modelado.
+
+    """
+
+
 import pandas as pd
 
 if __name__ == "__main__":

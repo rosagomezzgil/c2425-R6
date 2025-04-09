@@ -1,4 +1,24 @@
-# DESCARGAR EL CSV DEL DRIVE SI LA EXTRACCION DA ERROR
+"""
+    Para este script es necesario DESCARGAR EL CSV DEL DRIVE SI LA EXTRACCION DA ERROR
+
+    Este script procesa los datos históricos del índice S&P 500 obtenidos de un archivo CSV.
+
+    Realiza las siguientes operaciones sobre los datos:
+    - Convierte la columna 'timestamp' a formato de fecha y ordena los datos cronológicamente.
+    - Crea un rango de fechas completo con frecuencia diaria e inserta fechas faltantes en el dataset.
+    - Interpola los valores faltantes en todas las columnas numéricas, excepto 'timestamp', utilizando interpolación lineal.
+    - Calcula métricas de análisis técnico, tales como:
+       - Medias Móviles (SMA, EMA) de 50 y 200 días.
+       - Volatilidad (desviación estándar) de 50 y 200 días.
+       - Momentum (diferencia entre precios actuales y de hace 50/200 días).
+       - Variación diaria en porcentaje.
+       - Rango diario (diferencia entre el precio más alto y el más bajo).
+       - Índice de Fuerza Relativa (RSI) basado en el precio de cierre.
+    - Guarda el DataFrame procesado con las métricas calculadas en un archivo CSV de salida.
+
+
+    """
+
 
 from Calcular_RSI import calcular_rsi
 import pandas as pd

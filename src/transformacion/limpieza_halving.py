@@ -1,3 +1,13 @@
+"""
+    Este script limpia los datos relacionados con los eventos de halving de Bitcoin.
+    Se convierte la columna de fechas al formato datetime y se renombra a 'timestamp'
+    para mantener la consistencia con el resto de datasets del proyecto.
+    El archivo resultante se guarda en formato CSV para facilitar su uso en análisis
+    temporales y la integración con otros conjuntos de datos.
+
+    """
+
+
 import pandas as pd
 import numpy as np
 

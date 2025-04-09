@@ -1,3 +1,18 @@
+"""
+    Este script define una función para calcular el Índice de Fuerza Relativa (RSI),
+    un indicador técnico ampliamente utilizado en análisis financiero. El RSI ayuda
+    a evaluar si un activo como Bitcoin está sobrecomprado o sobrevendido, lo que
+    puede ser útil para predecir movimientos futuros de precio. La función toma un
+    DataFrame con precios históricos, calcula las ganancias y pérdidas medias en una
+    ventana de tiempo específica, y devuelve el DataFrame con una nueva columna que
+    contiene el valor del RSI correspondiente a cada punto temporal.
+
+    Tenemos este fichero para poder llamarlo desde cada uno de los ficheros
+    de limpieza en los que lo calculamos.
+    """
+
+
+
 import numpy as np
 import pandas as pd
 

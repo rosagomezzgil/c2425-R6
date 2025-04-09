@@ -1,4 +1,20 @@
-# DESCARGAR EL CSV DEL DRIVE SI LA EXTRACCION DA ERROR
+"""
+    Para este script habrá que DESCARGAR EL CSV DEL DRIVE SI LA EXTRACCION DA ERROR
+
+    Este script procesa los datos del índice DXY (Dollar Index), eliminando columnas irrelevantes
+    como el volumen, ya que no aplica a un índice no negociable. Se convierte el timestamp a formato
+    de fecha y se asegura la continuidad temporal diaria mediante la creación de un rango completo
+    de fechas.
+
+    Luego se interpolan los valores faltantes para mantener la coherencia de la serie temporal.
+    Se calculan múltiples indicadores técnicos como medias móviles (SMA y EMA), volatilidad, momentum,
+    variación diaria, rango diario y el RSI a partir de la función calculada. Estos indicadores permiten
+    estudiar el comportamiento del DXY y su posible relación con el precio del Bitcoin.
+
+    El resultado final se guarda como un CSV para su posterior uso en modelos de análisis o predicción.
+
+    """
+
 
 import pandas as pd
 from Calcular_RSI import calcular_rsi

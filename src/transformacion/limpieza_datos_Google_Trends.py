@@ -1,3 +1,21 @@
+"""
+    Este script limpia y prepara los datos de Google Trends relacionados con las búsquedas del
+    término "Bitcoin".
+
+    Primero convierte la columna de fechas al formato datetime y genera un rango completo de fechas
+    con frecuencia diaria para asegurar la continuidad temporal.
+
+    Luego, une este rango con los datos originales y rellena los valores que faltan con 0, suponiendo así
+    de que no hubo búsquedas ese día.
+
+    Posteriormente, los ceros son reemplazados con valores interpolados linealmente para suavizar la serie,
+    lo cual es útil en modelos predictivos que requieren continuidad en los datos.
+
+    Finalmente, se guarda el dataset limpio como archivo CSV.
+
+    """
+
+
 import pandas as pd
 
 if __name__ == "__main__":

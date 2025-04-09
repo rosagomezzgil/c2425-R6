@@ -1,3 +1,18 @@
+"""
+    Este script limpia y transforma los datos históricos de precios de Bitcoin provenientes
+    de la plataforma CoinGecko. Comienza convirtiendo el timestamp a formato de fecha y
+    renombrando la columna "price" como "close" para unificar los nombres con otros datasets.
+
+    Luego calcula algunos indicadores técnicos como variación diaria, volatilidad, rango diario,
+    momentum, medias móviles (SMA y EMA) y el RSI llamando a la función definida. Estos indicadores
+    enriquecen el dataset y lo preparan para análisis predictivos.
+
+    Finalmente, el archivo limpio se guarda como CSV listo para su uso
+    en las siguientes etapas del proyecto.
+
+    """
+
+
 from Calcular_RSI import calcular_rsi
 import pandas as pd
 

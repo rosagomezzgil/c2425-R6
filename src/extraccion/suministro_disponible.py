@@ -1,4 +1,6 @@
 """
+NO EJECUTAR NO FORMA PARTE DEL PROYECTO (por ahora)
+
 Descripción:
 Este script se conecta a la API de Binance para obtener datos del mercado de criptomonedas en tiempo real. En este caso, extrae información sobre el par de trading "BTCUSDT" (Bitcoin a USDT), pero el símbolo puede ser modificado. Los datos obtenidos incluyen el precio actual, el cambio de precio, el volumen de transacciones y otros indicadores relevantes. La información se guarda en un archivo CSV, agregando nuevas entradas cada minuto sin sobrescribir los datos anteriores.
 

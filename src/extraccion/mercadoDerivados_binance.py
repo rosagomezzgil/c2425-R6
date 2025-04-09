@@ -1,4 +1,3 @@
-import requests
 """
 Este script descarga datos históricos de Binance Futures utilizando la API de Binance. Permite especificar el par de trading, el número de días a recuperar y el intervalo de las velas (como 1 minuto, 1 hora, 1 día). Los datos descargados incluyen las columnas de precios (apertura, cierre, alto, bajo), volumen de transacciones, y número de transacciones.
 
@@ -13,9 +12,11 @@ Funciones principales:
     - main: Función principal que permite gestionar los parámetros de entrada y llamar a `get_binance_futures_historical_data`.
 """
 
+import requests
 import pandas as pd
 import argparse
 import time
+import os
 from typing import Optional
 
 
@@ -107,6 +108,7 @@ def get_binance_futures_historical_data(
         full_df = pd.concat(all_data).sort_index()
 
         if output_path:
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
             full_df.to_csv(output_path, encoding="utf-8-sig", index=True)
             print(f"Datos guardados en: {output_path}")
 

@@ -15,7 +15,7 @@
 
     """
 
-
+import os
 import pandas as pd
 from Calcular_RSI import calcular_rsi
 
@@ -79,6 +79,7 @@ if __name__ == "__main__":
 
     # Guardar el conjunto de datos procesados
     output_path = r"../../data/limpieza/limpios_dxy.csv"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     dxy.to_csv(output_path, index=False)
 
     print(f"Archivo guardado en: {output_path}")

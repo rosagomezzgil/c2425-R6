@@ -20,6 +20,7 @@
 
 from Calcular_RSI import calcular_rsi
 import pandas as pd
+import os
 
 if __name__ == "__main__":
     # Cargar datos desde CSV
@@ -67,6 +68,7 @@ if __name__ == "__main__":
 
     # Guardar el conjunto de datos procesados
     output_path = r"../../data/limpieza/limpios_nasdaq.csv"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     nasdaq.to_csv(output_path, index=False)
 
     print(f"Archivo guardado en: {output_path}")

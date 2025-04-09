@@ -12,6 +12,8 @@ La información es guardada en un archivo CSV en la ruta especificada.
 """
 
 import pandas as pd
+import os
+
 def get_halving_dates():
     halvings = [
         {"Fecha": "2012-11-28", "Bloque": 210000, "Recompensa": 25},
@@ -29,5 +31,6 @@ if __name__ == "__main__":
     df_halving = get_halving_dates()
 
     output_path = r"../../data/extraccion/halving_data.csv"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df_halving.to_csv(output_path, encoding="utf-8-sig", index=False)
     print(df_halving)

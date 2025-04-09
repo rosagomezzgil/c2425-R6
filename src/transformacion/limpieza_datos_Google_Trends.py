@@ -15,7 +15,7 @@
 
     """
 
-
+import os
 import pandas as pd
 
 if __name__ == "__main__":
@@ -51,6 +51,7 @@ if __name__ == "__main__":
 
     # Guardar el conjunto de datos
     output_path = r"../../data/limpieza/limpios_google_trends.csv"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df_merged.to_csv(output_path, encoding="utf-8-sig", index=False)
     print(df_merged.head())
     print(df_merged.info())

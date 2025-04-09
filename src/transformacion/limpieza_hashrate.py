@@ -12,6 +12,7 @@
 
 
 import pandas as pd
+import os
 
 if __name__ == "__main__":
     # Cargar datos desde un CSV (ajusta la ruta a tu archivo)
@@ -67,4 +68,6 @@ if __name__ == "__main__":
     # Ver si hay valores nulos
     print(df_merged.isnull().sum())  # No tiene valores nulos
 
-    df_merged.to_csv("../../data/limpieza/limpios_hashrate.csv", index=False)
+    output_path = r"../../data/limpieza/limpios_hashrate.csv"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    df_merged.to_csv(output_path, index=False)

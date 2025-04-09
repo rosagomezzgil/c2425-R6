@@ -15,6 +15,7 @@ Este módulo forma parte de un conjunto de scripts dedicados a la extracción de
 import requests
 import pandas as pd
 import argparse
+import os
 from typing import Optional
 
 
@@ -55,6 +56,7 @@ def get_fear_greed_index(
 
     # Guardar CSV si se proporciona una ruta
     if output_path:
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
         df.to_csv(output_path, index=False)
         print(f"Datos guardados en: {output_path}")
 

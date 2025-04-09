@@ -10,7 +10,7 @@
 
     """
 
-
+import os
 import pandas as pd
 import matplotlib.pyplot as plt
 from Calcular_RSI import calcular_rsi
@@ -67,4 +67,7 @@ if __name__ == "__main__":
     df["momentum_200"] = df["close"] - df["close"].shift(200)
 
     df = calcular_rsi(df, "close")
-    df.to_csv("../../data/limpieza/limpios_binance.csv", index=False)
+
+    output_path = r"../../data/limpieza/limpios_binance.csv"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    df.to_csv(output_path, index=False)

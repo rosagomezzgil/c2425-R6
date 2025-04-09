@@ -19,7 +19,7 @@
     conjuntos de datos.
 """
 
-
+import os
 import pandas as pd
 
 if __name__ == "__main__":
@@ -27,7 +27,9 @@ if __name__ == "__main__":
     df = pd.read_csv(r"../../data/limpieza/cleaned_data.csv")
 
     # Guardar como Parquet
-    df.to_parquet(r"../../data/parquet/data.parquet", engine="pyarrow")
+    output_path = r"../../data/parquet/data.parquet"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    df.to_parquet(output_path, engine="pyarrow")
     df_parquet = pd.read_parquet(r"../../data/parquet/data.parquet")
     print(df_parquet.head())
 
@@ -35,7 +37,9 @@ if __name__ == "__main__":
     df = pd.read_csv(r"../../data/limpieza/dataset_7d.csv")
 
     # Guardar como Parquet
-    df.to_parquet(r"../../data/parquet/data_7d.parquet", engine="pyarrow")
+    output_path = r"../../data/parquet/data_7d.parquet"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    df.to_parquet(output_path, engine="pyarrow")
     df_parquet = pd.read_parquet(r"../../data/parquet/data_7d.parquet")
     print(df_parquet.head())
 
@@ -43,6 +47,8 @@ if __name__ == "__main__":
     df = pd.read_csv(r"../../data/limpieza/dataset_30d.csv")
 
     # Guardar como Parquet
-    df.to_parquet(r"../../data/parquet/data_30d.parquet", engine="pyarrow")
+    output_path = r"../../data/parquet/data_30d.parquet"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    df.to_parquet(output_path, engine="pyarrow")
     df_parquet = pd.read_parquet(r"../../data/parquet/data_30d.parquet")
     print(df_parquet.head())

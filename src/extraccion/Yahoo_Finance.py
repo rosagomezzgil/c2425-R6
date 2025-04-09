@@ -63,6 +63,7 @@ def download_data(
 
             # Guardar el conjunto de datos
             if output_filename:
+                os.makedirs(os.path.dirname(output_filename), exist_ok=True)
                 df.to_csv(output_filename, index=False)
                 print(f"Datos guardados en: {output_filename}")
 

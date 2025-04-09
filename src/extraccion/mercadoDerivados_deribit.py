@@ -1,4 +1,3 @@
-import requests
 """
 Este script descarga datos históricos de Deribit utilizando su API pública. Permite especificar el instrumento (por ejemplo, BTC-PERPETUAL), el número de días a recuperar, el intervalo de las velas (como 1 minuto, 1 hora, 1 día), y la resolución (como "1", "5", "15", "60"). Los datos descargados incluyen las columnas de precios (apertura, cierre, alto, bajo), volumen de transacciones.
 
@@ -14,9 +13,12 @@ Funciones principales:
     - main: Función principal que permite gestionar los parámetros de entrada y llamar a `get_deribit_historical_data`.
 """
 
+from datetime import timedelta
 import pandas as pd
 import argparse
 import time
+import requests
+import os
 from typing import Optional
 
 
@@ -59,7 +61,10 @@ def get_deribit_historical_data(
 
     while current_start < end_time:
         current_end = min(current_start + interval_ms, end_time)
-        print(f"Cuanto falta: {end_time - current_end}")
+
+        remaining_ms = end_time - current_end
+        remaining_td = timedelta(milliseconds=remaining_ms)
+        print(f"Faltan aproximadamente: {str(remaining_td)}")
 
         params = {
             "instrument_name": instrument,
@@ -98,6 +103,7 @@ def get_deribit_historical_data(
         full_df = pd.concat(all_data).sort_index()
 
         if output_path:
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
             full_df.to_csv(output_path, encoding="utf-8-sig", index=True)
             print(f"Datos guardados en: {output_path}")
 

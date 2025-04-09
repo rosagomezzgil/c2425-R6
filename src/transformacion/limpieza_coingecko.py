@@ -15,6 +15,7 @@
 
 from Calcular_RSI import calcular_rsi
 import pandas as pd
+import os
 
 if __name__ == "__main__":
     df = pd.read_csv(r"../../data/extraccion/datos_coingecko.csv")
@@ -46,5 +47,6 @@ if __name__ == "__main__":
     df = calcular_rsi(df, "close")
 
     output_path = r"../../data/limpieza/limpios_coingecko.csv"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_csv(output_path, encoding="utf-8-sig", index=False)
     print(df)

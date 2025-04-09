@@ -17,6 +17,7 @@ from pytrends.request import TrendReq
 from typing import List, Optional
 import argparse
 import requests
+import os
 
 
 def get_google_trends(
@@ -53,6 +54,7 @@ def get_google_trends(
         df = df[["timestamp"] + keywords]
 
         if output_path:
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
             df.to_csv(output_path, index=False)
             print(f"Datos guardados en: {output_path}")
 

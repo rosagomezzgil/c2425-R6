@@ -16,6 +16,7 @@ de predicción basados en series temporales.
 import requests
 import argparse
 import pandas as pd
+import os
 from typing import Optional
 
 
@@ -51,6 +52,7 @@ def get_coingecko_data(
 
     # Guardar CSV si se proporciona una ruta
     if output_path:
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
         df.to_csv(output_path, index=False)
         print(f"Datos guardados en: {output_path}")
 

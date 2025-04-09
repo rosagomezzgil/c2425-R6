@@ -17,6 +17,7 @@ Este módulo forma parte del sistema de extracción de datos para análisis en e
 import tweepy
 import pandas as pd
 import argparse
+import os
 import config  # Importar las credenciales
 from typing import Optional
 
@@ -58,6 +59,7 @@ def fetch_tweets(
 
     # Guardar el conjunto de datos
     if output_filename:
+        os.makedirs(os.path.dirname(output_filename), exist_ok=True)
         df.to_csv(output_filename, index=False)
         print(f"Tweets guardados en: {output_filename}")
 

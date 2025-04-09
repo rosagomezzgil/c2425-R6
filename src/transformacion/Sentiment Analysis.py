@@ -17,6 +17,7 @@
 
 import pandas as pd
 from textblob import TextBlob
+import os
 
 
 def get_sentiment(text):
@@ -55,4 +56,5 @@ if __name__ == "__main__":
 
     # Guardar el conjunto de datos
     output_path = r"../../data/limpieza/sentiment_analysis.csv"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df_resultado.to_csv(output_path, index=False)

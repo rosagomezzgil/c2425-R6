@@ -10,7 +10,7 @@
 
     """
 
-
+import os
 import pandas as pd
 
 if __name__ == "__main__":
@@ -33,4 +33,6 @@ if __name__ == "__main__":
 
     print(df.isnull().sum())  # no hay nulos
 
-    df.to_csv("../../data/limpieza/limpios_fear_greed.csv", index=False)
+    output_path = r"../../data/limpieza/limpios_fear_greed.csv"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    df.to_csv(output_path, index=False)

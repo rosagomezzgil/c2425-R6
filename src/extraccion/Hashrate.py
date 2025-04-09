@@ -14,6 +14,7 @@ Funciones principales:
 import requests
 import pandas as pd
 import argparse
+import os
 from typing import Optional
 
 
@@ -47,6 +48,7 @@ def get_bitcoin_hashrate(
 
         # Guardar CSV si se proporciona una ruta
         if output_path:
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
             df.to_csv(output_path, index=False)
             print(f"Datos guardados en: {output_path}")
 

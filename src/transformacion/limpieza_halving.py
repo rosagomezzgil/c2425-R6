@@ -9,7 +9,7 @@
 
 
 import pandas as pd
-import numpy as np
+import os
 
 
 if __name__ == "__main__":
@@ -24,5 +24,6 @@ if __name__ == "__main__":
     df = df.rename(columns={"Fecha": "timestamp"})  # cambio el nombre para que coincida
 
     output_path = r"../../data/limpieza/limpios_halving.csv"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_csv(output_path, encoding="utf-8-sig", index=False)
     print(df)

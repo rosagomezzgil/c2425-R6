@@ -21,6 +21,7 @@ Este script forma parte del módulo de extracción de datos para análisis de cr
 import time
 import argparse
 import pandas as pd
+import os
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -135,6 +136,7 @@ def scrape_bitget_data(
     df_bitget = pd.DataFrame(all_rows, columns=headers)
 
     if output_path:
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
         df_bitget.to_csv(output_path, encoding="utf-8-sig", index=False)
         print(f"Datos guardados en {output_path}")
 

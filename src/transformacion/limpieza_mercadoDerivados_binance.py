@@ -17,6 +17,7 @@
 
 from Calcular_RSI import calcular_rsi
 import pandas as pd
+import os
 
 if __name__ == "__main__":
     df = pd.read_csv(r"../../data/extraccion/datos_mercadoDerivados_binance.csv")
@@ -84,8 +85,10 @@ if __name__ == "__main__":
     df = calcular_rsi(df, "mDclose")
     df = df.rename(columns={"RSI": "mD_RSI"})
 
+    output_path = r"../../data/limpieza/limpios_mercadoDerivados_binance.csv"
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_csv(
-        "../../data/limpieza/limpios_mercadoDerivados_binance.csv",
+        output_path,
         encoding="utf-8-sig",
         index=False,
     )

@@ -28,7 +28,7 @@ def get_market_data(symbol="BTCUSDT"):
 
 
 # Archivo donde se guardarán los datos
-csv_filename = "C:\\Users\\vegag\\SEGUNDO\\pd1\\historico_market_data.csv"
+csv_filename = r"../../data/extraccion/datos_hashrate.csv"
 
 # Bucle para recolectar datos cada X segundos
 while True:
@@ -42,7 +42,7 @@ while True:
             header=not pd.io.common.file_exists(csv_filename),
             index=False,
         )
-        print(f"✅ Datos guardados en {csv_filename} - {df['timestamp'].values[0]}")
+        print(f"Datos guardados en {csv_filename} - {df['timestamp'].values[0]}")
 
     # Esperar X segundos antes de la siguiente recolección
     time.sleep(60)  # Recolecta datos cada 60 segundos (puedes cambiarlo)

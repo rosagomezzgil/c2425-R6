@@ -8,7 +8,7 @@ El objetivo principal es proporcionar una herramienta que ayude a los inversores
 
 # Indicaciones
 El proyecto está desarrollado en **Python 3.10**, utilizando Selenium para la automatización de la extracción de datos. Para ejecutar o modificar el código, se recomienda utilizar **Jupyter Notebook** o un entorno de desarrollo como **VS Code** o **PyCharm**.
-La carpeta de datos del drive [https://drive.google.com/drive/folders/1rx4XvYLFwyn86TofruAenmslBwZ_eMg2?usp=sharing](esta%20aquí).
+La carpeta de datos del [https://drive.google.com/drive/folders/1rx4XvYLFwyn86TofruAenmslBwZ_eMg2?usp=sharing](drive).
 
 Para la correcta ejecución del proyecto, es necesario instalar las siguientes dependencias:
 

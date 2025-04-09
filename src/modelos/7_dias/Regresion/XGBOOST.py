@@ -1,3 +1,9 @@
+# Este archivo entrena un modelo de regresión para predecir el porcentaje de cambio de la tendencia del Bitcoin utilizando XGBoost.
+# El flujo de trabajo incluye la carga de datos desde un archivo Parquet, el preprocesamiento de los datos, la división de los datos
+# en conjuntos de entrenamiento, validación y prueba, la optimización de hiperparámetros mediante GridSearchCV, y la evaluación del modelo.
+# Además, se registran los resultados de los experimentos utilizando MLflow para seguimiento de modelos y métricas.
+# Se debe tener el data_7d.parquet (parquet_merged_data.py en transformacion)
+
 import mlflow
 import pandas as pd
 import numpy as np

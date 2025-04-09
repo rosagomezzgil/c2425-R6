@@ -1,3 +1,19 @@
+"""
+Módulo: extracción de tweets relacionados con Bitcoin mediante la API de Twitter (v2).
+
+Este script utiliza la librería `tweepy` y credenciales almacenadas en el módulo `config`
+para autenticar y conectarse a la API de Twitter. Permite realizar consultas personalizadas,
+recuperar un número definido de tweets recientes y guardarlos en un archivo CSV.
+
+Se enfoca en la recolección de contenido textual para análisis de sentimiento, tendencias,
+popularidad o correlaciones con precios del mercado de criptomonedas.
+
+Uso:
+    python script.py --query "(Bitcoin OR BTC) lang:en" --max_results 100 --output_path ./tweets.csv
+
+Este módulo forma parte del sistema de extracción de datos para análisis en el contexto de Bitcoin y criptomonedas.
+"""
+
 import tweepy
 import pandas as pd
 import argparse

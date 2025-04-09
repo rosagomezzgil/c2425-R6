@@ -8,7 +8,7 @@ El objetivo principal es proporcionar una herramienta que ayude a los inversores
 
 # Indicaciones
 El proyecto está desarrollado en **Python 3.10**, utilizando Selenium para la automatización de la extracción de datos. Para ejecutar o modificar el código, se recomienda utilizar **Jupyter Notebook** o un entorno de desarrollo como **VS Code** o **PyCharm**.
-La carpeta de datos del drive [https://drive.google.com/drive/folders/1rx4XvYLFwyn86TofruAenmslBwZ_eMg2?usp=sharing](esta aquí).
+La carpeta de datos del [drive](https://drive.google.com/drive/folders/1rx4XvYLFwyn86TofruAenmslBwZ_eMg2?usp=sharing).
 
 Para la correcta ejecución del proyecto, es necesario instalar las siguientes dependencias:
 
@@ -16,14 +16,9 @@ Para la correcta ejecución del proyecto, es necesario instalar las siguientes d
    - Instalación: [https://www.google.com/chrome/](https://www.google.com/chrome/)
 2. **ChromeDriver**: Controlador que permite a Selenium interactuar con Chrome.
    - Instalación: [https://chromedriver.chromium.org/downloads](https://chromedriver.chromium.org/downloads)
-3. **Selenium**: Biblioteca para la automatización de navegadores.
-   - Instalación mediante pip:
-     ```sh
-     pip install selenium
-     ```
-4. **CUDA 11.2**: plataforma de computación paralela de NVIDIA que permite ejecutar cálculos en la GPU
+3. **CUDA 11.2**: plataforma de computación paralela de NVIDIA que permite ejecutar cálculos en la GPU
    - Instalación: [https://developer.nvidia.com/cuda-11.2.0-download-archive?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exelocal](https://developer.nvidia.com/cuda-11.2.0-download-archive?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exelocal)
-5. **cuDNN 8.1.0**: biblioteca de NVIDIA optimizada para redes neuronales
+4. **cuDNN 8.1.0**: biblioteca de NVIDIA optimizada para redes neuronales
    - Instalación: [https://developer.nvidia.com/rdp/cudnn-archive](https://developer.nvidia.com/rdp/cudnn-archive)
     **Extrae el ZIP** y copia estos archivos dentro del directorio de instalación de CUDA (normalmente en `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.2`):
 

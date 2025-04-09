@@ -1,3 +1,16 @@
+"""
+Este script obtiene los datos del hashrate de Bitcoin desde la API de Blockchain.com. Permite especificar el rango de tiempo y el promedio móvil de los datos a obtener, además de guardar los resultados en un archivo CSV si se proporciona una ruta de salida.
+
+Parámetros:
+    - timespan: Rango de tiempo para los datos (por ejemplo, "30days", "1year", "all").
+    - rolling_average: Promedio móvil que se aplicará a los datos (por ejemplo, "8hours", "24hours").
+    - output_path: Ruta donde se guardarán los datos como archivo CSV (opcional).
+
+Funciones principales:
+    - get_bitcoin_hashrate: Solicita los datos del hashrate de Bitcoin desde Blockchain.com y devuelve un DataFrame con los resultados.
+    - main: Función principal que gestiona la interacción con el usuario a través de la línea de comandos, solicitando los parámetros de entrada y llamando a `get_bitcoin_hashrate` para obtener los datos.
+"""
+
 import requests
 import pandas as pd
 import argparse

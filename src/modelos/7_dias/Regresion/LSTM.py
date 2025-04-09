@@ -1,3 +1,13 @@
+# Este archivo contiene la implementación de un modelo LSTM para predecir el cambio porcentual en la tendencia del Bitcoin a un horizonte específico (en este caso 7 días).
+# El flujo incluye:
+# 1. La carga y preprocesamiento de datos.
+# 2. La creación y entrenamiento de un modelo LSTM.
+# 3. La optimización de hiperparámetros utilizando búsqueda en malla.
+# 4. La evaluación del modelo con diversas métricas (MSE, MAE, R², y accuracy direccional).
+# 5. La integración con MLflow para el seguimiento de experimentos.
+# 6. Visualización de las predicciones junto con los valores reales.
+# Se debe tener el data_7d.parquet (parquet_merged_data.py en transformacion)
+
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout

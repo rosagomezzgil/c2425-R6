@@ -1,3 +1,9 @@
+# Este archivo implementa un modelo de regresión utilizando Support Vector Regression (SVR) para predecir el porcentaje de cambio
+# de la tendencia del Bitcoin en un período de 7 días. El proceso abarca desde la carga de los datos, el preprocesamiento,
+# la optimización de hiperparámetros hasta la evaluación y visualización de los resultados. El modelo es evaluado en base a
+# métricas estándar como MSE, RMSE, MAE y R², y se utiliza MLflow para el seguimiento y registro de experimentos.
+# Se debe tener el data_7d.parquet (parquet_merged_data.py en transformacion)
+
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler

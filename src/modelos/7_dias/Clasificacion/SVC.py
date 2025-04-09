@@ -111,7 +111,7 @@ def main():
     """
     Función principal que ejecuta el flujo completo del modelo.
     """
-    ruta_parquet = "ruta/a/tu/dataset.parquet"  # Cambia por la ruta correcta
+    ruta_parquet = r"../../data/limpieza/cleaned_data.csv"  # Cambia por la ruta correcta
     df = cargar_datos(ruta_parquet)
 
     # Preprocesamiento de datos

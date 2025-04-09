@@ -35,8 +35,8 @@ def dividir_datos(X, y, test_size=0.1, val_size=0.1):
 
 
 # Función para buscar los mejores hiperparámetros (p,d,q)
-def buscar_mejores_hiperparametros(y_train):
-    mejor_aic = np.inf
+def buscar_mejores_hiperparametros(y_train, y_val):
+    mejor_rmse = np.inf
     mejor_modelo = None
     mejores_parametros = None
 
@@ -50,16 +50,23 @@ def buscar_mejores_hiperparametros(y_train):
                 try:
                     modelo_arima = ARIMA(y_train, order=(p, d, q))
                     modelo_resultado = modelo_arima.fit()
-                    aic = modelo_resultado.aic
 
-                    if aic < mejor_aic:
-                        mejor_aic = aic
+                    # Validamos en y_val
+                    y_pred_val = modelo_resultado.forecast(steps=len(y_val))
+                    rmse_val = mean_squared_error(y_val, y_pred_val, squared=False)
+
+                    print(f"(p={p}, d={d}, q={q}) → RMSE validación: {rmse_val:.4f}")
+
+                    if rmse_val < mejor_rmse:
+                        mejor_rmse = rmse_val
                         mejor_modelo = modelo_resultado
                         mejores_parametros = (p, d, q)
+
                 except Exception as e:
                     print(f"Error con (p={p}, d={d}, q={q}): {e}")
 
-    print(f"Mejores hiperparámetros: p={mejores_parametros[0]}, d={mejores_parametros[1]}, q={mejores_parametros[2]}")
+    print(
+        f"\n Mejor modelo según validación: p={mejores_parametros[0]}, d={mejores_parametros[1]}, q={mejores_parametros[2]}")
     return mejor_modelo, dict(zip(['p', 'd', 'q'], mejores_parametros))
 
 
@@ -92,7 +99,7 @@ def main():
     X_train, X_val, X_test, y_train, y_val, y_test = dividir_datos(X, y)
 
     with mlflow.start_run(run_name=f"ARIMA"):
-        mejor_modelo, best_params = buscar_mejores_hiperparametros(y_train)
+        mejor_modelo, best_params = buscar_mejores_hiperparametros(y_train, y_val)
 
         mae, mse, rmse, r2 = evaluar_modelo(mejor_modelo, y_test)
 

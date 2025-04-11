@@ -1,0 +1,16 @@
+artifact_uri: file:///C:/Users/Daniel/Universidad/PD/c2425-R6/src/modelos/mlruns/191856407358870632/937e941fecdf44ccb68e82c888d7418d/artifacts
+deleted_time: 1744378521628
+end_time: 1744377764028
+entry_point_name: ''
+experiment_id: '191856407358870632'
+lifecycle_stage: deleted
+run_id: 937e941fecdf44ccb68e82c888d7418d
+run_name: Baseline 7d categorica
+run_uuid: 937e941fecdf44ccb68e82c888d7418d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744377763266
+status: 3
+tags: []
+user_id: Daniel

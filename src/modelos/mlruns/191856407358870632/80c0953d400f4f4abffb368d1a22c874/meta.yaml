@@ -1,0 +1,16 @@
+artifact_uri: file:///C:/Users/Daniel/Universidad/PD/c2425-R6/src/modelos/mlruns/191856407358870632/80c0953d400f4f4abffb368d1a22c874/artifacts
+deleted_time: 1744378521512
+end_time: 1744378251377
+entry_point_name: ''
+experiment_id: '191856407358870632'
+lifecycle_stage: deleted
+run_id: 80c0953d400f4f4abffb368d1a22c874
+run_name: Baseline 30d categorica
+run_uuid: 80c0953d400f4f4abffb368d1a22c874
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744378250872
+status: 3
+tags: []
+user_id: Daniel

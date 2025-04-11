@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/Daniel/Universidad/PD/c2425-R6/src/modelos/mlruns/191856407358870632/07a9eaf6325e43a2a261833056472f44/artifacts
+end_time: 1744378552405
+entry_point_name: ''
+experiment_id: '191856407358870632'
+lifecycle_stage: active
+run_id: 07a9eaf6325e43a2a261833056472f44
+run_name: Baseline 7d regresion
+run_uuid: 07a9eaf6325e43a2a261833056472f44
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744378546046
+status: 3
+tags: []
+user_id: Daniel

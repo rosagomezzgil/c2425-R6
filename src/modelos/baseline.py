@@ -9,7 +9,6 @@ from sklearn.metrics import (
 )
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from typing import Tuple
 import seaborn as sns
 import numpy as np
 import mlflow

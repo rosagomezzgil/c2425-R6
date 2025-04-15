@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/30_dias/../../mlruns/192337872476721052/6ce8d617368e45669cca4d4f76b1e51e/artifacts
+end_time: 1744658651154
+entry_point_name: ''
+experiment_id: '192337872476721052'
+lifecycle_stage: active
+run_id: 6ce8d617368e45669cca4d4f76b1e51e
+run_name: skillful-dolphin-983
+run_uuid: 6ce8d617368e45669cca4d4f76b1e51e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744658650840
+status: 4
+tags: []
+user_id: vegag

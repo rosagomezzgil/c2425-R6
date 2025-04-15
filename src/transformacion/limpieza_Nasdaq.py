@@ -24,7 +24,7 @@ import os
 
 if __name__ == "__main__":
     # Cargar datos desde CSV
-    nasdaq = pd.read_csv(r"../../data/extraccion/datos_nasdaq.csv")
+    nasdaq = pd.read_csv(r"../data/extraccion/datos_nasdaq.csv")
 
     # Ver si hay valores nulos
     print(nasdaq.isnull().sum())  # No tiene valores nulos
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     nasdaq = calcular_rsi(nasdaq, "Close")
 
     # Guardar el conjunto de datos procesados
-    output_path = r"../../data/limpieza/limpios_nasdaq.csv"
+    output_path = r"../data/limpieza/limpios_nasdaq.csv"
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     nasdaq.to_csv(output_path, index=False)
 

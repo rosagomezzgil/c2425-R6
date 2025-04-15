@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/30_dias/../../mlruns/839290281313935658/48c7ff94885a4f968327f6a556196d09/artifacts
+end_time: 1744716626462
+entry_point_name: ''
+experiment_id: '839290281313935658'
+lifecycle_stage: active
+run_id: 48c7ff94885a4f968327f6a556196d09
+run_name: useful-snail-538
+run_uuid: 48c7ff94885a4f968327f6a556196d09
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744716500477
+status: 3
+tags: []
+user_id: vegag

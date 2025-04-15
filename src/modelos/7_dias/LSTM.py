@@ -1,286 +1,74 @@
-# Este archivo contiene la implementación de un modelo LSTM para predecir el cambio porcentual en la tendencia del Bitcoin a un horizonte específico (en este caso 7 días).
-# El flujo incluye:
-# 1. La carga y preprocesamiento de datos.
-# 2. La creación y entrenamiento de un modelo LSTM.
-# 3. La optimización de hiperparámetros utilizando búsqueda en malla.
-# 4. La evaluación del modelo con diversas métricas (MSE, MAE, R², y accuracy direccional).
-# 5. La integración con MLflow para el seguimiento de experimentos.
-# 6. Visualización de las predicciones junto con los valores reales.
-# Se debe tener el data_7d.parquet (parquet_merged_data.py en transformacion)
-
-import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense, Dropout
-from tensorflow.random import set_seed
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, accuracy_score
 import mlflow
-import mlflow.tensorflow
-import itertools
-import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
-import random
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense
+from src.modelos.A_cargar_datos import cargar_datos_7d
+from src.modelos.B_preprocesamiento import preprocesar_datos_7d
+from src.modelos.E_ajuste_hiperparametros import ajustar_modelo
+from src.modelos.F_metricas import evaluar_modelo_7d
 
-# Fijar semillas
-def fijar_semillas(seed: int = 123):
-    """
-    Fija las semillas para reproducibilidad
-
-    :param seed: Semilla para las bibliotecas random, numpy y tensorflow
-    """
-    set_seed(seed)
-    np.random.seed(seed)
-    random.seed(seed)
-
-# 1. Cargar los datos
-def load_data(parquet_file: str):
-    """
-    Carga los datos de un fichero parquet a un DataFrame de pandas
-
-    :param parquet_file: URL del fichero parquet
-
-    :return: pd.DataFrame
-    """
-    df = pd.read_parquet(parquet_file)
-    df['timestamp'] = pd.to_datetime(df['timestamp'])  # Asegurar que la fecha esté en formato datetime
-    df.set_index('timestamp', inplace=True)
-    return df
-
-# 2. Preprocesar los datos
-def preprocess_data(df: pd.DataFrame, horizonte: int, target_col: str, sequence_length: int = 30):
-    """
-    Preprocesa los datos para LSTM (normalización de X con StandardScaler y creación de secuencias)
-
-    :param df: pd.DataFrame con los datos para el modelo
-    :param horizonte: días de la predicción
-    :param target_col: nombre de la columna de la variable objetivo
-    :param sequence_length: longitud de las secuencias a crear (valor por defecto: 30)
-
-    :return: X, y, scaler
-    """
-    assert target_col in df.columns, f"La columna {target_col} no está en el DataFrame"
-    assert target_col == f'pct_cambio_{horizonte}d', "El nombre de la columna objetivo no coincide con el horizonte"
-
-    col_categorica = f'tendencia_futura_{horizonte}d'
-    assert col_categorica in df.columns, f"La columna {col_categorica} no está en el DataFrame"
-
-    # Separar X y y antes de escalar
-    features = df.drop(columns=[target_col, col_categorica])
-    y = df[target_col].values  # Mantener y en su escala original
-
-    # Escalar solo las características de entrada con StandardScaler
-    scaler = StandardScaler()
-    features_scaled = scaler.fit_transform(features)
-    features_scaled = pd.DataFrame(features_scaled, columns=features.columns)
-
-    X = []
-    for i in range(len(features_scaled) - sequence_length - horizonte + 1):
-        X.append(features_scaled.iloc[i: i + sequence_length].values)
-
-    X = np.array(X)  # Convertir a numpy array
-
-    return X, y[: len(X)], scaler  # Asegurar que y tenga la misma longitud que X
+# Genera ventanas para LSTM
+def crear_ventanas(X, y, window_size=10):
+    Xs, ys = [], []
+    for i in range(len(X) - window_size):
+        Xs.append(X[i:i + window_size])
+        ys.append(y[i + window_size])
+    return np.array(Xs), np.array(ys)
 
 
-def split_data(
-        X: np.ndarray,
-        y: np.ndarray,
-        test_size: float = 0.1,
-        val_size: float = 0.1,
-        shuffle: bool = False
-):
-    """
-    Divide los datos en conjuntos de entrenamiento, validación y prueba.
+def preparar_datos():
+    # Cargar datos
+    df = cargar_datos_7d("../../data/parquet/data_7d.parquet")
 
-    :param X: Características
-    :param y: Etiquetas
-    :param test_size: Proporción de datos para prueba
-    :param val_size: Proporción de datos para validación (sobre el total)
-    :param shuffle: Si se deben mezclar los datos antes de dividir
-    :return: X_train, X_val, X_test, y_train, y_val, y_test
-    """
-    # Primero, dividir en entrenamiento y prueba
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, shuffle=shuffle)
+    # Preprocesar datos para LSTM
+    X, y, scaler = preprocesar_datos_7d(df, tecnica="lstm", target_col="pct_cambio_7d")
 
-    # Luego, dividir el conjunto de entrenamiento para extraer validación
-    val_relative_size = val_size / (1 - test_size)  # Ajuste relativo al tamaño de entrenamiento
-    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=val_relative_size, shuffle=shuffle)
+    # Crear secuencias para LSTM
+    X_seq, y_seq = crear_ventanas(X, y)
 
-    return X_train, X_val, X_test, y_train, y_val, y_test
+    # Dividir en entrenamiento y test
+    n_train = int(0.8 * len(X_seq))
+    X_train, X_test = X_seq[:n_train], X_seq[n_train:]
+    y_train, y_test = y_seq[:n_train], y_seq[n_train:]
+
+    return X_train, y_train, X_test, y_test
 
 
-# 3. Crear y entrenar el modelo LSTM
-def train_lstm(
-    X_train: np.ndarray,
-    y_train: np.ndarray,
-    units: int = 50,
-    epochs: int = 50,
-    batch_size: int = 32,
-):
-    """
-    Crea y entrena un modelo LSTM
-
-    :param X_train: Datos de entrada para el entrenamiento
-    :param y_train: Datos para el entrenamiento
-    :param units: Número de unidades LSTM
-    :param epochs: Número de épocas de entrenamiento
-    :param batch_size: Tamaño del batch de entrenamiento
-
-    :return: Modelo entrenado
-    """
-
-    print("GPUs disponibles:", tf.config.list_physical_devices('GPU'))
-    print("Dispositivo en uso:", tf.test.gpu_device_name())
-
-    model = Sequential(
-        [
-            LSTM(
-                units, return_sequences=True, input_shape=(X_train.shape[1], X_train.shape[2])
-            ),
-            Dropout(0.2),
-            LSTM(units),
-            Dense(1),
-        ]
-    )
-
-    model.compile(optimizer="adam", loss="mse")
-    model.fit(
-        X_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2, verbose=1
-    )
-
+# Crear el modelo LSTM
+def crear_modelo_lstm(input_shape, units=50, epochs=20, batch_size=32):
+    model = Sequential([
+        LSTM(units, activation='relu', input_shape=input_shape),
+        Dense(1)
+    ])
+    model.compile(optimizer='adam', loss='mse')
     return model
 
-def predict_and_plot(
-    model: Sequential,
-    X_test: np.ndarray,
-    y_test: np.ndarray,
-    target_col: str,
-):
-    """
-    Realiza predicciones y las grafica junto con los valores reales.
 
-    :param model: Modelo entrenado.
-    :param X_test: Datos de prueba.
-    :param y_test: Etiquetas de prueba (sin escalar).
-    :param target_col: Columna objetivo a predecir.
-    """
-    # Realizar predicciones
-    predictions = model.predict(X_test).flatten()  # Asegurar que sea un array 1D
-
-    # Graficar resultados
-    plt.figure(figsize=(12, 6))
-    plt.plot(y_test, label="Real", color="blue")
-    plt.plot(predictions, label="Predicción", color="red", linestyle="dashed")
-    plt.legend()
-    plt.xlabel("Días")
-    plt.ylabel(f"Valor de {target_col}")
-    plt.title(f"Predicción vs Real: {target_col}")
-    plt.show()
-
-def evaluate_model(model, X_test, y_test):
-    """
-    Calcula y muestra las métricas de evaluación del modelo.
-    """
-    predictions = model.predict(X_test).flatten()
-    mse = mean_squared_error(y_test, predictions)
-    mae = mean_absolute_error(y_test, predictions)
-    rmse = np.sqrt(mse)
-    r2 = r2_score(y_test, predictions)
-    # Accuracy direccional (comparar signo de la predicción y del valor real)
-    pred_sign = np.sign(predictions)
-    real_sign = np.sign(y_test)
-    directional_acc = accuracy_score(real_sign, pred_sign)
-
-    print("\nMétricas del modelo:")
-    print(f"MSE: {mse:.4f}")
-    print(f"MAE: {mae:.4f}")
-    print(f"RMSE: {rmse:.4f}")
-    print(f"R²: {r2:.4f}")
-    print(f"Accuracy Direccional: {directional_acc:.4f}")
-
-    return mse, mae, rmse, r2, directional_acc
-
-
-def optimize_hyperparameters(X_train, y_train, X_val, y_val, param_grid):
-    """
-    Realiza una búsqueda de hiperparámetros evaluando diferentes combinaciones.
-    """
-    best_score = float("inf")
-    best_params = None
-
-    for params in itertools.product(*param_grid.values()):
-        param_dict = dict(zip(param_grid.keys(), params))
-        print(f"Probando configuración: {param_dict}")
-
-        model = train_lstm(
-            X_train, y_train,
-            units=param_dict['units'],
-            epochs=param_dict['epochs'],
-            batch_size=param_dict['batch_size']
-        )
-
-        mse, _, _, _ = evaluate_model(model, X_val, y_val)
-
-        if mse < best_score:
-            best_score = mse
-            best_params = param_dict
-            print("Nuevo mejor modelo encontrado!")
-
-        print('\n')
-
-    print("\nMejores hiperparámetros encontrados:")
-    print(best_params)
-    return best_params
-
-# 5. Ejecutar el flujo
 def main():
-    # Configurar MLflow en local
-    mlflow.set_tracking_uri(r"file:../../mlruns")
-    mlflow.set_experiment("LSTM Optimization 7d")
+    mlflow.set_tracking_uri("file:../../mlruns")
+    mlflow.set_experiment("Modelo LSTM con TimeSeriesSplit")
 
-    # 1. Definir hiperparámetros a probar
+    # Preparar los datos
+    X_train, y_train, X_test, y_test = preparar_datos()
+
+    # Ajuste de hiperparámetros: para LSTM ajustamos epochs, batch_size y unidades LSTM
     param_grid = {
-        "units": [32, 64, 128],
-        "epochs": [30, 50, 100, 500],
-        "batch_size": [16, 32, 64],
+        "units": [50, 100],
+        "epochs": [10, 20],
+        "batch_size": [16, 32]
     }
 
-    # 2. Preparar datos
-    parquet_file = "../../../../data/parquet/data_7d.parquet"
-    horizonte = 7
-    target_col = "pct_cambio_7d"
-    # sequences_length = [1, 7, 30, 60]
-    sequence_length = 7
+    # Utilizamos GridSearch o RandomizedSearch con TimeSeriesSplit
+    best_model, best_params = ajustar_modelo(crear_modelo_lstm, X_train, y_train, param_grid, strategy="grid")
 
-    fijar_semillas()
-    df = load_data(parquet_file)
+    # Evaluar el modelo final con el mejor conjunto de hiperparámetros
+    with mlflow.start_run():
+        mse, mae, rmse, r2, acc = evaluar_modelo_7d(best_model, X_test, y_test)
 
-    X, y, scaler = preprocess_data(df, horizonte, target_col, sequence_length)
-    X_train, X_val, X_test, y_train, y_val, y_test = split_data(X, y, 0.1, 0.1, shuffle=False)
-    print(f"Datos preparados para sequence_length: {sequence_length}\n")
-
-    # 3. Optimizar hiperparámetros
-    best_params = optimize_hyperparameters(X_train, y_train, X_val, y_val, param_grid)
-
-    # 4. Entrenar el modelo final con los mejores parámetros
-    with mlflow.start_run(run_name=f"LSTM_seq{sequence_length}"):
-        best_model = train_lstm(
-            X_train, y_train,
-            units=best_params['units'],
-            epochs=best_params['epochs'],
-            batch_size=best_params['batch_size']
-        )
-
-        # 5. Evaluar
-        mse, mae, rmse, r2, directional_acc = evaluate_model(best_model, X_test, y_test)
-
-        # Registrar en MLflow
+        # Loguear el modelo y los parámetros en MLFlow
         mlflow.log_params(best_params)
-        mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2, "directional_acc" : directional_acc})
+        mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2, "acc": acc})
 
-    predict_and_plot(best_model, X_test, y_test, target_col)
 
 if __name__ == "__main__":
     main()

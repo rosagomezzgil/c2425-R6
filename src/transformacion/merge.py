@@ -394,6 +394,6 @@ if __name__ == "__main__":
     print(df.head())
 
     # Guardar el dataframe final
-    output_path = r"../../data/limpieza/cleaned_data.csv"
+    output_path = r"../data/limpieza/cleaned_data.csv"
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_csv(output_path)

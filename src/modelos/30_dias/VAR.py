@@ -1,124 +1,74 @@
-import pandas as pd
-import numpy as np
+from src.modelos.A_cargar_datos import cargar_datos_30d
+from src.modelos.B_preprocesamiento import preprocesar_datos_30d
+from src.modelos.D_division_temporal import dividir_datos_temporalmente_30d
+from src.modelos.C_seleccion_variables import seleccionar_variables
+from src.modelos.F_metricas import evaluar_modelo_30d
+
 from statsmodels.tsa.api import VAR
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import mlflow
-
-# Función para cargar datos desde un archivo Parquet
-def cargar_datos(parquet_file: str):
-    """
-    Carga los datos de un fichero parquet a un DataFrame de pandas
-
-    :param parquet_file: URL del fichero parquet
-
-    :return: pd.DataFrame
-    """
-    df = pd.read_parquet(parquet_file)
-    df['timestamp'] = pd.to_datetime(df['timestamp'])  # Asegurar que la fecha esté en formato datetime
-    df.set_index('timestamp', inplace=True)
-    return df
-
-# Función para preprocesar los datos
-def preprocesar_datos(df):
-    df = df.drop(
-        columns=["tendencia_futura_7d", "pct_cambio_7d", "tendencia_futura_30d"],
-        errors="ignore",
-    )
-    X = df.drop(columns=["pct_cambio_30d"])
-    y = df[["pct_cambio_30d"]]
-
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
-    df_scaled = pd.DataFrame(X_scaled, columns=X.columns, index=df.index)
-    df_scaled = pd.concat(
-        [df_scaled, y], axis=1
-    )  # Agregar variables objetivo sin escalar
-
-    return df_scaled, scaler
-
-# Función para dividir los datos en train, validación y test
-def dividir_datos(df, test_size=0.2, val_size=0.2):
-    train_size = int(len(df) * (1 - test_size - val_size))
-    val_size = int(len(df) * val_size)
-
-    train, val, test = (
-        df.iloc[:train_size],
-        df.iloc[train_size : train_size + val_size],
-        df.iloc[train_size + val_size :],
-    )
-    return train, val, test
+import numpy as np
 
 
-# Función para entrenar y validar el modelo VAR
-def entrenar_y_validar_var(train, val, max_lags=5):
-    model = VAR(train)
-    best_model = None
-    best_mse = float("inf")
-    best_lag = None
+def main_var(parquet_path: str, target_col: str = 'pct_cambio_30d'):
+    # Cargar datos y preprocesarlos
+    df = cargar_datos_30d(parquet_path)
+    df = preprocesar_datos_30d(df, target_col)  # Este paso ya te asegura que hay múltiples columnas
 
-    # Probar diferentes valores de rezagos
-    for lags in range(1, max_lags + 1):
+    # Definir X e y
+    X = df.drop(columns=[target_col])  # Las variables explicativas
+    y = df[target_col]  # La variable target
+
+    # Seleccionar las variables para VAR
+    X_var, _ = seleccionar_variables(X, y, tecnica="var")
+
+    # Dividir los datos en conjunto de entrenamiento y test --> ponemos el multivariado a true porque VAR funciona
+    # con vectores
+    train_df, test_df = dividir_datos_temporalmente_30d(df, target_col, test_ratio=0.2, multivariado=True)
+
+
+    mlflow.set_tracking_uri("file:../../mlruns")
+    mlflow.set_experiment("Modelo VAR")
+
+    modelo = VAR(train_df)
+    mejores_modelos = {}
+
+    for lag in range(1, 16):
         try:
-            model_fitted = model.fit(lags)
-            val_pred = model_fitted.forecast(train.values[-lags:], steps=len(val))
-            val_pred_df = pd.DataFrame(val_pred, index=val.index, columns=val.columns)
-            mse = mean_squared_error(val, val_pred_df)
+            resultado = modelo.fit(lag)
+            _ = resultado.aic  # Fuerza el cálculo del AIC para verificar que el modelo es válido
+            mejores_modelos[lag] = resultado
+        except Exception:
+            pass  # No hace nada si hay un error, simplemente pasa al siguiente
 
-            print(f"Lags: {lags}, MSE de validación: {mse:.4f}")
+    if not mejores_modelos:
+        raise ValueError("Ningún modelo VAR pudo ser ajustado correctamente.")
 
-            if mse < best_mse:
-                best_mse = mse
-                best_model = model_fitted
-                best_lag = lags
-        except Exception as e:
-            print(f"Error con {lags} rezagos: {e}")
+    best_lag = min(mejores_modelos, key=lambda k: mejores_modelos[k].aic)
+    best_model = mejores_modelos[best_lag]
 
-    print(f"Mejor número de rezagos: {best_lag} con MSE {best_mse:.4f}")
-    return best_model, {'best lag': best_lag}
+    with mlflow.start_run():
+        # Hacer predicciones sobre el test
+        n_obs = len(test_df)
+        forecast = best_model.forecast(train_df.values[-best_lag:], steps=n_obs)
+        forecast_df = test_df.copy().astype(np.float64)
+        forecast_df.iloc[:, :] = forecast
 
+        # Evaluar solo la serie target
+        y_true = test_df[target_col]
+        y_pred = forecast_df[target_col]
 
-# Función para evaluar el modelo
-def evaluar_modelo(modelo, test):
-    if modelo is None:
-        print("El modelo no fue entrenado correctamente.")
-        return None
+        mse, mae, rmse, r2, acc = evaluar_modelo_30d(y_true, y_pred)
 
-    lags = modelo.k_ar
-    predicciones = modelo.forecast(test.values[:lags], steps=len(test))
-    pred_df = pd.DataFrame(predicciones, index=test.index, columns=test.columns)
-
-    # Cálculo de métricas
-    mse = mean_squared_error(test, pred_df)
-    rmse = np.sqrt(mse)
-    mae = mean_absolute_error(test, pred_df)
-    r2 = r2_score(test, pred_df)
-
-    print(f"MSE en test: {mse:.4f}")
-    print(f"RMSE en test: {rmse:.4f}")
-    print(f"MAE en test: {mae:.4f}")
-    print(f"R² en test: {r2:.4f}")
-
-    return mse, rmse, mae, r2
-
-
-# Función principal
-def main():
-    mlflow.set_tracking_uri(r"file:../../mlruns")
-    mlflow.set_experiment("VAR 30d")
-
-    ruta_parquet = r"../../../../data/parquet/data_30d.parquet"
-    df = cargar_datos(ruta_parquet)
-    df_scaled, scaler = preprocesar_datos(df)
-    train, val, test = dividir_datos(df_scaled)
-
-    with mlflow.start_run(run_name="VAR"):
-        modelo_var, best_params = entrenar_y_validar_var(train, val)
-        mse, rmse, mae, r2 = evaluar_modelo(modelo_var, test)
-
-        mlflow.log_params(best_params)
-        mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2})
+        mlflow.log_param("best_lag", best_lag)
+        mlflow.log_metrics({
+            "mse": mse,
+            "mae": mae,
+            "rmse": rmse,
+            "r2": r2,
+            "acc": acc
+        })
 
 
 if __name__ == "__main__":
-    main()
+    main_var("../../data/parquet/data_30d.parquet")
+

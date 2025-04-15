@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/30_dias/../../mlruns/293472285265345671/ec11057d3ac54681b4a513cbbeb9ab39/artifacts
+end_time: 1744726128507
+entry_point_name: ''
+experiment_id: '293472285265345671'
+lifecycle_stage: active
+run_id: ec11057d3ac54681b4a513cbbeb9ab39
+run_name: gregarious-dog-680
+run_uuid: ec11057d3ac54681b4a513cbbeb9ab39
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744726128374
+status: 4
+tags: []
+user_id: vegag

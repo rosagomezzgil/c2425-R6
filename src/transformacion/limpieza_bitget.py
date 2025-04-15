@@ -56,7 +56,7 @@ def detectar_outliers_iqr(data, col):
 
 
 if __name__ == "__main__":
-    df = pd.read_csv(r"../../data/extraccion/bitget_scrapping.csv")
+    df = pd.read_csv(r"../data/extraccion/bitget_scrapping.csv")
 
     # Mostrar las primeras filas del DataFrame
     print("Primeras filas del archivo CSV:")
@@ -136,6 +136,6 @@ if __name__ == "__main__":
 
     df = calcular_rsi(df, "close")
 
-    output_path = r"../../data/limpieza/limpios_bitget_scrapping.csv"
+    output_path = r"../data/limpieza/limpios_bitget_scrapping.csv"
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_csv(output_path, index=False)

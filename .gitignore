@@ -3,7 +3,7 @@
 .idea/
 
 # Datos almacenados
-data/
+src/data/
 
 __pycache__/
 

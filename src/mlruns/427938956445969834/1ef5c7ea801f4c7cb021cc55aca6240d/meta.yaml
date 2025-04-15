@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/7_dias/../../mlruns/427938956445969834/1ef5c7ea801f4c7cb021cc55aca6240d/artifacts
+end_time: 1744727450647
+entry_point_name: ''
+experiment_id: '427938956445969834'
+lifecycle_stage: active
+run_id: 1ef5c7ea801f4c7cb021cc55aca6240d
+run_name: angry-rook-285
+run_uuid: 1ef5c7ea801f4c7cb021cc55aca6240d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744727443290
+status: 3
+tags: []
+user_id: vegag

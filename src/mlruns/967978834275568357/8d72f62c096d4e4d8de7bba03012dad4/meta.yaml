@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/30_dias/../../mlruns/967978834275568357/8d72f62c096d4e4d8de7bba03012dad4/artifacts
+end_time: 1744672051785
+entry_point_name: ''
+experiment_id: '967978834275568357'
+lifecycle_stage: active
+run_id: 8d72f62c096d4e4d8de7bba03012dad4
+run_name: smiling-ape-101
+run_uuid: 8d72f62c096d4e4d8de7bba03012dad4
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744672045922
+status: 3
+tags: []
+user_id: vegag

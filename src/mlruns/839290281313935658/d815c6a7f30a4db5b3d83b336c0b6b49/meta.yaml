@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/30_dias/../../mlruns/839290281313935658/d815c6a7f30a4db5b3d83b336c0b6b49/artifacts
+end_time: 1744672478960
+entry_point_name: ''
+experiment_id: '839290281313935658'
+lifecycle_stage: active
+run_id: d815c6a7f30a4db5b3d83b336c0b6b49
+run_name: nimble-colt-969
+run_uuid: d815c6a7f30a4db5b3d83b336c0b6b49
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744672447239
+status: 3
+tags: []
+user_id: vegag

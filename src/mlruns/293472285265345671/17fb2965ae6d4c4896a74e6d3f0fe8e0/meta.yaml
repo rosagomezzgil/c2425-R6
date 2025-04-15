@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/30_dias/../../mlruns/293472285265345671/17fb2965ae6d4c4896a74e6d3f0fe8e0/artifacts
+end_time: 1744723733012
+entry_point_name: ''
+experiment_id: '293472285265345671'
+lifecycle_stage: active
+run_id: 17fb2965ae6d4c4896a74e6d3f0fe8e0
+run_name: powerful-midge-701
+run_uuid: 17fb2965ae6d4c4896a74e6d3f0fe8e0
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744723732826
+status: 4
+tags: []
+user_id: vegag

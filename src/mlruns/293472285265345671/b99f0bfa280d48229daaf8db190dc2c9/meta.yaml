@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/30_dias/../../mlruns/293472285265345671/b99f0bfa280d48229daaf8db190dc2c9/artifacts
+end_time: 1744725921521
+entry_point_name: ''
+experiment_id: '293472285265345671'
+lifecycle_stage: active
+run_id: b99f0bfa280d48229daaf8db190dc2c9
+run_name: redolent-slug-876
+run_uuid: b99f0bfa280d48229daaf8db190dc2c9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744725921405
+status: 4
+tags: []
+user_id: vegag

@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/7_dias/../../mlruns/411642068214775853/7f4ff678ca2349f184450501aef3505c/artifacts
+end_time: 1744646310446
+entry_point_name: ''
+experiment_id: '411642068214775853'
+lifecycle_stage: active
+run_id: 7f4ff678ca2349f184450501aef3505c
+run_name: persistent-yak-540
+run_uuid: 7f4ff678ca2349f184450501aef3505c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744646303151
+status: 3
+tags: []
+user_id: vegag

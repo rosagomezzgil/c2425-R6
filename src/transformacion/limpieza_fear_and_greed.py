@@ -15,7 +15,7 @@ import pandas as pd
 
 if __name__ == "__main__":
     # Cargar datos desde un CSV (ajusta la ruta a tu archivo)
-    df = pd.read_csv(r"../../data/extraccion/datos_bitcoin_fear_greed.csv")
+    df = pd.read_csv(r"../data/extraccion/datos_bitcoin_fear_greed.csv")
 
     # Ver las primeras filas
     print(df.head())
@@ -33,6 +33,6 @@ if __name__ == "__main__":
 
     print(df.isnull().sum())  # no hay nulos
 
-    output_path = r"../../data/limpieza/limpios_fear_greed.csv"
+    output_path = r"../data/limpieza/limpios_fear_greed.csv"
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_csv(output_path, index=False)

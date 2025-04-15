@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/7_dias/../../mlruns/427938956445969834/8d41eaa1ac2a481e87fd6d2978662090/artifacts
+end_time: 1744718338699
+entry_point_name: ''
+experiment_id: '427938956445969834'
+lifecycle_stage: active
+run_id: 8d41eaa1ac2a481e87fd6d2978662090
+run_name: delightful-colt-360
+run_uuid: 8d41eaa1ac2a481e87fd6d2978662090
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744718321503
+status: 3
+tags: []
+user_id: vegag

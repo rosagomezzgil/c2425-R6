@@ -19,7 +19,7 @@ import os
 import pandas as pd
 
 if __name__ == "__main__":
-    df = pd.read_csv(r"../../data/extraccion/datos_google_trends.csv")
+    df = pd.read_csv(r"../data/extraccion/datos_google_trends.csv")
     df = df.reset_index(drop=True)
 
     # Convertir timestamp a datetime
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     df_merged["bitcoin"] = df_merged["bitcoin"].interpolate(method="linear")
 
     # Guardar el conjunto de datos
-    output_path = r"../../data/limpieza/limpios_google_trends.csv"
+    output_path = r"../data/limpieza/limpios_google_trends.csv"
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df_merged.to_csv(output_path, encoding="utf-8-sig", index=False)
     print(df_merged.head())

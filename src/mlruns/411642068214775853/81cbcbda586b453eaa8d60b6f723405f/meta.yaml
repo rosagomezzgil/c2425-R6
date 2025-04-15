@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/7_dias/../../mlruns/411642068214775853/81cbcbda586b453eaa8d60b6f723405f/artifacts
+end_time: 1744718300014
+entry_point_name: ''
+experiment_id: '411642068214775853'
+lifecycle_stage: active
+run_id: 81cbcbda586b453eaa8d60b6f723405f
+run_name: adorable-rat-999
+run_uuid: 81cbcbda586b453eaa8d60b6f723405f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744718288110
+status: 3
+tags: []
+user_id: vegag

@@ -1,6 +1,6 @@
-# Archivos de PyCharm
 .venv/
 .idea/
+.python-version
 
 # Datos almacenados
 src/data/
@@ -9,4 +9,3 @@ __pycache__/
 
 # Notebooks
 .ipynb_checkpoints/
-

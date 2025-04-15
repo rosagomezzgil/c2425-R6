@@ -1,0 +1,16 @@
+artifact_uri: file:///C:/Users/Daniel/Universidad/PD/c2425-R6/src/modelos/mlruns/191856407358870632/5a29f51505f4457aae0e54e8bee4602d/artifacts
+deleted_time: 1744378521649
+end_time: 1744377335761
+entry_point_name: ''
+experiment_id: '191856407358870632'
+lifecycle_stage: deleted
+run_id: 5a29f51505f4457aae0e54e8bee4602d
+run_name: Baseline 30d regresion
+run_uuid: 5a29f51505f4457aae0e54e8bee4602d
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744377329678
+status: 3
+tags: []
+user_id: Daniel

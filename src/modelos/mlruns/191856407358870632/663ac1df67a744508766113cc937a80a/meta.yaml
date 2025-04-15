@@ -1,0 +1,16 @@
+artifact_uri: file:///C:/Users/Daniel/Universidad/PD/c2425-R6/src/modelos/mlruns/191856407358870632/663ac1df67a744508766113cc937a80a/artifacts
+deleted_time: 1744378521576
+end_time: 1744377941820
+entry_point_name: ''
+experiment_id: '191856407358870632'
+lifecycle_stage: deleted
+run_id: 663ac1df67a744508766113cc937a80a
+run_name: Baseline 7d regresion
+run_uuid: 663ac1df67a744508766113cc937a80a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744377941220
+status: 4
+tags: []
+user_id: Daniel

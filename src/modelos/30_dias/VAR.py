@@ -3,9 +3,10 @@ from src.modelos.B_preprocesamiento import preprocesar_datos_30d
 from src.modelos.D_division_temporal import dividir_datos_temporalmente_30d
 from src.modelos.C_seleccion_variables import seleccionar_variables
 from src.modelos.F_metricas import evaluar_modelo_30d
-
 from statsmodels.tsa.api import VAR
 import mlflow
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import TimeSeriesSplit
 import numpy as np
 
 
@@ -29,22 +30,33 @@ def main_var(parquet_path: str, target_col: str = 'pct_cambio_30d'):
     mlflow.set_tracking_uri("file:../../mlruns")
     mlflow.set_experiment("Modelo VAR")
 
-    modelo = VAR(train_df)
-    mejores_modelos = {}
+    tscv = TimeSeriesSplit(n_splits=5)
+    errores_por_lag = {}
 
     for lag in range(1, 16):
-        try:
-            resultado = modelo.fit(lag)
-            _ = resultado.aic  # Fuerza el cálculo del AIC para verificar que el modelo es válido
-            mejores_modelos[lag] = resultado
-        except Exception:
-            pass  # No hace nada si hay un error, simplemente pasa al siguiente
+        errores = []
 
-    if not mejores_modelos:
-        raise ValueError("Ningún modelo VAR pudo ser ajustado correctamente.")
+        for train_index, val_index in tscv.split(df):
+            train_split, val_split = df.iloc[train_index], df.iloc[val_index]
 
-    best_lag = min(mejores_modelos, key=lambda k: mejores_modelos[k].aic)
-    best_model = mejores_modelos[best_lag]
+            try:
+                modelo = VAR(train_split)
+                fitted = modelo.fit(lag)
+                forecast = fitted.forecast(train_split.values[-lag:], steps=len(val_split))
+
+                mse = mean_squared_error(val_split, forecast)
+                errores.append(mse)
+            except:
+                continue
+
+        if errores:
+            errores_por_lag[lag] = np.mean(errores)
+
+    if not errores_por_lag:
+        raise ValueError("Ningún modelo VAR fue válido con los datos y splits proporcionados.")
+
+    best_lag = min(errores_por_lag, key=errores_por_lag.get)
+    best_model = VAR(train_df).fit(best_lag)
 
     with mlflow.start_run():
         # Hacer predicciones sobre el test

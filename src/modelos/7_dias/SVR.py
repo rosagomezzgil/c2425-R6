@@ -35,7 +35,7 @@ def main():
 
     # Ajustar el modelo con los mejores hiperparámetros usando tu función de ajuste
     with mlflow.start_run():
-        best_model, best_params = ajustar_modelo(svr_model, X_train_val, y_train_val, param_grid)
+        best_model, best_params = ajustar_modelo(svr_model, X_train_val, y_train_val, param_grid, strategy="random")
 
         # Evaluación del modelo
         mse, mae, rmse, r2, acc = evaluar_modelo_7d(best_model, X_test, y_test)

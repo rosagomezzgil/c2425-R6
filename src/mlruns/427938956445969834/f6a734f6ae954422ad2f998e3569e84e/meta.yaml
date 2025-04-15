@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/7_dias/../../mlruns/427938956445969834/f6a734f6ae954422ad2f998e3569e84e/artifacts
+end_time: 1744729779955
+entry_point_name: ''
+experiment_id: '427938956445969834'
+lifecycle_stage: active
+run_id: f6a734f6ae954422ad2f998e3569e84e
+run_name: whimsical-frog-996
+run_uuid: f6a734f6ae954422ad2f998e3569e84e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744729761021
+status: 3
+tags: []
+user_id: vegag

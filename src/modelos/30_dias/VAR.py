@@ -82,5 +82,5 @@ def main_var(parquet_path: str, target_col: str = 'pct_cambio_30d'):
 
 
 if __name__ == "__main__":
-    main_var("../../data/parquet/data_30d.parquet")
+    main_var("../../../data/parquet/data_30d.parquet")
 

@@ -51,4 +51,4 @@ def main_sarima(parquet_path: str, target_col: str = 'pct_cambio_30d'):
 
 
 if __name__ == "__main__":
-    main_sarima("../../data/parquet/data_30d.parquet")
+    main_sarima("../../../data/parquet/data_30d.parquet")

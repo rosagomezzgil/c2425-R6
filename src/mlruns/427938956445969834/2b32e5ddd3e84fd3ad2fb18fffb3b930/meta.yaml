@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/7_dias/../../mlruns/427938956445969834/2b32e5ddd3e84fd3ad2fb18fffb3b930/artifacts
+end_time: 1744730283707
+entry_point_name: ''
+experiment_id: '427938956445969834'
+lifecycle_stage: active
+run_id: 2b32e5ddd3e84fd3ad2fb18fffb3b930
+run_name: blushing-dolphin-430
+run_uuid: 2b32e5ddd3e84fd3ad2fb18fffb3b930
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744730262326
+status: 3
+tags: []
+user_id: vegag

@@ -3,7 +3,7 @@
 .python-version
 
 # Datos almacenados
-src/data/
+data/
 
 __pycache__/
 

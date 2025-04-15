@@ -130,7 +130,7 @@ if __name__ == "__main__":
     mlflow.set_experiment("Baseline")
 
     # Datos para 7 días
-    df = pd.read_parquet(r"../data/parquet/data_7d.parquet")
+    df = pd.read_parquet(r"../../data/parquet/data_7d.parquet")
 
     print("BASELINE PARA 7 DIAS:")
 
@@ -170,7 +170,7 @@ if __name__ == "__main__":
         mlflow.log_figure(fig, "prediction_plot.png")
 
     # Datos para 30 días
-    df = pd.read_parquet(r"../data/parquet/data_30d.parquet")
+    df = pd.read_parquet(r"../../data/parquet/data_30d.parquet")
 
     print("\n")
     print("BASELINE PARA 30 DIAS:")

@@ -24,31 +24,31 @@ import pandas as pd
 
 if __name__ == "__main__":
     # Cargar el CSV en un DataFrame
-    df = pd.read_csv(r"../data/limpieza/cleaned_data.csv")
+    df = pd.read_csv(r"../../data/limpieza/cleaned_data.csv")
 
     # Guardar como Parquet
-    output_path = r"../data/parquet/data.parquet"
+    output_path = r"../../data/parquet/data.parquet"
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_parquet(output_path, engine="pyarrow")
-    df_parquet = pd.read_parquet(r"../data/parquet/data.parquet")
+    df_parquet = pd.read_parquet(r"../../data/parquet/data.parquet")
     print(df_parquet.head())
 
     # Cargar el CSV en un DataFrame
-    df = pd.read_csv(r"../data/limpieza/dataset_7d.csv")
+    df = pd.read_csv(r"../../data/limpieza/dataset_7d.csv")
 
     # Guardar como Parquet
-    output_path = r"../data/parquet/data_7d.parquet"
+    output_path = r"../../data/parquet/data_7d.parquet"
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_parquet(output_path, engine="pyarrow")
-    df_parquet = pd.read_parquet(r"../data/parquet/data_7d.parquet")
+    df_parquet = pd.read_parquet(r"../../data/parquet/data_7d.parquet")
     print(df_parquet.head())
 
     # Cargar el CSV en un DataFrame
-    df = pd.read_csv(r"../data/limpieza/dataset_30d.csv")
+    df = pd.read_csv(r"../../data/limpieza/dataset_30d.csv")
 
     # Guardar como Parquet
-    output_path = r"../data/parquet/data_30d.parquet"
+    output_path = r"../../data/parquet/data_30d.parquet"
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_parquet(output_path, engine="pyarrow")
-    df_parquet = pd.read_parquet(r"../data/parquet/data_30d.parquet")
+    df_parquet = pd.read_parquet(r"../../data/parquet/data_30d.parquet")
     print(df_parquet.head())

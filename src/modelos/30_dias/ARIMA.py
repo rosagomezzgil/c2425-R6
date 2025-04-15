@@ -37,4 +37,4 @@ def main_arima(parquet_path: str, target_col: str = 'pct_cambio_30d'):
 
 
 if __name__ == "__main__":
-    main_arima("../../data/parquet/data_30d.parquet")
+    main_arima("../../../data/parquet/data_30d.parquet")

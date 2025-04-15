@@ -18,7 +18,7 @@ def crear_ventanas(X, y, window_size=10):
 
 def preparar_datos():
     # Cargar datos
-    df = cargar_datos_7d("../../data/parquet/data_7d.parquet")
+    df = cargar_datos_7d("../../../data/parquet/data_7d.parquet")
 
     # Preprocesar datos para LSTM
     X, y, scaler = preprocesar_datos_7d(df, tecnica="lstm", target_col="pct_cambio_7d")

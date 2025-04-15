@@ -10,7 +10,7 @@ def main():
     mlflow.set_tracking_uri(r"file:../../mlruns")
     mlflow.set_experiment("Modelo Arbol")
 
-    df = cargar_datos_7d("../../data/parquet/data_7d.parquet")
+    df = cargar_datos_7d("../../../data/parquet/data_7d.parquet")
     X, y, _ = preprocesar_datos_7d(df, tecnica="arbol", target_col="pct_cambio_7d")
 
     # Cambiado: ahora separamos solo train_val y test

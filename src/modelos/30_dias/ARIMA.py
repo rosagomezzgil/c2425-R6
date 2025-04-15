@@ -8,7 +8,7 @@ import mlflow
 from statsmodels.tsa.arima.model import ARIMA
 
 
-def main_arima(parquet_path: str, target_col: str = 'pct_cambio_30d'):
+def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
     df = cargar_datos_30d(parquet_path)
     df = preprocesar_datos_30d(df, target_col)
 
@@ -37,4 +37,4 @@ def main_arima(parquet_path: str, target_col: str = 'pct_cambio_30d'):
 
 
 if __name__ == "__main__":
-    main_arima("../../../data/parquet/data_30d.parquet")
+    main("../../../data/parquet/data_30d.parquet")

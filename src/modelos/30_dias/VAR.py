@@ -10,7 +10,7 @@ from sklearn.model_selection import TimeSeriesSplit
 import numpy as np
 
 
-def main_var(parquet_path: str, target_col: str = 'pct_cambio_30d'):
+def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
     # Cargar datos y preprocesarlos
     df = cargar_datos_30d(parquet_path)
     df = preprocesar_datos_30d(df, target_col)  # Este paso ya te asegura que hay múltiples columnas
@@ -82,5 +82,5 @@ def main_var(parquet_path: str, target_col: str = 'pct_cambio_30d'):
 
 
 if __name__ == "__main__":
-    main_var("../../../data/parquet/data_30d.parquet")
+    main("../../../data/parquet/data_30d.parquet")
 

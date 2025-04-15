@@ -7,7 +7,7 @@ from src.modelos.E_ajuste_hiperparametros import validar_modelo_timeseries
 from src.modelos.F_metricas import evaluar_modelo_30d
 
 
-def main_sarima(parquet_path: str, target_col: str = 'pct_cambio_30d'):
+def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
     df = cargar_datos_30d(parquet_path)
     df = preprocesar_datos_30d(df, target_col)
 
@@ -51,4 +51,4 @@ def main_sarima(parquet_path: str, target_col: str = 'pct_cambio_30d'):
 
 
 if __name__ == "__main__":
-    main_sarima("../../../data/parquet/data_30d.parquet")
+    main("../../../data/parquet/data_30d.parquet")

@@ -3,6 +3,7 @@ from src.modelos.B_preprocesamiento import preprocesar_datos_30d
 from src.modelos.D_division_temporal import dividir_datos_temporalmente_30d
 from src.modelos.C_seleccion_variables import seleccionar_variables
 from src.modelos.F_metricas import evaluar_modelo_30d
+from src.modelos.G_graficar_predicciones import plot_predictions
 from statsmodels.tsa.api import VAR
 import mlflow
 from sklearn.metrics import mean_squared_error
@@ -71,6 +72,8 @@ def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
 
         mse, mae, rmse, r2, acc = evaluar_modelo_30d(y_true, y_pred)
 
+        fig = plot_predictions(y_true, pred=y_pred)
+
         mlflow.log_param("best_lag", best_lag)
         mlflow.log_metrics({
             "mse": mse,
@@ -79,6 +82,7 @@ def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
             "r2": r2,
             "acc": acc
         })
+        mlflow.log_figure(fig, "prediction_plot.png")
 
 
 if __name__ == "__main__":

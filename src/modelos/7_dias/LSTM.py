@@ -35,7 +35,7 @@ def preparar_datos():
 
 
 # Crear el modelo LSTM
-def crear_modelo_lstm(input_shape, units=50, epochs=20, batch_size=32):
+def crear_modelo_lstm(input_shape, units=50):
     model = Sequential([
         LSTM(units, activation='relu', input_shape=input_shape),
         Dense(1)

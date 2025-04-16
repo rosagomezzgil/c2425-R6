@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/Daniel/Universidad/PD/c2425-R6/src/modelos/mlruns/191856407358870632/8fc657db632844e39d4e974533f7d100/artifacts
+end_time: 1744834393460
+entry_point_name: ''
+experiment_id: '191856407358870632'
+lifecycle_stage: active
+run_id: 8fc657db632844e39d4e974533f7d100
+run_name: Baseline 30d categorica
+run_uuid: 8fc657db632844e39d4e974533f7d100
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744834392993
+status: 3
+tags: []
+user_id: Daniel

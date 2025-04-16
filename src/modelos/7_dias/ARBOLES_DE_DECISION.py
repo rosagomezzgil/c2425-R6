@@ -5,6 +5,7 @@ from src.modelos.B_preprocesamiento import preprocesar_datos_7d
 from src.modelos.D_division_temporal import dividir_datos_temporalmente_7d
 from src.modelos.E_ajuste_hiperparametros import ajustar_modelo
 from src.modelos.F_metricas import evaluar_modelo_7d
+from src.modelos.G_graficar_predicciones import plot_predictions
 
 def main():
     mlflow.set_tracking_uri(r"file:../../mlruns")
@@ -29,8 +30,12 @@ def main():
             )
             mse, mae, rmse, r2, acc = evaluar_modelo_7d(best_model, X_test, y_test)
 
+            fig = plot_predictions(y_test, modelo=best_model, X=X_test)
+
             mlflow.log_params(best_params)
             mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2, "acc": acc})
+            mlflow.log_figure(fig, "prediction_plot.png")
+
     except Exception as e:
         print(e)
 

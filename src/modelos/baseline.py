@@ -107,6 +107,10 @@ def plot_predictions(df: pd.DataFrame):
     fig, ax = plt.subplots(figsize=(12, 6))
     ax.plot(timestamps, y, label="Real", color="blue")
     ax.plot(timestamps, predictions, label="Predicción", color="red", linestyle="dashed")
+
+    # Línea horizontal en y = 0
+    ax.axhline(y=0, color="purple", linestyle="--", linewidth=1, label="y = 0")
+
     ax.legend()
     ax.set_xlabel("Tiempo")
     ax.set_ylabel(f"Valor de {target_col}")

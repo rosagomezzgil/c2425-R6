@@ -32,6 +32,7 @@ def validar_modelo_timeseries(y, param_grid, model_class, seasonal=False, season
     best_params = None
     best_model = None
 
+    # Si es un modelo estacional y hay una grilla de parámetros estacionales
     if seasonal and seasonal_param_grid:
         for order in param_grid:
             for seasonal_order in seasonal_param_grid:
@@ -45,6 +46,7 @@ def validar_modelo_timeseries(y, param_grid, model_class, seasonal=False, season
                         mse = np.mean((y_test - pred[:len(y_test)]) ** 2)
                         fold_mse.append(mse)
                     except Exception:
+                        # Si ocurre un error, asigna infinito al error de ese split
                         fold_mse.append(np.inf)
 
                 avg_mse = np.mean(fold_mse)
@@ -53,6 +55,7 @@ def validar_modelo_timeseries(y, param_grid, model_class, seasonal=False, season
                     best_params = (order, seasonal_order)
                     best_model = model_class(y, order=order, seasonal_order=seasonal_order).fit(disp=False)
     else:
+        # Sin parámetros estacionales
         for order in param_grid:
             fold_mse = []
             for train_idx, test_idx in tscv.split(y):

@@ -5,6 +5,7 @@ from src.modelos.B_preprocesamiento import preprocesar_datos_7d  # Función de p
 from src.modelos.D_division_temporal import dividir_datos_temporalmente_7d  # Función para dividir los datos temporalmente
 from src.modelos.F_metricas import evaluar_modelo_7d  # Función de evaluación del modelo
 from src.modelos.C_seleccion_variables import seleccionar_variables
+from src.modelos.G_graficar_predicciones import plot_predictions
 import mlflow
 
 
@@ -40,9 +41,12 @@ def main():
         # Evaluación del modelo
         mse, mae, rmse, r2, acc = evaluar_modelo_7d(best_model, X_test, y_test)
 
+        fig = plot_predictions(y_test, modelo=best_model, X=X_test)
+
         # Loguear los mejores parámetros y métricas
         mlflow.log_params(best_params)
         mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2, "acc": acc})
+        mlflow.log_figure(fig, "prediction_plot.png")
 
 
 if __name__ == "__main__":

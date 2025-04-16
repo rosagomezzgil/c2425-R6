@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/7_dias/../../mlruns/411642068214775853/813a096624fc469e95c67900b30506b2/artifacts
+end_time: 1744833047581
+entry_point_name: ''
+experiment_id: '411642068214775853'
+lifecycle_stage: active
+run_id: 813a096624fc469e95c67900b30506b2
+run_name: melodic-lynx-859
+run_uuid: 813a096624fc469e95c67900b30506b2
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744833000858
+status: 3
+tags: []
+user_id: Daniel

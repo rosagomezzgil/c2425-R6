@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/7_dias/../../mlruns/427938956445969834/18002b863acd43be82c086d0fc64d7a6/artifacts
+end_time: 1744833232634
+entry_point_name: ''
+experiment_id: '427938956445969834'
+lifecycle_stage: active
+run_id: 18002b863acd43be82c086d0fc64d7a6
+run_name: industrious-tern-918
+run_uuid: 18002b863acd43be82c086d0fc64d7a6
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744833202281
+status: 4
+tags: []
+user_id: Daniel

@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/30_dias/../../mlruns/967978834275568357/43cc6f9a53ec49afb3448dabb91cfb4a/artifacts
+end_time: 1744833989341
+entry_point_name: ''
+experiment_id: '967978834275568357'
+lifecycle_stage: active
+run_id: 43cc6f9a53ec49afb3448dabb91cfb4a
+run_name: unique-snake-865
+run_uuid: 43cc6f9a53ec49afb3448dabb91cfb4a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744833941321
+status: 4
+tags: []
+user_id: Daniel

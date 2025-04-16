@@ -1,3 +1,4 @@
+from datetime import datetime
 from sklearn.svm import SVR
 from src.modelos.E_ajuste_hiperparametros import ajustar_modelo  # Función de ajuste de hiperparámetros
 from src.modelos.A_cargar_datos import cargar_datos_7d  # Función de carga de datos
@@ -11,7 +12,7 @@ import mlflow
 
 def main():
     # Configuración de mlflow
-    mlflow.set_tracking_uri("file:../../mlruns")
+    mlflow.set_tracking_uri("file:../../../mlruns")
     mlflow.set_experiment("Modelo SVR")
 
     # Cargar y preprocesar los datos
@@ -35,7 +36,8 @@ def main():
     }
 
     # Ajustar el modelo con los mejores hiperparámetros usando tu función de ajuste
-    with mlflow.start_run():
+    hora_actual = datetime.now().strftime("%H-%M-%S")
+    with mlflow.start_run(run_name=f"SVR-{hora_actual}"):
         best_model, best_params = ajustar_modelo(svr_model, X_train_val, y_train_val, param_grid, strategy="random")
 
         # Evaluación del modelo

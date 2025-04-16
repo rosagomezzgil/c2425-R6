@@ -6,6 +6,7 @@ from src.modelos.D_division_temporal import dividir_datos_temporalmente_30d
 from src.modelos.G_graficar_predicciones import  plot_predictions
 
 import mlflow
+from datetime import datetime
 from statsmodels.tsa.arima.model import ARIMA
 
 
@@ -18,10 +19,11 @@ def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
 
     param_grid = [(1, 1, 1), (2, 1, 2), (1, 0, 1), (2, 0, 2)]
 
-    mlflow.set_tracking_uri("file:../../mlruns")
+    mlflow.set_tracking_uri("file:../../../mlruns")
     mlflow.set_experiment("ARIMA con TimeSeriesSplit")
 
-    with mlflow.start_run():
+    hora_actual = datetime.now().strftime("%H-%M-%S")
+    with mlflow.start_run(run_name=f"ARIMA-{hora_actual}"):
 
         model, best_order = validar_modelo_timeseries(y_train, param_grid, ARIMA)
         pred = model.predict(start=y_test.index[0], end=y_test.index[-1])

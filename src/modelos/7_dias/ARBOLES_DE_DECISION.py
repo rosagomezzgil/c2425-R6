@@ -1,4 +1,5 @@
 import mlflow
+from datetime import datetime
 from sklearn.tree import DecisionTreeRegressor
 from src.modelos.A_cargar_datos import cargar_datos_7d
 from src.modelos.B_preprocesamiento import preprocesar_datos_7d
@@ -8,7 +9,7 @@ from src.modelos.F_metricas import evaluar_modelo_7d
 from src.modelos.G_graficar_predicciones import plot_predictions
 
 def main():
-    mlflow.set_tracking_uri(r"file:../../mlruns")
+    mlflow.set_tracking_uri(r"file:../../../mlruns")
     mlflow.set_experiment("Modelo Arbol")
 
     df = cargar_datos_7d("../../../data/parquet/data_7d.parquet")
@@ -24,7 +25,8 @@ def main():
     }
 
     try:
-        with mlflow.start_run():
+        hora_actual = datetime.now().strftime("%H-%M-%S")
+        with mlflow.start_run(run_name=f"Arbol-{hora_actual}"):
             best_model, best_params = ajustar_modelo(
                 modelo, X_train_val, y_train_val, param_grid
             )

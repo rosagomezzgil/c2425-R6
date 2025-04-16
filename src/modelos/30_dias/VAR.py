@@ -9,6 +9,7 @@ import mlflow
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import TimeSeriesSplit
 import numpy as np
+from datetime import datetime
 
 
 def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
@@ -28,7 +29,7 @@ def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
     train_df, test_df = dividir_datos_temporalmente_30d(df, target_col, test_ratio=0.2, multivariado=True)
 
 
-    mlflow.set_tracking_uri("file:../../mlruns")
+    mlflow.set_tracking_uri("file:../../../mlruns")
     mlflow.set_experiment("Modelo VAR")
 
     tscv = TimeSeriesSplit(n_splits=5)
@@ -59,7 +60,8 @@ def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
     best_lag = min(errores_por_lag, key=errores_por_lag.get)
     best_model = VAR(train_df).fit(best_lag)
 
-    with mlflow.start_run():
+    hora_actual = datetime.now().strftime("%H-%M-%S")
+    with mlflow.start_run(run_name=f"VAR-{hora_actual}"):
         # Hacer predicciones sobre el test
         n_obs = len(test_df)
         forecast = best_model.forecast(train_df.values[-best_lag:], steps=n_obs)

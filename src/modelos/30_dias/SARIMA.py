@@ -1,4 +1,5 @@
 import mlflow
+from datetime import  datetime
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from src.modelos.A_cargar_datos import cargar_datos_30d
 from src.modelos.B_preprocesamiento import preprocesar_datos_30d
@@ -23,10 +24,11 @@ def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
 
     ]
 
-    mlflow.set_tracking_uri("file:../../mlruns")
+    mlflow.set_tracking_uri("file:../../../mlruns")
     mlflow.set_experiment("SARIMA Modular")
 
-    with mlflow.start_run():
+    hora_actual = datetime.now().strftime("%H-%M-%S")
+    with mlflow.start_run(run_name=f"SARIMA-{hora_actual}"):
         model, (best_order, best_seasonal_order) = validar_modelo_timeseries(
             y_train,
             param_grid,

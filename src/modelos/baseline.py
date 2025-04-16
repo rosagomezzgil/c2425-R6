@@ -130,7 +130,7 @@ def plot_predictions(df: pd.DataFrame):
 
 
 if __name__ == "__main__":
-    mlflow.set_tracking_uri(r"file:mlruns")
+    mlflow.set_tracking_uri(r"file:../../mlruns")
     mlflow.set_experiment("Baseline")
 
     # Datos para 7 días

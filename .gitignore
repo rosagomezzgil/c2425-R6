@@ -2,6 +2,9 @@
 .idea/
 .python-version
 
+#MLFlow
+**/mlruns
+
 # Datos almacenados
 data/
 

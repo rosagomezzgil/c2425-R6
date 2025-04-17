@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/7_dias/../../mlruns/411642068214775853/e5e764dcf86c4295b0ae85124fb75efb/artifacts
+end_time: 1744889728202
+entry_point_name: ''
+experiment_id: '411642068214775853'
+lifecycle_stage: active
+run_id: e5e764dcf86c4295b0ae85124fb75efb
+run_name: sedate-cow-146
+run_uuid: e5e764dcf86c4295b0ae85124fb75efb
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744889720527
+status: 3
+tags: []
+user_id: vegag

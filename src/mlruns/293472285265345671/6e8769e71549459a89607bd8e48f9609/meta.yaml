@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/30_dias/../../mlruns/293472285265345671/6e8769e71549459a89607bd8e48f9609/artifacts
+end_time: 1744903698675
+entry_point_name: ''
+experiment_id: '293472285265345671'
+lifecycle_stage: active
+run_id: 6e8769e71549459a89607bd8e48f9609
+run_name: secretive-hen-782
+run_uuid: 6e8769e71549459a89607bd8e48f9609
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744903698472
+status: 3
+tags: []
+user_id: vegag

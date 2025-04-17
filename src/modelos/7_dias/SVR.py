@@ -14,7 +14,7 @@ def main():
     mlflow.set_experiment("Modelo SVR")
 
     # Cargar y preprocesar los datos
-    df = cargar_datos_7d("../../../data/parquet/data_7d.parquet")
+    df = cargar_datos_7d("../../../data/limpieza/cleaned_data.csv")
     X, y, scaler = preprocesar_datos_7d(df, tecnica="svr", target_col="pct_cambio_7d")
 
     # Seleccion de variables

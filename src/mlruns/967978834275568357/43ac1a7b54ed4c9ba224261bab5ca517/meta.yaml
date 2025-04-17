@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/30_dias/../../mlruns/967978834275568357/43ac1a7b54ed4c9ba224261bab5ca517/artifacts
+end_time: 1744902917301
+entry_point_name: ''
+experiment_id: '967978834275568357'
+lifecycle_stage: active
+run_id: 43ac1a7b54ed4c9ba224261bab5ca517
+run_name: rumbling-sheep-523
+run_uuid: 43ac1a7b54ed4c9ba224261bab5ca517
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744902913294
+status: 3
+tags: []
+user_id: vegag

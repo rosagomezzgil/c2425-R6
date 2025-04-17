@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/7_dias/../../mlruns/411642068214775853/a72b9c93aab544888b637e7a0398385e/artifacts
+end_time: 1744890619122
+entry_point_name: ''
+experiment_id: '411642068214775853'
+lifecycle_stage: active
+run_id: a72b9c93aab544888b637e7a0398385e
+run_name: defiant-asp-784
+run_uuid: a72b9c93aab544888b637e7a0398385e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744890612481
+status: 3
+tags: []
+user_id: vegag

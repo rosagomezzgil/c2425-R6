@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/7_dias/../../mlruns/411642068214775853/0fbce83fbf00418cbfaa9d3008aa54d9/artifacts
+end_time: 1744889768549
+entry_point_name: ''
+experiment_id: '411642068214775853'
+lifecycle_stage: active
+run_id: 0fbce83fbf00418cbfaa9d3008aa54d9
+run_name: gaudy-hen-269
+run_uuid: 0fbce83fbf00418cbfaa9d3008aa54d9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744889762405
+status: 3
+tags: []
+user_id: vegag

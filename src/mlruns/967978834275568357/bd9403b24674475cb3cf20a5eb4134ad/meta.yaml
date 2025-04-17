@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/vegag/OneDrive/Documentos/GitHub/c2425-R6/src/modelos/30_dias/../../mlruns/967978834275568357/bd9403b24674475cb3cf20a5eb4134ad/artifacts
+end_time: 1744902832642
+entry_point_name: ''
+experiment_id: '967978834275568357'
+lifecycle_stage: active
+run_id: bd9403b24674475cb3cf20a5eb4134ad
+run_name: luminous-foal-751
+run_uuid: bd9403b24674475cb3cf20a5eb4134ad
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1744902829108
+status: 3
+tags: []
+user_id: vegag

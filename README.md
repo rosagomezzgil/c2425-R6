@@ -16,45 +16,76 @@ Para la correcta ejecución del proyecto, es necesario instalar las siguientes d
    - Instalación: [https://www.google.com/chrome/](https://www.google.com/chrome/)
 2. **ChromeDriver**: Controlador que permite a Selenium interactuar con Chrome.
    - Instalación: [https://chromedriver.chromium.org/downloads](https://chromedriver.chromium.org/downloads)
-3. **CUDA 11.2**: plataforma de computación paralela de NVIDIA que permite ejecutar cálculos en la GPU
-   - Instalación: [https://developer.nvidia.com/cuda-11.2.0-download-archive?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exelocal](https://developer.nvidia.com/cuda-11.2.0-download-archive?target_os=Windows&target_arch=x86_64&target_version=10&target_type=exelocal)
-4. **cuDNN 8.1.0**: biblioteca de NVIDIA optimizada para redes neuronales
-   - Instalación: [https://developer.nvidia.com/rdp/cudnn-archive](https://developer.nvidia.com/rdp/cudnn-archive)
-    **Extrae el ZIP** y copia estos archivos dentro del directorio de instalación de CUDA (normalmente en `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.2`):
-
-     - Copia el contenido de `bin\` a `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.2\bin`
-     - Copia el contenido de `lib\` a `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.2\lib\x64`
-     - Copia el contenido de `include\` a `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.2\include`
 
 
 # Estructura del Proyecto
 
 ```
-src/: Contiene el código fuente del proyecto.
+src/
+│
+├── analisis/                     # Notebooks de análisis y visualización de datos
+│   ├── Visualizacion_merged_datos.ipynb
+│   ├── Visualización_creacion_variables.ipynb
+│   └── Visualización_variable_respuesta.ipynb
+│
+├── extraccion/                  # Scripts para extracción de datos desde diversas fuentes
+│   ├── Twitter/
+│   │   ├── config.py            # Configuración de API para Twitter
+│   │   └── Twitter.py           # Extracción de datos desde Twitter
+│   ├── Alternative.py           # Datos de la plataforma Alternative.me (índice de miedo/codicia, etc.)
+│   ├── Binance.py               # Extracción de datos del exchange Binance
+│   ├── Bitget.py                # Extracción de datos del exchange Bitget
+│   ├── CoinGecko.py             # API pública de CoinGecko
+│   ├── Google_Trends.py         # Tendencias de búsqueda en Google
+│   ├── Halving.py               # Info sobre eventos de halving de Bitcoin
+│   ├── Hashrate.py              # Datos de hashrate de Bitcoin
+│   ├── mercadoDerivados_binance.py
+│   ├── mercadoDerivados_deribit.py
+│   └── Yahoo_Finance.py         # Datos financieros generales desde Yahoo Finance
+│
+├── modelos/                     # Entrenamiento y predicción de modelos ML/DL
+│   ├── 7_dias/                  # Modelos para predicciones a 7 días
+│   │   ├── ARBOLES_DE_DECISION.py
+│   │   ├── LSTM.py
+│   │   └── SVR.py
+│   ├── 30_dias/                 # Modelos para predicciones a 30 días
+│   │   ├── ARIMA.py
+│   │   ├── SARIMA.py
+│   │   └── VAR.py
+│   ├── A_cargar_datos.py
+│   ├── B_preprocesamiento.py
+│   ├── C_seleccion_variables.py
+│   ├── D_division_temporal.py
+│   ├── E_ajuste_hiperparametros.py
+│   ├── F_metricas.py
+│   ├── G_graficar_predicciones.py
+│   ├── baseline.py
+│   ├── eliminacion de variables.ipynb
+│   └── Estudio_correlaciones.ipynb
+│
+├── transformacion/             # Limpieza, procesamiento y transformación de datos
+│   ├── Calcular_RSI.py
+│   ├── limpieza_binance.py
+│   ├── limpieza_bitget.py
+│   ├── limpieza_coingecko.py
+│   ├── limpieza_datos_Google_Trends.py
+│   ├── limpieza_dxy.py
+│   ├── limpieza_fear_and_greed.py
+│   ├── limpieza_halving.py
+│   ├── limpieza_hashrate.py
+│   ├── limpieza_mercadoDerivados_binance.py
+│   ├── limpieza_mercDer_derivit.py
+│   ├── limpieza_Nasdaq.py
+│   ├── limpieza_sp500.py
+│   ├── merge.py
+│   ├── parquet_merged_data.py
+│   └── Sentiment Analysis.py # Procesamiento de sentimiento en noticias
+│
+├── .gitignore                   # Archivos/Directorios ignorados por Git
+├── pyproject.toml               # Configuración del entorno y dependencias
+├── uv.lock                      # Archivo de bloqueo de dependencias para `uv` (gestor)
+└── README.md                    # Documentación general del proyecto
 
-extraccion/: Administra la obtención de datos desde diferentes fuentes.
-    Twitter/
-        config.py: Configuración general para la extracción de datos.
-        Twitter.py: Obtiene datos desde Twitter relacionados con Bitcoin.
-        Alternative.py, Binance.py, Bitget.py: Scripts para obtener datos desde distintas plataformas de intercambio.
-        CoinGecko.py: Obtiene datos desde la API de CoinGecko.
-        Google_Trends.py: Extrae datos de tendencias de Google.
-        Yahoo_Finance.py: Obtiene información financiera desde Yahoo Finance.
-        Otros archivos: Scripts adicionales para extraer datos relevantes.
-
-transformacion/: Gestiona el procesamiento y limpieza de los datos obtenidos.
-    CleanBitcoinCoingecko.py: Limpia y estructura datos de CoinGecko.
-    Creacion_datos_binance.py: Genera un dataset estructurado con datos de Binance.
-    limpieza_binance.py, limpieza_bitget.py: Scripts de limpieza específicos para plataformas de intercambio.
-    limpieza_datos_Google_Trends.py: Procesa y limpia datos de Google Trends.
-    limpieza_Nasdaq.py: Filtra y organiza datos de Nasdaq.
-    Sentiment_Analysis.py: Realiza análisis de sentimiento basado en los datos extraídos.
-
-.gitignore: Especifica los archivos y directorios que Git debe ignorar.
-
-requirements.txt: Lista las dependencias necesarias para el proyecto.
-
-README.md: Contiene la información general del proyecto.
 ```
 
 # Reglas del Análisis

@@ -1,9 +1,9 @@
 from datetime import datetime
 from sklearn.svm import SVR
-from src.modelos.E_ajuste_hiperparametros import ajustar_modelo  # Función de ajuste de hiperparámetros
 from src.modelos.A_cargar_datos import cargar_datos_7d  # Función de carga de datos
 from src.modelos.B_preprocesamiento import preprocesar_datos_7d  # Función de preprocesamiento
 from src.modelos.D_division_temporal import dividir_datos_temporalmente_7d  # Función para dividir los datos temporalmente
+from src.modelos.E_ajuste_hiperparametros import ajustar_modelo  # Función de ajuste de hiperparámetros
 from src.modelos.F_metricas import evaluar_modelo_7d  # Función de evaluación del modelo
 from src.modelos.C_seleccion_variables import seleccionar_variables
 from src.modelos.G_graficar_predicciones import plot_predictions
@@ -51,6 +51,18 @@ def main():
         mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2, "acc": acc})
         mlflow.log_figure(fig, "prediction_plot.png")
 
+        #Reentrenar el modelo con train_val completo
+        modelo_reentrenado = SVR(**best_params)
+        modelo_reentrenado.fit(X_train_val, y_train_val)
+
+        # Evaluar el modelo reducido
+        mse2, mae2, rmse2, r2_2, acc2 = evaluar_modelo_7d(
+            modelo_reentrenado, X_test, y_test
+        )
+        fig2 = plot_predictions(y_test, modelo=best_model, X=X_test)
+
+        mlflow.log_metrics({"mse": mse2, "mae": mae2, "rmse": rmse2, "r2": r2_2, "acc": acc2})
+        mlflow.log_figure(fig2, "prediction_plot.png")
 
 if __name__ == "__main__":
     main()

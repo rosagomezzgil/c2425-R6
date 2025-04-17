@@ -61,22 +61,22 @@ def main():
             #Seleccionar las variables importantes
             variables_importantes = analizar_importancias(best_model, X_train_val)
 
-            # Reentrenamiento con solo variables importantes
+            # Quedarse solo variables importantes
             X_train_val_filtrado = X_train_val[variables_importantes]
             X_test_filtrado = X_test[variables_importantes]
 
-
+            #Reentrenar el modelo con las variables importantes y train_val completo
             modelo_reentrenado = DecisionTreeRegressor(random_state=42, **best_params)
             modelo_reentrenado.fit(X_train_val_filtrado, y_train_val)
 
             # Evaluar el modelo reducido
-
             mse2, mae2, rmse2, r2_2, acc2 = evaluar_modelo_7d(
                 modelo_reentrenado, X_test_filtrado, y_test
             )
+            fig2 = plot_predictions(y_test, modelo=best_model, X=X_test)
 
-            mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2, "acc": acc})
-            mlflow.log_figure(fig, "prediction_plot.png")
+            mlflow.log_metrics({"mse": mse2, "mae": mae2, "rmse": rmse2, "r2": r2_2, "acc": acc2})
+            mlflow.log_figure(fig2, "prediction_plot.png")
 
     except Exception as e:
         print(e)

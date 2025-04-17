@@ -88,5 +88,5 @@ def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
 
 
 if __name__ == "__main__":
-    main("../../../data/limpieza/cleaned_data.csv")
+    main("../../../data/parquet/data_30d.parquet")
 

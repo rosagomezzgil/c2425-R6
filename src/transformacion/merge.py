@@ -133,9 +133,14 @@ def calcular_tendencia(
     :return: pd.DataFrame con la tendencia calculada.
     """
 
-    df[f"pct_cambio_{horizonte}d"] = (df["close_binance"].shift(-horizonte) / df["close_binance"] - 1) * 100
+    # Calcular el precio medio en la ventana
+    precio_medio = df["close_binance"].rolling(window=horizonte).mean()
 
-    """
+    # Calcular la variación porcentual
+    df[f"pct_cambio_{horizonte}d"] = (
+            (precio_medio.shift(-horizonte) - precio_medio) / precio_medio * 100
+    )
+
     # Definir la tendencia futura
     df[f"tendencia_futura_{horizonte}d"] = 0  # Neutral por defecto
     df.loc[
@@ -144,7 +149,7 @@ def calcular_tendencia(
     df.loc[
         df[f"pct_cambio_{horizonte}d"] < -threshold, f"tendencia_futura_{horizonte}d"
     ] = -1  # Bajista
-   """
+
     # Guardar CSV si se proporciona una ruta
     if output_path:
         df.to_csv(output_path, index=False)

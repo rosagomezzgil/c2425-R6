@@ -14,8 +14,7 @@ def preprocesar_datos_7d(df, tecnica, target_col):
     :return: X, y, scaler o None
     """
     y = df[target_col]
-    X = df.drop(columns=[target_col, "pct_cambio_30d"])
-    print(X.columns)
+    X = df.drop(columns=[target_col])
 
     scaler = None
     if tecnica in ["svr", "lstm"]:

@@ -29,6 +29,7 @@ def main():
     svr_model = SVR()
 
     # Definir los hiperparámetros para buscar
+
     param_grid = {
         'C': [0.1, 1, 10],
         'epsilon': [0.01, 0.1, 0.2],

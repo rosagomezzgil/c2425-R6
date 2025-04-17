@@ -1,4 +1,6 @@
 from sklearn.feature_selection import SelectKBest, f_regression
+import pandas as pd
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 def seleccionar_variables(X, y, tecnica, umbral_correlacion=0.1):
     """
@@ -12,9 +14,30 @@ def seleccionar_variables(X, y, tecnica, umbral_correlacion=0.1):
     :return: X reducido y el selector (o None)
     """
     if tecnica == "svr":
-        selector = SelectKBest(score_func=f_regression, k="all")
-        X_new = selector.fit_transform(X, y)
-        return X_new, selector
+
+        if not isinstance(X, pd.DataFrame):
+            X = pd.DataFrame(X, columns=[f"var_{i}" for i in range(X.shape[1])])
+
+        # SelectKBest con reducción real
+        selector = SelectKBest(score_func=f_regression, k=min(15, X.shape[1]))
+        X_kbest_array = selector.fit_transform(X, y)
+        selected_columns = X.columns[selector.get_support()]
+        X_kbest = pd.DataFrame(X_kbest_array, columns=selected_columns, index=X.index)
+
+        # Reducir VIF iterativamente
+        while True:
+            vif = pd.Series(
+                [variance_inflation_factor(X_kbest.values, i) for i in range(X_kbest.shape[1])],
+                index=X_kbest.columns
+            )
+            max_vif = vif.max()
+            if max_vif > 10:
+                col_a_eliminar = vif.idxmax()
+                X_kbest = X_kbest.drop(columns=[col_a_eliminar])
+            else:
+                break
+
+        return X_kbest, selector
 
     elif tecnica == "var":
         # Concatenamos X con y para calcular correlaciones con la target

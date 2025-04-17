@@ -1,10 +1,12 @@
 import mlflow
+from datetime import  datetime
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 from src.modelos.A_cargar_datos import cargar_datos_30d
 from src.modelos.B_preprocesamiento import preprocesar_datos_30d
 from src.modelos.D_division_temporal import dividir_datos_temporalmente_30d
 from src.modelos.E_ajuste_hiperparametros import validar_modelo_timeseries
 from src.modelos.F_metricas import evaluar_modelo_30d
+from src.modelos.G_graficar_predicciones import  plot_predictions
 
 
 def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
@@ -22,10 +24,11 @@ def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
 
     ]
 
-    mlflow.set_tracking_uri("file:../../mlruns")
+    mlflow.set_tracking_uri("file:../../../mlruns")
     mlflow.set_experiment("SARIMA Modular")
 
-    with mlflow.start_run():
+    hora_actual = datetime.now().strftime("%H-%M-%S")
+    with mlflow.start_run(run_name=f"SARIMA-{hora_actual}"):
         model, (best_order, best_seasonal_order) = validar_modelo_timeseries(
             y_train,
             param_grid,
@@ -36,6 +39,8 @@ def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
 
         pred = model.predict(start=y_test.index[0], end=y_test.index[-1])
         mse, mae, rmse, r2, acc = evaluar_modelo_30d(y_test, pred)
+
+        fig = plot_predictions(y_test, pred=pred)
 
         mlflow.log_params({
             "order": best_order,
@@ -48,6 +53,7 @@ def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
             "r2": r2,
             "acc": acc
         })
+        mlflow.log_figure(fig, "prediction_plot.png")
 
 
 if __name__ == "__main__":

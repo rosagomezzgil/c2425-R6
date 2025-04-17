@@ -1,5 +1,6 @@
 import mlflow
 import numpy as np
+from datetime import datetime
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 from src.modelos.A_cargar_datos import cargar_datos_7d
@@ -35,7 +36,7 @@ def preparar_datos():
 
 
 # Crear el modelo LSTM
-def crear_modelo_lstm(input_shape, units=50, epochs=20, batch_size=32):
+def crear_modelo_lstm(input_shape, units=50):
     model = Sequential([
         LSTM(units, activation='relu', input_shape=input_shape),
         Dense(1)
@@ -45,7 +46,7 @@ def crear_modelo_lstm(input_shape, units=50, epochs=20, batch_size=32):
 
 
 def main():
-    mlflow.set_tracking_uri("file:../../mlruns")
+    mlflow.set_tracking_uri("file:../../../mlruns")
     mlflow.set_experiment("Modelo LSTM con TimeSeriesSplit")
 
     # Preparar los datos
@@ -62,7 +63,8 @@ def main():
     best_model, best_params = ajustar_modelo(crear_modelo_lstm, X_train, y_train, param_grid, strategy="grid")
 
     # Evaluar el modelo final con el mejor conjunto de hiperparámetros
-    with mlflow.start_run():
+    hora_actual = datetime.now().strftime("%H-%M-%S")
+    with mlflow.start_run(run_name=f"LSTM-{hora_actual}"):
         mse, mae, rmse, r2, acc = evaluar_modelo_7d(best_model, X_test, y_test)
 
         # Loguear el modelo y los parámetros en MLFlow

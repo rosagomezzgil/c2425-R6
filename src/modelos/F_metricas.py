@@ -32,7 +32,7 @@ def evaluar_modelo_30d(y_test, pred):
     print(f"RMSE: {rmse:.4f}")
     print(f"MAE: {mae:.4f}")
     print(f"R²: {r2:.4f}")
-    print(f"Accuracy: {acc:.4f}")
+    print(f"Accuracy Direccional: {acc:.4f}")
 
     return mse, mae, rmse, r2, acc
 

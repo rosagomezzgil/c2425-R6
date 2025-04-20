@@ -7,6 +7,8 @@ from src.modelos.A_cargar_datos import cargar_datos_7d
 from src.modelos.B_preprocesamiento import preprocesar_datos_7d
 from src.modelos.E_ajuste_hiperparametros import ajustar_modelo
 from src.modelos.F_metricas import evaluar_modelo_7d
+from src.utils.mlflow_utils import setup_mlflow
+from src.utils.paths import get_path
 
 # Genera ventanas para LSTM
 def crear_ventanas(X, y, window_size=10):
@@ -19,7 +21,7 @@ def crear_ventanas(X, y, window_size=10):
 
 def preparar_datos():
     # Cargar datos
-    df = cargar_datos_7d("../../../data/parquet/data_7d.parquet")
+    df = cargar_datos_7d(get_path('data', 'parquet', 'data_7d.parquet'))
 
     # Preprocesar datos para LSTM
     X, y, scaler = preprocesar_datos_7d(df, tecnica="lstm", target_col="pct_cambio_7d")
@@ -46,8 +48,7 @@ def crear_modelo_lstm(input_shape, units=50):
 
 
 def main():
-    mlflow.set_tracking_uri("file:../../../mlruns")
-    mlflow.set_experiment("Modelo LSTM con TimeSeriesSplit")
+    setup_mlflow("LSTM")
 
     # Preparar los datos
     X_train, y_train, X_test, y_test = preparar_datos()

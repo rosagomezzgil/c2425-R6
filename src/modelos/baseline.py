@@ -7,6 +7,9 @@ from sklearn.metrics import (
 )
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+from src.utils.paths import get_path
+from src.utils.mlflow_utils import setup_mlflow
+from pathlib import Path
 import numpy as np
 import mlflow
 
@@ -86,11 +89,10 @@ def plot_predictions(df: pd.DataFrame):
 
 
 if __name__ == "__main__":
-    mlflow.set_tracking_uri(r"file:../../mlruns")
-    mlflow.set_experiment("Baseline")
+    setup_mlflow("Baseline")
 
     # Datos para 7 días
-    df = pd.read_parquet(r"../../data/parquet/data_7d.parquet")
+    df = pd.read_parquet(get_path('data', 'parquet', 'data_7d.parquet'))
 
     print("BASELINE PARA 7 DIAS:")
 
@@ -110,7 +112,7 @@ if __name__ == "__main__":
         mlflow.log_figure(fig, "prediction_plot.png")
 
     # Datos para 30 días
-    df = pd.read_parquet(r"../../data/parquet/data_30d.parquet")
+    df = pd.read_parquet(get_path('data', 'parquet', 'data_30d.parquet'))
 
     print("\n")
     print("BASELINE PARA 30 DIAS:")

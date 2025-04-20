@@ -4,6 +4,8 @@ from src.modelos.D_division_temporal import dividir_datos_temporalmente_30d
 from src.modelos.C_seleccion_variables import seleccionar_variables
 from src.modelos.F_metricas import evaluar_modelo_30d
 from src.modelos.G_graficar_predicciones import plot_predictions
+from src.utils.mlflow_utils import setup_mlflow
+from src.utils.paths import get_path
 from statsmodels.tsa.api import VAR
 import mlflow
 from sklearn.metrics import mean_squared_error
@@ -29,8 +31,7 @@ def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
     train_df, test_df = dividir_datos_temporalmente_30d(df, target_col, test_ratio=0.2, multivariado=True)
 
 
-    mlflow.set_tracking_uri("file:../../../mlruns")
-    mlflow.set_experiment("Modelo VAR")
+    setup_mlflow("Modelo VAR")
 
     tscv = TimeSeriesSplit(n_splits=5)
     errores_por_lag = {}
@@ -88,5 +89,5 @@ def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
 
 
 if __name__ == "__main__":
-    main("../../../data/parquet/data_30d.parquet")
+    main(get_path('data', 'parquet', 'data_30d.parquet'))
 

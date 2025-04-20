@@ -7,6 +7,8 @@ from src.modelos.D_division_temporal import dividir_datos_temporalmente_7d
 from src.modelos.E_ajuste_hiperparametros import ajustar_modelo
 from src.modelos.F_metricas import evaluar_modelo_7d
 from src.modelos.G_graficar_predicciones import plot_predictions
+from src.utils.mlflow_utils import setup_mlflow
+from src.utils.paths import get_path
 import pandas as pd
 
 def analizar_importancias(modelo, X, umbral_importancia=0.01, top_n=20):
@@ -26,10 +28,9 @@ def analizar_importancias(modelo, X, umbral_importancia=0.01, top_n=20):
 
 
 def main():
-    mlflow.set_tracking_uri(r"file:../../../mlruns")
-    mlflow.set_experiment("Modelo Arbol")
+    setup_mlflow("Modelo Arbol")
 
-    df = cargar_datos_7d("../../../data/parquet/data_7d.parquet")
+    df = cargar_datos_7d(get_path('data', 'parquet', 'data_7d.parquet'))
     X, y, _ = preprocesar_datos_7d(df, tecnica="arbol", target_col="pct_cambio_7d")
 
     # Cambiado: ahora separamos solo train_val y test

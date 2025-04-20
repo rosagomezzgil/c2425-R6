@@ -13,6 +13,7 @@ Funciones principales:
 """
 
 import time
+from src.utils.paths import get_path
 from pytrends.request import TrendReq
 from typing import List, Optional
 import argparse
@@ -90,12 +91,17 @@ def main():
     parser.add_argument(
         "--output_path",
         type=str,
-        default=r"../../data/extraccion/datos_google_trends.csv",
+        default=None,
         help="Ruta donde guardar los datos como CSV (opcional).",
     )
 
     # Parsear los argumentos
     args = parser.parse_args()
+
+    if args.output_path is None:
+        output_path = get_path('data', 'extraccion', 'datos_google_trends.csv')
+    else:
+        output_path = args.output_path
 
     # Convertir la cadena de keywords en un list
     keywords = list(args.keywords.split(","))
@@ -105,7 +111,7 @@ def main():
         keywords=keywords,
         timeframe=args.timeframe,
         geo=args.geo,
-        output_path=args.output_path,
+        output_path=output_path,
     )
 
     print(google_trends_df.iloc[0, 0])

@@ -21,12 +21,13 @@
 
 
 from Calcular_RSI import calcular_rsi
+from src.utils.paths import get_path
 import pandas as pd
 import os
 
 if __name__ == "__main__":
     # Cargar datos desde CSV
-    sp500 = pd.read_csv(r"../../data/extraccion/datos_sp500.csv")
+    sp500 = pd.read_csv(get_path('data', 'extraccion', 'datos_sp500.csv'))
 
     # Ver si hay valores nulos
     print(sp500.isnull().sum())  # No tiene valores nulos
@@ -81,7 +82,7 @@ if __name__ == "__main__":
     sp500 = calcular_rsi(sp500, "Close")
 
     # Guardar el conjunto de datos procesados
-    output_path = r"../../data/limpieza/limpios_sp500.csv"
+    output_path = get_path('data', 'limpieza', 'limpios_sp500.csv')
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     sp500.to_csv(output_path, index=False)
 

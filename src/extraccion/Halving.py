@@ -11,6 +11,7 @@ Eventos de Halving incluidos:
 La información es guardada en un archivo CSV en la ruta especificada.
 """
 
+from src.utils.paths import get_path
 import pandas as pd
 import os
 
@@ -30,7 +31,7 @@ if __name__ == "__main__":
     # Obtener datos de halving
     df_halving = get_halving_dates()
 
-    output_path = r"../../data/extraccion/halving_data.csv"
+    output_path = get_path('data', 'extraccion', 'halving_data.csv')
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df_halving.to_csv(output_path, encoding="utf-8-sig", index=False)
     print(df_halving)

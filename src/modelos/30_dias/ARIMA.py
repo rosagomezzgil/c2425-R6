@@ -4,6 +4,8 @@ from src.modelos.F_metricas import evaluar_modelo_30d
 from src.modelos.A_cargar_datos import cargar_datos_30d
 from src.modelos.D_division_temporal import dividir_datos_temporalmente_30d
 from src.modelos.G_graficar_predicciones import  plot_predictions
+from src.utils.mlflow_utils import setup_mlflow
+from src.utils.paths import get_path
 
 import mlflow
 from datetime import datetime
@@ -19,8 +21,7 @@ def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
 
     param_grid = [(1, 1, 1), (2, 1, 2), (1, 0, 1), (2, 0, 2)]
 
-    mlflow.set_tracking_uri("file:../../../mlruns")
-    mlflow.set_experiment("ARIMA con TimeSeriesSplit")
+    setup_mlflow("ARIMA")
 
     hora_actual = datetime.now().strftime("%H-%M-%S")
     with mlflow.start_run(run_name=f"ARIMA-{hora_actual}"):
@@ -43,4 +44,4 @@ def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
 
 
 if __name__ == "__main__":
-    main("../../../data/parquet/data_30d.parquet")
+    main(get_path('data', 'parquet', 'data_30d.parquet'))

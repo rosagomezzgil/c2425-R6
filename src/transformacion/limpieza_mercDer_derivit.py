@@ -14,13 +14,14 @@
     """
 
 from Calcular_RSI import calcular_rsi
+from src.utils.paths import get_path
 import pandas as pd
 import os
 
 if __name__ == "__main__":
     # Cargar el DataFrame
     df = pd.read_csv(
-        r"../../data/extraccion/datos_mercadoDerivados_deribit.csv",
+        get_path('data', 'extraccion', 'datos_mercadoDerivados_deribit.csv'),
         parse_dates=["timestamp"],
     )
 
@@ -79,7 +80,7 @@ if __name__ == "__main__":
     df_diario = df_diario.rename(columns={"RSI": "mD_RSI"})
 
     # Guardar el conjunto de datos
-    output_path = r"../../data/limpieza/limpios_mercadoDerivados_deribit.csv"
+    output_path = get_path('data', 'limpieza', 'limpios_mercadoDerivados_deribit.csv')
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df_diario.to_csv(output_path, encoding="utf-8-sig", index=False)
     print(df_diario)

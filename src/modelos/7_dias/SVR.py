@@ -7,16 +7,17 @@ from src.modelos.E_ajuste_hiperparametros import ajustar_modelo  # Función de a
 from src.modelos.F_metricas import evaluar_modelo_7d  # Función de evaluación del modelo
 from src.modelos.C_seleccion_variables import seleccionar_variables
 from src.modelos.G_graficar_predicciones import plot_predictions
+from src.utils.mlflow_utils import setup_mlflow
+from src.utils.paths import get_path
 import mlflow
 
 
 def main():
     # Configuración de mlflow
-    mlflow.set_tracking_uri("file:../../../mlruns")
-    mlflow.set_experiment("Modelo SVR")
+    setup_mlflow("Modelo SVR")
 
     # Cargar y preprocesar los datos
-    df = cargar_datos_7d("../../../data/parquet/data_7d.parquet")
+    df = cargar_datos_7d(get_path('data', 'parquet', 'data_7d.parquet'))
     X, y, scaler = preprocesar_datos_7d(df, tecnica="svr", target_col="pct_cambio_7d")
 
     # Seleccion de variables

@@ -18,10 +18,11 @@
 import os
 import pandas as pd
 from Calcular_RSI import calcular_rsi
+from src.utils.paths import get_path
 
 if __name__ == "__main__":
 
-    dxy = pd.read_csv(r"../../data/extraccion/datos_dxy.csv")
+    dxy = pd.read_csv(get_path('data', 'extraccion', 'datos_dxy.csv'))
 
     # Hacemos un analisis inicial de como se comporta el df
     print(dxy.head())
@@ -78,7 +79,7 @@ if __name__ == "__main__":
     sp500 = calcular_rsi(dxy, "Close")
 
     # Guardar el conjunto de datos procesados
-    output_path = r"../../data/limpieza/limpios_dxy.csv"
+    output_path = get_path('data', 'limpieza', 'limpios_dxy.csv')
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     dxy.to_csv(output_path, index=False)
 

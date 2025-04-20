@@ -14,11 +14,12 @@
 
 
 from Calcular_RSI import calcular_rsi
+from src.utils.paths import  get_path
 import pandas as pd
 import os
 
 if __name__ == "__main__":
-    df = pd.read_csv(r"../../data/extraccion/datos_coingecko.csv")
+    df = pd.read_csv(get_path('data', 'extraccion', 'datos_coingecko.csv'))
 
     print(df.info())  # Ver tipos de datos y valores nulos
     print(df.describe())  # Estadísticas básicas
@@ -46,7 +47,7 @@ if __name__ == "__main__":
 
     df = calcular_rsi(df, "close")
 
-    output_path = r"../../data/limpieza/limpios_coingecko.csv"
+    output_path = get_path('data', 'limpieza', 'limpios_coingecko.csv')
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_csv(output_path, encoding="utf-8-sig", index=False)
     print(df)

@@ -29,6 +29,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
+from src.utils.paths import  get_path
 from typing import Optional
 
 
@@ -168,19 +169,24 @@ def main():
     parser.add_argument(
         "--output_path",
         type=str,
-        default=r"../../data/extraccion/bitget_scrapping.csv",
+        default=None,
         help="Ruta del archivo CSV de salida",
     )
 
     # Parsear los argumentos
     args = parser.parse_args()
 
+    if args.output_path is None:
+        output_path = get_path('data', 'extraccion', 'bitget_scrapping.csv')
+    else:
+        output_path = args.output_path
+
     # Llamar a la funcion con los datos parseados
     df_bitget = scrape_bitget_data(
         url=args.url,
         max_pages=args.max_pages,
         wait_time=args.wait_time,
-        output_path=args.output_path,
+        output_path=output_path,
     )
 
     print(df_bitget.shape)

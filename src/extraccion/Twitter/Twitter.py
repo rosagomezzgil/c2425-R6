@@ -19,6 +19,7 @@ import pandas as pd
 import argparse
 import os
 import config  # Importar las credenciales
+from src.utils.paths import get_path
 from typing import Optional
 
 
@@ -85,16 +86,21 @@ def main():
     parser.add_argument(
         "--output_path",
         type=str,
-        default="../../../data/extraccion/tweets_bitcoin.csv",
+        default=None,
         help="Ruta del archivo CSV donde se guardarán los tweets",
     )
 
     # Parsear los argumentos
     args = parser.parse_args()
 
+    if args.output_path is None:
+        output_path = get_path('data', 'extraccion', 'tweets_bitcoin.csv')
+    else:
+        output_path = args.output_path
+
     # Llamar a la funcion con los argumentos parseados
     df_twitter = fetch_tweets(
-        query=args.query, max_results=args.max_results, output_filename=args.output_path
+        query=args.query, max_results=args.max_results, output_filename=output_path
     )
 
     print(df_twitter.shape)

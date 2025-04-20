@@ -17,6 +17,7 @@ import requests
 import argparse
 import pandas as pd
 import os
+from src.utils.paths import get_path
 from typing import Optional
 
 
@@ -82,19 +83,24 @@ def main():
     parser.add_argument(
         "--output_path",
         type=str,
-        default=r"../../data/extraccion/datos_coingecko.csv",
+        default=None,
         help="Ruta donde guardar el CSV",
     )
 
     # Parsear los argumentos
     args = parser.parse_args()
 
+    if args.output_path is None:
+        output_path = get_path('data', 'extraccion', 'datos_coingecko.csv')
+    else:
+        output_path = args.output_path
+
     # Llamar a la funcion con los datos parseados
     coingecko_df = get_coingecko_data(
         symbol=args.symbol,
         vs_currency=args.vs_currency,
         days=args.days,
-        output_path=args.output_path,
+        output_path=output_path,
     )
 
     print(coingecko_df.shape)

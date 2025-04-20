@@ -18,7 +18,7 @@ import argparse
 import time
 import os
 from typing import Optional
-
+from src.utils.paths import get_path
 
 def get_binance_futures_historical_data(
     symbol: str = "BTCUSDT",
@@ -135,19 +135,24 @@ def main():
     parser.add_argument(
         "--output_path",
         type=str,
-        default=r"../../data/extraccion/datos_mercadoDerivados_binance.csv",
+        default=None,
         help="Ruta para guardar los datos en CSV",
     )
 
     # Parsear los argumentos
     args = parser.parse_args()
 
+    if args.output_path is None:
+        output_path = get_path('data', 'extraccion', 'datos_mercadoDerivados_binance.csv')
+    else:
+        output_path = args.output_path
+
     # Llamar a la funcion con los datos parseados
     df = get_binance_futures_historical_data(
         symbol=args.symbol,
         days=args.days,
         interval=args.interval,
-        output_path=args.output_path,
+        output_path=output_path,
     )
 
     print(df.shape)

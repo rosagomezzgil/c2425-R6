@@ -17,6 +17,7 @@
 
 import pandas as pd
 from textblob import TextBlob
+from src.utils.paths import get_path
 import os
 
 
@@ -50,11 +51,11 @@ def analyze_tweets(file_path):
 
 if __name__ == "__main__":
     # Ruta del archivo (modificar según sea necesario)
-    file_path = r"../../data/extraccion/tweets_bitcoin.csv"
+    file_path = get_path('data', 'extraccion', 'tweets_bitcoin.csv')
     df_resultado = analyze_tweets(file_path)
     print(df_resultado.head())
 
     # Guardar el conjunto de datos
-    output_path = r"../../data/limpieza/sentiment_analysis.csv"
+    output_path = get_path('data', 'limpieza', 'sentiment_analysis.csv')
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df_resultado.to_csv(output_path, index=False)

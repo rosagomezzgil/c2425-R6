@@ -20,6 +20,7 @@ import time
 import requests
 import os
 from typing import Optional
+from src.utils.paths import get_path
 
 
 def get_deribit_historical_data(
@@ -134,12 +135,17 @@ def main():
     parser.add_argument(
         "--output_path",
         type=str,
-        default=r"../../data/extraccion/datos_mercadoDerivados_deribit.csv",
+        default=None,
         help="Ruta para guardar los datos en CSV",
     )
 
     # Parsear los argumentos
     args = parser.parse_args()
+
+    if args.output_path is None:
+        output_path = get_path('data', 'extraccion', 'datos_mercadoDerivados_deribit.csv')
+    else:
+        output_path = args.output_path
 
     # Llamar a la funcion con los argumentos parseados
     df = get_deribit_historical_data(
@@ -147,7 +153,7 @@ def main():
         days=args.days,
         interval=args.interval,
         resolution=args.resolution,
-        output_path=args.output_path,
+        output_path=output_path,
     )
 
     print(df.shape)

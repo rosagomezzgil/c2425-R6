@@ -20,6 +20,7 @@ import requests
 import pandas as pd
 import argparse
 import os
+from src.utils.paths import get_path
 from typing import Optional
 
 
@@ -116,12 +117,17 @@ def main():
     parser.add_argument(
         "--output_path",
         type=str,
-        default=r"../../data/extraccion/datos_bitcoin_binance.csv",
+        default=None,
         help="Ruta donde guardar el CSV",
     )
 
     # Parsear los argumentos
     args = parser.parse_args()
+
+    if args.output_path is None:
+        output_path = get_path('data', 'extraccion', 'datos_bitcoin_binance.csv')
+    else:
+        output_path = args.output_path
 
     # Llamar a la funcion con los datos parseados
     binance_df = get_binance_data(
@@ -130,7 +136,7 @@ def main():
         limit=args.limit,
         start_time=args.start_time,
         end_time=args.end_time,
-        output_path=args.output_path,
+        output_path=output_path,
     )
 
     print(binance_df.shape)

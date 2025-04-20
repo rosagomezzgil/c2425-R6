@@ -16,6 +16,7 @@ import pandas as pd
 import argparse
 import os
 from typing import Optional
+from src.utils.paths import  get_path
 
 
 def get_bitcoin_hashrate(
@@ -78,18 +79,23 @@ def main():
     parser.add_argument(
         "--output_path",
         type=str,
-        default=r"../../data/extraccion/datos_hashrate.csv",
+        default=None,
         help="Ruta para guardar los datos en CSV",
     )
 
     # Parsear los argumentos
     args = parser.parse_args()
 
+    if args.output_path is None:
+        output_path = get_path('data', 'extraccion', 'datos_hashrate.csv')
+    else:
+        output_path = args.output_path
+
     # Llamar a la funcion con los argumentos parseados
     hashrate_df = get_bitcoin_hashrate(
         timespan=args.timespan,
         rolling_average=args.rolling_average,
-        output_path=args.output_path,
+        output_path=output_path,
     )
 
     print(hashrate_df.shape)

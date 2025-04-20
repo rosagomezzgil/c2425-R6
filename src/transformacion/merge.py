@@ -25,6 +25,7 @@
 import pandas as pd
 import numpy as np
 from typing import Optional
+from src.utils.paths import get_path
 import os
 
 
@@ -164,10 +165,7 @@ if __name__ == "__main__":
     1 - JUNTAMOS TODOS LOS DATAFRAMES
     """
     ### RUTA ABSOLUTA A LA CARPETA 'DATA' ###
-    BASE_DIR = os.path.dirname(
-        os.path.dirname(os.path.dirname(__file__))
-    )  # Sube 2 niveles desde 'src/transformacion/'
-    DATA_DIR = os.path.join(BASE_DIR, "data/limpieza")
+    DATA_DIR = get_path('data', 'limpieza')
 
     ### LISTA DE LOS CSV Q VAMOS A CARGAR ###
     archivos = [
@@ -394,6 +392,6 @@ if __name__ == "__main__":
     print(df.head())
 
     # Guardar el dataframe final
-    output_path = r"../../data/limpieza/cleaned_data.csv"
+    output_path = get_path('data', 'limpieza', 'cleaned_data.csv')
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_csv(output_path, index=False)

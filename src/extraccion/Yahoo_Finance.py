@@ -20,6 +20,7 @@ import argparse
 import os
 import time
 from typing import Optional
+from src.utils.paths import get_path
 
 
 def download_data(
@@ -103,12 +104,17 @@ def main():
     parser.add_argument(
         "--output_dir",
         type=str,
-        default="../../data/extraccion",
+        default=None,
         help="Directorio de salida para los archivos CSV",
     )
     args = parser.parse_args()
 
-    os.makedirs(args.output_dir, exist_ok=True)
+    if args.output_dir is None:
+        output_dir = get_path('data', 'extraccion')
+    else:
+        output_dir = args.output_dir
+
+    os.makedirs(output_dir, exist_ok=True)
 
     assets = {
         "DX-Y.NYB": "datos_dxy.csv",
@@ -123,7 +129,7 @@ def main():
             end_date=args.end_date,
             interval=args.interval,
             columns_rename={"Date": "timestamp"},
-            output_filename=os.path.join(args.output_dir, filename),
+            output_filename=os.path.join(output_dir, filename),
         )
 
 

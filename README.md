@@ -23,69 +23,75 @@ Para la correcta ejecución del proyecto, es necesario instalar las siguientes d
 ```
 src/
 │
-├── analisis/                     # Notebooks de análisis y visualización de datos
-│   ├── Visualizacion_merged_datos.ipynb
-│   ├── Visualización_creacion_variables.ipynb
-│   └── Visualización_variable_respuesta.ipynb
+├── analisis/                    # Notebooks para análisis exploratorio y visualización de variables
+│   ├── Visualizacion_merged_datos.ipynb         # Análisis visual de datos ya fusionados
+│   ├── Visualización_creacion_variables.ipynb   # Visualización de variables generadas/ingeniería de características
+│   └── Visualización_variable_respuesta.ipynb   # Análisis visual de la variable objetivo
 │
-├── extraccion/                  # Scripts para extracción de datos desde diversas fuentes
+├── extraccion/                  # Scripts para la extracción de datos desde distintas APIs y fuentes externas
 │   ├── Twitter/
-│   │   ├── config.py            # Configuración de API para Twitter
-│   │   └── Twitter.py           # Extracción de datos desde Twitter
-│   ├── Alternative.py           # Datos de la plataforma Alternative.me (índice de miedo/codicia, etc.)
-│   ├── Binance.py               # Extracción de datos del exchange Binance
-│   ├── Bitget.py                # Extracción de datos del exchange Bitget
-│   ├── CoinGecko.py             # API pública de CoinGecko
-│   ├── Google_Trends.py         # Tendencias de búsqueda en Google
-│   ├── Halving.py               # Info sobre eventos de halving de Bitcoin
-│   ├── Hashrate.py              # Datos de hashrate de Bitcoin
-│   ├── mercadoDerivados_binance.py
-│   ├── mercadoDerivados_deribit.py
-│   └── Yahoo_Finance.py         # Datos financieros generales desde Yahoo Finance
+│   │   ├── config.py            # Configuración de autenticación para la API de Twitter (X)
+│   │   └── Twitter.py           # Script para recolectar datos desde Twitter
+│   ├── Alternative.py           # Extracción del índice Fear & Greed desde Alternative.me
+│   ├── Binance.py               # Descarga de datos históricos del exchange Binance
+│   ├── Bitget.py                # Obtención de datos de mercado desde el exchange Bitget
+│   ├── CoinGecko.py             # Acceso a datos de criptomonedas vía API pública de CoinGecko
+│   ├── Google_Trends.py         # Consulta de tendencias de búsqueda relacionadas a criptomonedas en Google
+│   ├── Halving.py               # Información histórica y futura sobre eventos de halving de Bitcoin
+│   ├── Hashrate.py              # Datos sobre el hashrate de la red de Bitcoin
+│   ├── mercadoDerivados_binance.py   # Datos de derivados financieros desde Binance
+│   ├── mercadoDerivados_deribit.py   # Extracción de datos de derivados desde Deribit
+│   └── Yahoo_Finance.py         # Recolección de datos macroeconómicos y financieros generales desde Yahoo Finance
 │
-├── modelos/                     # Entrenamiento y predicción de modelos ML/DL
-│   ├── 7_dias/                  # Modelos para predicciones a 7 días
-│   │   ├── ARBOLES_DE_DECISION.py
-│   │   ├── LSTM.py
-│   │   └── SVR.py
-│   ├── 30_dias/                 # Modelos para predicciones a 30 días
-│   │   ├── ARIMA.py
-│   │   ├── SARIMA.py
-│   │   └── VAR.py
-│   ├── A_cargar_datos.py
-│   ├── B_preprocesamiento.py
-│   ├── C_seleccion_variables.py
-│   ├── D_division_temporal.py
-│   ├── E_ajuste_hiperparametros.py
-│   ├── F_metricas.py
-│   ├── G_graficar_predicciones.py
-│   ├── baseline.py
-│   ├── eliminacion de variables.ipynb
-│   └── Estudio_correlaciones.ipynb
+├── modelos/                     # Entrenamiento, evaluación y comparación de modelos de predicción
+│   ├── 7_dias/                  # Modelos entrenados para realizar predicciones a 7 días
+│   │   ├── ARBOLES_DE_DECISION.py     # Modelo de árboles de decisión
+│   │   ├── LSTM.py                     # Modelo LSTM con PyTorch
+│   │   └── SVR.py                      # Máquina de soporte vectorial para regresión
+│   ├── 30_dias/                 # Modelos estadísticos para predicciones a 30 días
+│   │   ├── ARIMA.py                   # Modelo ARIMA
+│   │   ├── SARIMA.py                  # Modelo SARIMA
+│   │   └── VAR.py                     # Modelo VAR (vectores autorregresivos)
+│   ├── arquitecturas/           # Arquitecturas personalizadas compatibles con los estimadores de Scikit-learn
+│   │   └── lstm_model.py              # Clase LSTM como estimador compatible con Scikit-learn
+│   ├── baseline.py              # Modelo de referencia (baseline) para comparación
+│   ├── eliminacion de variables.ipynb # Estudio de importancia/eliminación de variables
+│   └── Estudio_correlaciones.ipynb   # Análisis de correlación entre variables
 │
-├── transformacion/             # Limpieza, procesamiento y transformación de datos
-│   ├── Calcular_RSI.py
-│   ├── limpieza_binance.py
-│   ├── limpieza_bitget.py
-│   ├── limpieza_coingecko.py
-│   ├── limpieza_datos_Google_Trends.py
-│   ├── limpieza_dxy.py
-│   ├── limpieza_fear_and_greed.py
-│   ├── limpieza_halving.py
-│   ├── limpieza_hashrate.py
-│   ├── limpieza_mercadoDerivados_binance.py
-│   ├── limpieza_mercDer_derivit.py
-│   ├── limpieza_Nasdaq.py
-│   ├── limpieza_sp500.py
-│   ├── merge.py
-│   ├── parquet_merged_data.py
-│   └── Sentiment Analysis.py # Procesamiento de sentimiento en noticias
+├── transformacion/              # Procesamiento, limpieza y transformación de datos crudos
+│   ├── Calcular_RSI.py                      # Cálculo del indicador técnico RSI
+│   ├── limpieza_binance.py                 # Limpieza de datos de Binance
+│   ├── limpieza_bitget.py                  # Limpieza de datos de Bitget
+│   ├── limpieza_coingecko.py               # Limpieza de datos de CoinGecko
+│   ├── limpieza_datos_Google_Trends.py     # Preprocesamiento de tendencias de búsqueda de Google
+│   ├── limpieza_dxy.py                     # Limpieza de datos del índice DXY (dólar)
+│   ├── limpieza_fear_and_greed.py          # Procesamiento del índice Fear & Greed
+│   ├── limpieza_halving.py                 # Estandarización de datos sobre halving de BTC
+│   ├── limpieza_hashrate.py                # Procesamiento de datos de hashrate
+│   ├── limpieza_mercadoDerivados_binance.py# Limpieza de datos derivados de Binance
+│   ├── limpieza_mercDer_derivit.py         # Limpieza de datos derivados de Deribit
+│   ├── limpieza_Nasdaq.py                  # Limpieza de datos del índice Nasdaq
+│   ├── limpieza_sp500.py                   # Limpieza de datos del índice S&P 500
+│   ├── merge.py                            # Unión e integración de todas las fuentes de datos
+│   ├── parquet_merged_data.py              # Generación y guardado de datos integrados en formato Parquet
+│   └── Sentiment Analysis.py               # Análisis de sentimiento en noticias y tweets
 │
-├── .gitignore                   # Archivos/Directorios ignorados por Git
-├── pyproject.toml               # Configuración del entorno y dependencias
-├── uv.lock                      # Archivo de bloqueo de dependencias para `uv` (gestor)
-└── README.md                    # Documentación general del proyecto
-
+├── utils/                       # Utilidades y componentes reutilizables para entrenamiento y evaluación
+│   ├── modelos_sklearn/         # Pipeline completo para entrenamiento de modelos clásicos
+│   │   ├── A_cargar_datos.py           # Lectura y carga de datasets
+│   │   ├── B_preprocesamiento.py       # Preprocesamiento general (escalado, imputación, etc.)
+│   │   ├── C_seleccion_variables.py    # Selección de variables relevantes
+│   │   ├── D_division_temporal.py      # Separación train/test respetando la estructura temporal
+│   │   ├── E_ajuste_hiperparametros.py # Ajuste de hiperparámetros con validación cruzada temporal
+│   │   ├── F_metricas.py               # Cálculo de métricas de evaluación (RMSE, MAE, etc.)
+│   │   └── G_graficar_predicciones.py  # Visualización de predicciones vs valores reales
+│   ├── mlflow_utils.py                # Funciones de utilidad para registrar y gestionar modelos con MLflow
+│   └── paths.py                       # Rutas centralizadas a carpetas y archivos del proyecto
+│
+├── .gitignore                   # Define qué archivos/directorios no se deben subir al repositorio
+├── pyproject.toml               # Archivo de configuración del entorno y dependencias del proyecto
+├── uv.lock                      # Bloqueo de versiones de dependencias usado por `uv`
+└── README.md                    # Descripción general, propósito y estructura del proyecto
 ```
 
 # Reglas del Análisis

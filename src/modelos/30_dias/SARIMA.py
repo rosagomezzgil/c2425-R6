@@ -1,14 +1,12 @@
-from distutils.core import setup
-
 import mlflow
 from datetime import  datetime
 from statsmodels.tsa.statespace.sarimax import SARIMAX
-from src.modelos.A_cargar_datos import cargar_datos_30d
-from src.modelos.B_preprocesamiento import preprocesar_datos_30d
-from src.modelos.D_division_temporal import dividir_datos_temporalmente_30d
-from src.modelos.E_ajuste_hiperparametros import validar_modelo_timeseries
-from src.modelos.F_metricas import evaluar_modelo_30d
-from src.modelos.G_graficar_predicciones import  plot_predictions
+from src.utils.modelos_sklearn.A_cargar_datos import cargar_datos_30d
+from src.utils.modelos_sklearn.B_preprocesamiento import preprocesar_datos_30d
+from src.utils.modelos_sklearn.D_division_temporal import dividir_datos_temporalmente_30d
+from src.utils.modelos_sklearn.E_ajuste_hiperparametros import validar_modelo_timeseries
+from src.utils.modelos_sklearn.F_metricas import evaluar_modelo_30d
+from src.utils.modelos_sklearn.G_graficar_predicciones import  plot_predictions
 from src.utils.mlflow_utils import setup_mlflow
 from src.utils.paths import get_path
 

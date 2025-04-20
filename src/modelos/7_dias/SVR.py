@@ -1,12 +1,12 @@
 from datetime import datetime
 from sklearn.svm import SVR
-from src.modelos.A_cargar_datos import cargar_datos_7d  # Función de carga de datos
-from src.modelos.B_preprocesamiento import preprocesar_datos_7d  # Función de preprocesamiento
-from src.modelos.D_division_temporal import dividir_datos_temporalmente_7d  # Función para dividir los datos temporalmente
-from src.modelos.E_ajuste_hiperparametros import ajustar_modelo  # Función de ajuste de hiperparámetros
-from src.modelos.F_metricas import evaluar_modelo_7d  # Función de evaluación del modelo
-from src.modelos.C_seleccion_variables import seleccionar_variables
-from src.modelos.G_graficar_predicciones import plot_predictions
+from src.utils.modelos_sklearn.A_cargar_datos import cargar_datos_7d  # Función de carga de datos
+from src.utils.modelos_sklearn.B_preprocesamiento import preprocesar_datos_7d  # Función de preprocesamiento
+from src.utils.modelos_sklearn.D_division_temporal import dividir_datos_temporalmente_7d  # Función para dividir los datos temporalmente
+from src.utils.modelos_sklearn.E_ajuste_hiperparametros import ajustar_modelo  # Función de ajuste de hiperparámetros
+from src.utils.modelos_sklearn.F_metricas import evaluar_modelo_7d  # Función de evaluación del modelo
+from src.utils.modelos_sklearn.C_seleccion_variables import seleccionar_variables
+from src.utils.modelos_sklearn.G_graficar_predicciones import plot_predictions
 from src.utils.mlflow_utils import setup_mlflow
 from src.utils.paths import get_path
 import mlflow

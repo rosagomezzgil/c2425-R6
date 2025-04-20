@@ -1,29 +1,61 @@
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, TimeSeriesSplit
 import numpy as np
 
-def ajustar_modelo(modelo, X, y, param_grid, strategy="grid", scoring="neg_mean_squared_error", n_splits=5):
-    """
-    Ajusta un modelo usando validación cruzada temporal con GridSearch o RandomSearch.
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, TimeSeriesSplit
+import numpy as np
 
-    :param modelo: Modelo sklearn
-    :param X: Características
-    :param y: Objetivo
-    :param param_grid: Hiperparámetros a buscar
+def ajustar_modelo(modelo, X, y, param_grid, strategy="grid", scoring="neg_mean_squared_error",
+                   n_splits=5, random_state=42, verbose=1):
+    """
+    Ajusta un modelo sklearn usando validación cruzada temporal.
+
+    :param modelo: Instancia del modelo sin entrenar
+    :param X: Matriz de características (estandarizadas)
+    :param y: Vector objetivo
+    :param param_grid: Diccionario de hiperparámetros
     :param strategy: 'grid' o 'random'
     :param scoring: Métrica de evaluación
     :param n_splits: Número de divisiones temporales
+    :param random_state: Para reproducibilidad en RandomizedSearchCV
+    :param verbose: Nivel de detalle
 
-    :return: Mejor estimador, mejores parámetros
+    :return: Mejor modelo ajustado, mejores parámetros
     """
     cv = TimeSeriesSplit(n_splits=n_splits)
 
     if strategy == "grid":
-        search = GridSearchCV(modelo, param_grid, scoring=scoring, cv=cv, n_jobs=-1)
+        search = GridSearchCV(
+            estimator=modelo,
+            param_grid=param_grid,
+            scoring=scoring,
+            cv=cv,
+            n_jobs=-1,
+            verbose=verbose
+        )
     else:
-        search = RandomizedSearchCV(modelo, param_grid, scoring=scoring, cv=cv, n_iter=20, n_jobs=-1)
+        search = RandomizedSearchCV(
+            estimator=modelo,
+            param_distributions=param_grid,
+            n_iter=20,
+            scoring=scoring,
+            cv=cv,
+            n_jobs=-1,
+            verbose=verbose,
+            random_state=random_state
+        )
 
     search.fit(X, y)
-    return search.best_estimator_, search.best_params_
+
+    best_model = search.best_estimator_
+    best_params = search.best_params_
+    best_score = search.best_score_
+
+    if verbose:
+        print(f"\nMejor puntuación CV ({scoring}): {best_score:.5f}")
+        print(f"Mejores parámetros encontrados: {best_params}")
+
+    return best_model, best_params
+
 
 
 def validar_modelo_timeseries(y, param_grid, model_class, seasonal=False, seasonal_param_grid=None, n_splits=3):

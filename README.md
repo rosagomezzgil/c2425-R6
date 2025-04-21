@@ -16,6 +16,11 @@ Para la correcta ejecución del proyecto, es necesario instalar las siguientes d
    - Instalación: [https://www.google.com/chrome/](https://www.google.com/chrome/)
 2. **ChromeDriver**: Controlador que permite a Selenium interactuar con Chrome.
    - Instalación: [https://chromedriver.chromium.org/downloads](https://chromedriver.chromium.org/downloads)
+3. **Instalación del Kernel de Jupyter en el entorno virtual**:  
+   Para el pipeline correctamente asegurando la ejecución de los notebooks ejecutar el siguiente comando en la terminal con el entorno virtual activado
+   ```bash
+   python -m ipykernel install --user --name=c2425-r6 --display-name "Python (c2425-R6)"
+   ```
 
 
 # Estructura del Proyecto

@@ -17,6 +17,20 @@ desde la extracción, pasando por la limpieza, hasta la exportación final de un
 4. Eliminación de algunas variables y genereación de dataset_7d y dataset_30d
 5. Creación de un backup de la versión anterior del conjunto final.
 6. Guardado del nuevo archivo Parquet actualizado.
+
+IMPORTANTE: Antes de ejecutar este script en un entorno nuevo o después de clonar el proyecto,
+asegurate de registrar el entorno virtual actual como un kernel de Jupyter. Esto es necesario 
+para que los notebooks se puedan ejecutar correctamente desde este script.
+
+Ejecutá el siguiente comando en la terminal con el entorno virtual activado:
+
+    python -m ipykernel install --user --name=c2425-r6 --display-name "Python (c2425-R6)"
+
+- `--name=c2425-r6` establece el identificador interno del kernel (usado por nbconvert).
+- `--display-name "Python (c2425-R6)"` es el nombre que se mostrará en Jupyter.
+- `--user` lo instala para el usuario actual (no requiere permisos de administrador).
+
+Este paso solo es necesario una vez por entorno virtual.
 """
 
 def ejecutar_script(ruta):

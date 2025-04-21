@@ -3,7 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.dates as mdates
 
-def plot_predictions(y_real, pred=None, modelo=None, X=None, fechas=None):
+def plot_predictions(y_real, pred=None, modelo=None, X=None, fechas=None, show=True):
     """
     Grafica predicciones junto con los valores reales, usando fechas opcionalmente.
 
@@ -12,6 +12,7 @@ def plot_predictions(y_real, pred=None, modelo=None, X=None, fechas=None):
     :param modelo: Modelo sklearn-like para usar .predict()
     :param X: Features a predecir, si no se pasa pred
     :param fechas: Índice de fechas opcional
+    :param show: Mostrar el gráfico
     :return: Objeto figura de matplotlib
     """
     if isinstance(y_real, np.ndarray):
@@ -41,6 +42,10 @@ def plot_predictions(y_real, pred=None, modelo=None, X=None, fechas=None):
 
     plt.xticks(rotation=45)
     plt.tight_layout()
-    plt.show()
+
+    if show:
+        plt.show()
+    else:
+        plt.close(fig)
 
     return fig

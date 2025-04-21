@@ -24,4 +24,7 @@ dependencies = [
     "tweepy>=4.15.0",
     "webdriver-manager>=4.0.2",
     "yfinance>=0.2.55",
+    "nbconvert>=7.16.3",
+    "ipykernel>=6.17.0",
+    "jupyter-client>=7.2.2",
 ]

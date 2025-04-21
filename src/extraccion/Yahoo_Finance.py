@@ -21,7 +21,7 @@ import os
 import time
 from typing import Optional
 from src.utils.paths import get_path
-
+from datetime import datetime
 
 def download_data(
     ticker: str,
@@ -83,7 +83,7 @@ def download_data(
 
 def main():
     start_date = "2022-01-01"
-    end_date = "2025-02-17"
+    end_date = datetime.today().strftime("%Y-%m-%d")
 
     parser = argparse.ArgumentParser(description="Descargar datos de Yahoo Finance.")
     parser.add_argument(

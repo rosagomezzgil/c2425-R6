@@ -1,6 +1,9 @@
 from sklearn.feature_selection import SelectKBest, f_regression
 import pandas as pd
 from statsmodels.stats.outliers_influence import variance_inflation_factor
+from statsmodels.tsa.stattools import adfuller
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
 def seleccionar_variables(X, y, tecnica, umbral_correlacion=0.1):
     """
@@ -18,45 +21,87 @@ def seleccionar_variables(X, y, tecnica, umbral_correlacion=0.1):
         if not isinstance(X, pd.DataFrame):
             X = pd.DataFrame(X, columns=[f"var_{i}" for i in range(X.shape[1])])
 
-        # SelectKBest con reducción real
+        # Seleccionar las mejores variables con SelectKBest
         selector = SelectKBest(score_func=f_regression, k=min(15, X.shape[1]))
         X_kbest_array = selector.fit_transform(X, y)
         selected_columns = X.columns[selector.get_support()]
         X_kbest = pd.DataFrame(X_kbest_array, columns=selected_columns, index=X.index)
 
         # Reducir VIF iterativamente
-        while True:
-            vif = pd.Series(
-                [variance_inflation_factor(X_kbest.values, i) for i in range(X_kbest.shape[1])],
-                index=X_kbest.columns
-            )
-            max_vif = vif.max()
-            if max_vif > 10:
-                col_a_eliminar = vif.idxmax()
-                X_kbest = X_kbest.drop(columns=[col_a_eliminar])
-            else:
-                break
+        X_kbest = reducir_vif(X_kbest)
 
         return X_kbest, selector
 
     elif tecnica == "var":
-        # Concatenamos X con y para calcular correlaciones con la target
-        df_completo = X.copy()
-        df_completo["target"] = y
-        correlaciones = df_completo.corr()["target"].drop("target")
 
-        # Filtramos por correlación significativa
-        variables_relevantes = correlaciones[correlaciones.abs() > umbral_correlacion].index.tolist()
+        # 1. Comprobación de estacionariedad con ADF para cada variable
+        # Test ADF solo sobre X (sin target)
+        X_filtrado = X.copy()
+        adf_fail = test_estacionariedad_adf(X_filtrado)
 
-        # Asegurarse de que haya al menos dos variables (VAR no funciona con una sola)
-        if len(variables_relevantes) < 2:
-            raise ValueError("No hay suficientes variables con correlación significativa para VAR.")
+        # Diferenciación si hace falta
+        if adf_fail:
+            for col in adf_fail:
+                X_filtrado.loc[:, col] = X_filtrado[col].diff()
+            X_filtrado = X_filtrado.dropna()
 
-        X_filtrado = X[variables_relevantes]
-        X_filtrado = X_filtrado.copy()
-        X_filtrado.loc[:, "target"] = y
+        # 2. Aplicar PCA para reducir dimensionalidad
+        # Estandarizamos las variables para PCA
+        scaler = StandardScaler()
+        X_estandarizado = scaler.fit_transform(X_filtrado)
 
-        return X_filtrado, None
+        pca = PCA(n_components=0.90)  # Esto conserva el 90% de la varianza
+        X_pca = pca.fit_transform(X_estandarizado)
+
+        # Convertimos a DataFrame para compatibilidad
+        X_pca_df = pd.DataFrame(X_pca, columns=[f"PC{i + 1}" for i in range(X_pca.shape[1])])
+
+        # Retornamos el DataFrame con las componentes principales y la variable target
+        X_pca_df["target"] = y
+
+        return X_pca_df, None
 
     else:
         return X, None
+
+def reducir_vif(X, umbral=10.0):
+    """
+    Elimina variables con VIF alto de forma iterativa.
+
+    :param X: DataFrame con variables explicativas
+    :param umbral: VIF máximo aceptable (por defecto: 10)
+    :param verbose: Si True, imprime qué variables se eliminan
+    :return: DataFrame con variables filtradas por VIF
+    """
+    X_filtrado = X.copy()
+    while True:
+        vif = pd.Series(
+            [variance_inflation_factor(X_filtrado.values, i) for i in range(X_filtrado.shape[1])],
+            index=X_filtrado.columns
+        )
+        max_vif = vif.max()
+        if max_vif > umbral:
+            col_a_eliminar = vif.idxmax()
+            X_filtrado = X_filtrado.drop(columns=[col_a_eliminar])
+        else:
+            break
+    return X_filtrado
+
+def test_estacionariedad_adf(X, alpha=0.1):
+    """
+    Aplica el test de Dickey-Fuller aumentado (ADF) a cada columna de un DataFrame.
+
+    Este test evalúa si una serie temporal es estacionaria. La hipótesis nula (H0) es que la serie
+    NO es estacionaria (es decir, contiene raíz unitaria). Si el p-valor es mayor que el umbral alpha,
+    no podemos rechazar la hipótesis nula, por lo que consideramos que esa variable no es estacionaria.
+
+    :param X: DataFrame con variables temporales (una por columna)
+    :param alpha: Nivel de significancia para el test ADF (por defecto 0.05)
+    :return: Lista con los nombres de las columnas que NO son estacionarias
+    """
+    no_estacionarias = []
+    for col in X.columns:
+        p_valor = adfuller(X[col])[1]
+        if p_valor > alpha:
+            no_estacionarias.append(col)
+    return no_estacionarias

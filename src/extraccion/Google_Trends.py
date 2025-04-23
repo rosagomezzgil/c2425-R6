@@ -13,7 +13,7 @@ Funciones principales:
 """
 
 import time
-from src.utils.paths import get_path
+from utils.paths import get_path
 from pytrends.request import TrendReq
 from typing import List, Optional
 import argparse

@@ -9,6 +9,7 @@
 data/
 
 __pycache__/
+dist/
 
 # Notebooks
 .ipynb_checkpoints/

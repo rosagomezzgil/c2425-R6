@@ -20,7 +20,7 @@ import argparse
 import os
 import time
 from typing import Optional
-from src.utils.paths import get_path
+from utils.paths import get_path
 from datetime import datetime
 
 def download_data(

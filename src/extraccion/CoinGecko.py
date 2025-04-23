@@ -17,7 +17,7 @@ import requests
 import argparse
 import pandas as pd
 import os
-from src.utils.paths import get_path
+from utils.paths import get_path
 from typing import Optional
 
 

@@ -12,7 +12,7 @@ IMPORTANTE: Ejecutar primero los notebooks de análisis antes de correr este scr
 
 import os
 import pandas as pd
-from src.utils.paths import get_path
+from utils.paths import get_path
 
 
 def convertir_csv_a_parquet(nombre_csv, nombre_parquet):

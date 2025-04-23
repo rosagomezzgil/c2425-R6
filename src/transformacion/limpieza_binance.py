@@ -13,7 +13,7 @@
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
-from src.utils.paths import get_path
+from utils.paths import get_path
 from Calcular_RSI import calcular_rsi
 
 if __name__ == "__main__":

@@ -17,7 +17,7 @@
 
 import pandas as pd
 from textblob import TextBlob
-from src.utils.paths import get_path
+from utils.paths import get_path
 import os
 
 

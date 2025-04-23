@@ -20,7 +20,7 @@ import time
 import requests
 import os
 from typing import Optional
-from src.utils.paths import get_path
+from utils.paths import get_path
 
 
 def get_deribit_historical_data(

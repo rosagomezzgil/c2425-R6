@@ -1,14 +1,14 @@
 import mlflow
 from datetime import datetime
 from sklearn.tree import DecisionTreeRegressor
-from src.utils.modelos_sklearn.A_cargar_datos import cargar_datos_7d
-from src.utils.modelos_sklearn.B_preprocesamiento import preprocesar_datos_7d
-from src.utils.modelos_sklearn.D_division_temporal import dividir_datos_temporalmente_7d
-from src.utils.modelos_sklearn.E_ajuste_hiperparametros import ajustar_modelo
-from src.utils.modelos_sklearn.F_metricas import evaluar_modelo_7d
-from src.utils.modelos_sklearn.G_graficar_predicciones import plot_predictions
-from src.utils.mlflow_utils import setup_mlflow
-from src.utils.paths import get_path
+from utils.modelos_sklearn.A_cargar_datos import cargar_datos_7d
+from utils.modelos_sklearn.B_preprocesamiento import preprocesar_datos_7d
+from utils.modelos_sklearn.D_division_temporal import dividir_datos_temporalmente_7d
+from utils.modelos_sklearn.E_ajuste_hiperparametros import ajustar_modelo
+from utils.modelos_sklearn.F_metricas import evaluar_modelo_7d
+from utils.modelos_sklearn.G_graficar_predicciones import plot_predictions
+from utils.mlflow_utils import setup_mlflow
+from utils.paths import get_path
 import pandas as pd
 
 def analizar_importancias(modelo, X, umbral_importancia=0.01, top_n=20):

@@ -14,7 +14,7 @@
 
 
 from Calcular_RSI import calcular_rsi
-from src.utils.paths import  get_path
+from utils.paths import  get_path
 import pandas as pd
 import os
 

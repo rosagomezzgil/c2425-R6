@@ -7,9 +7,8 @@ from sklearn.metrics import (
 )
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from src.utils.paths import get_path
-from src.utils.mlflow_utils import setup_mlflow
-from pathlib import Path
+from utils.paths import get_path
+from utils.mlflow_utils import setup_mlflow
 import numpy as np
 import mlflow
 

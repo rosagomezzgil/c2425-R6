@@ -3,17 +3,17 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 
-from src.utils.modelos_sklearn.A_cargar_datos import cargar_datos_7d
-from src.utils.modelos_sklearn.B_preprocesamiento import preprocesar_datos_7d
-from src.utils.modelos_sklearn.C_seleccion_variables import seleccionar_variables
-from src.utils.modelos_sklearn.D_division_temporal import dividir_datos_temporalmente_7d
-from src.utils.modelos_sklearn.E_ajuste_hiperparametros import ajustar_modelo
-from src.utils.modelos_sklearn.F_metricas import evaluar_modelo_7d
-from src.utils.modelos_sklearn.G_graficar_predicciones import plot_predictions
-from src.utils.mlflow_utils import setup_mlflow
-from src.utils.paths import get_path
+from utils.modelos_sklearn.A_cargar_datos import cargar_datos_7d
+from utils.modelos_sklearn.B_preprocesamiento import preprocesar_datos_7d
+from utils.modelos_sklearn.C_seleccion_variables import seleccionar_variables
+from utils.modelos_sklearn.D_division_temporal import dividir_datos_temporalmente_7d
+from utils.modelos_sklearn.E_ajuste_hiperparametros import ajustar_modelo
+from utils.modelos_sklearn.F_metricas import evaluar_modelo_7d
+from utils.modelos_sklearn.G_graficar_predicciones import plot_predictions
+from utils.mlflow_utils import setup_mlflow
+from utils.paths import get_path
 
-from src.modelos.arquitecturas.lstm_model import SklearnLikeLSTM  # Clase adaptada
+from utils.arquitecturas.lstm_model import SklearnLikeLSTM  # Clase adaptada
 
 
 def crear_ventanas(X, y, window_size=10):

@@ -19,7 +19,7 @@ import pandas as pd
 import argparse
 import os
 import config  # Importar las credenciales
-from src.utils.paths import get_path
+from utils.paths import get_path
 from typing import Optional
 
 

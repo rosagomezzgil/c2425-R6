@@ -12,7 +12,7 @@
 
 import os
 import pandas as pd
-from src.utils.paths import get_path
+from utils.paths import get_path
 
 if __name__ == "__main__":
     # Cargar datos desde un CSV (ajusta la ruta a tu archivo)

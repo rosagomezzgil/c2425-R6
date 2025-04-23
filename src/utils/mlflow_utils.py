@@ -1,6 +1,6 @@
 from pathlib import Path
 import mlflow
-from src.utils.paths import get_path
+from utils.paths import get_path
 
 def setup_mlflow(experiment_name: str):
     """

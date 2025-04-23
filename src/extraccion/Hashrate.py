@@ -16,7 +16,7 @@ import pandas as pd
 import argparse
 import os
 from typing import Optional
-from src.utils.paths import  get_path
+from utils.paths import  get_path
 
 
 def get_bitcoin_hashrate(

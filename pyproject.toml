@@ -28,3 +28,15 @@ dependencies = [
     "webdriver-manager>=4.0.2",
     "yfinance>=0.2.55",
 ]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = [
+    "utils",
+    "utils.arquitecturas",
+    "utils.modelos_sklearn"
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

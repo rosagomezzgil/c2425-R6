@@ -2,7 +2,7 @@ import subprocess
 import os
 from datetime import datetime
 import shutil
-from src.utils.paths import get_path
+from utils.paths import get_path
 import sys
 from subprocess import run
 

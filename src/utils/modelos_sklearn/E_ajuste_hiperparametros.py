@@ -1,9 +1,6 @@
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, TimeSeriesSplit
 import numpy as np
 
-from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, TimeSeriesSplit
-import numpy as np
-
 def ajustar_modelo(modelo, X, y, param_grid, strategy="grid", scoring="neg_mean_squared_error",
                    n_splits=5, random_state=42, verbose=1):
     """

@@ -17,7 +17,7 @@
 
 import os
 import pandas as pd
-from src.utils.paths import get_path
+from utils.paths import get_path
 
 if __name__ == "__main__":
     df = pd.read_csv(get_path('data', 'extraccion', 'datos_google_trends.csv'))

@@ -52,7 +52,8 @@ def main():
     data = {}
     best_mse = np.inf
 
-    windows_size = [1, 7, 14, 21, 28, 30, 35]
+    #windows_size = [1, 7, 14, 21, 28, 30, 35]
+    windows_size = [1]
 
     for window_size in windows_size:
         X_train, y_train, X_test, y_test, fechas_train, fechas_test = preparar_datos(window_size)

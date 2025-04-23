@@ -6,7 +6,9 @@
 **/mlruns
 
 # Datos almacenados
-data/
+data/extraccion
+data/limpieza
+data/parquet
 
 __pycache__/
 dist/

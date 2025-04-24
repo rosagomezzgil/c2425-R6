@@ -388,9 +388,6 @@ if __name__ == "__main__":
     df = calcular_tendencia(df=merged_limpio, horizonte=7)
     df = calcular_tendencia(df=df, horizonte=30)
 
-    df.dropna(inplace=True)
-    print(df.head())
-
     # Guardar el dataframe final
     output_path = get_path('data', 'limpieza', 'cleaned_data.csv')
     os.makedirs(os.path.dirname(output_path), exist_ok=True)

@@ -1,17 +1,27 @@
+# Entorno virtual
 .venv/
-.idea/
 .python-version
 
-#MLFlow
-**/mlruns
+# Configuración de IDEs
+.idea/
+.vscode/
 
-# Datos almacenados
-data/extraccion
-data/limpieza
-data/parquet
-
+# Cachés de Python
 __pycache__/
-dist/
 
-# Notebooks
+# Archivos de distribución (generados por build)
+dist/
+build/
+*.egg-info/
+src/c2425_r6.egg-info/
+
+# MLflow: directorio de logs y modelos
+**/mlruns/
+
+# Datos generados o procesados
+data/extraccion/
+data/limpieza/
+data/parquet/
+
+# Jupyter notebooks
 .ipynb_checkpoints/

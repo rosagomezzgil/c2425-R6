@@ -122,6 +122,7 @@ def calcular_tendencia(
         df: pd.DataFrame,
         horizonte: int,
         threshold: float = 0,
+        pct_promedio = False,
         output_path: Optional[str] = None,
 ):
     """
@@ -136,15 +137,19 @@ def calcular_tendencia(
     # Crear una copia del DataFrame para no modificar el original
     df_result = df.copy()
 
-    # Calcular el precio medio en la ventana
-    df_result["precio_medio"] = df_result["close_binance"].rolling(window=horizonte).mean()
+    if pct_promedio:
+        precio_medio = df["close_binance"].rolling(window=horizonte).mean()
+        df_result[f"pct_cambio_{horizonte}d"] = (
+                (precio_medio.shift(-horizonte) - precio_medio) / precio_medio * 100
+        )
 
-    # Calcular la variación porcentual futura (sin data leakage)
-    # Usamos el precio actual y el precio futuro después de 'horizonte' días
-    future_price = df_result["close_binance"].shift(-horizonte)
-    df_result[f"pct_cambio_{horizonte}d"] = (
-            (future_price - df_result["close_binance"]) / df_result["close_binance"] * 100
-    )
+    else:
+        # Calcular la variación porcentual futura
+        # Usamos el precio actual y el precio futuro después de 'horizonte' días
+        future_price = df_result["close_binance"].shift(-horizonte)
+        df_result[f"pct_cambio_{horizonte}d"] = (
+                (future_price - df_result["close_binance"]) / df_result["close_binance"] * 100
+        )
 
     # Definir la tendencia futura
     df_result[f"tendencia_futura_{horizonte}d"] = 0  # Neutral por defecto
@@ -356,8 +361,8 @@ if __name__ == "__main__":
     print(merged_limpio.head())
 
     # CREACION DE LA VARIABLE RESPUESTA
-    df = calcular_tendencia(df=merged_limpio, horizonte=7)
-    df = calcular_tendencia(df=df, horizonte=30)
+    df = calcular_tendencia(df=merged_limpio, horizonte=7, pct_promedio=False)
+    df = calcular_tendencia(df=df, horizonte=30, pct_promedio=True)
 
     # Guardar el dataframe final
     output_path = get_path('data', 'limpieza', 'cleaned_data.csv')

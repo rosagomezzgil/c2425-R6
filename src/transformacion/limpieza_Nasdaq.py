@@ -18,7 +18,7 @@
     """
 
 
-from Calcular_RSI import calcular_rsi
+from Creacion_variables import crear_variables
 from utils.paths import get_path
 import pandas as pd
 import os
@@ -43,29 +43,10 @@ if __name__ == "__main__":
             nasdaq[col] = pd.to_numeric(nasdaq[col], errors="coerce")
             nasdaq[col] = nasdaq[col].interpolate(method="linear")
 
+    nasdaq.columns = nasdaq.columns.str.lower()
+
     #  Agregar variables de análisis técnico
-    #  Medias Móviles
-    nasdaq["SMA_50"] = nasdaq["Close"].rolling(window=50).mean()
-    nasdaq["SMA_200"] = nasdaq["Close"].rolling(window=200).mean()
-    nasdaq["EMA_50"] = nasdaq["Close"].ewm(span=50, adjust=False).mean()
-    nasdaq["EMA_200"] = nasdaq["Close"].ewm(span=200, adjust=False).mean()
-
-    #  Volatilidad (Desviación estándar de los últimos X días)
-    nasdaq["volatilidad_50"] = nasdaq["Close"].rolling(window=50).std()
-    nasdaq["volatilidad_200"] = nasdaq["Close"].rolling(window=200).std()
-
-    #  Momentum (Diferencia entre el precio actual y hace X días)
-    nasdaq["momentum_50"] = nasdaq["Close"] - nasdaq["Close"].shift(50)
-    nasdaq["momentum_200"] = nasdaq["Close"] - nasdaq["Close"].shift(200)
-
-    #  Variación diaria en porcentaje
-    nasdaq["var_diaria"] = nasdaq["Close"].pct_change() * 100
-
-    #  Rango Diario (Diferencia entre el precio más alto y más bajo)
-    nasdaq["rango_dia"] = nasdaq["High"] - nasdaq["Low"]
-
-    #  RSI (Relative Strength Index)
-    nasdaq = calcular_rsi(nasdaq, "Close")
+    nasdaq = crear_variables(nasdaq)
 
     # Guardar el conjunto de datos procesados
     output_path = get_path('data', 'limpieza', 'limpios_nasdaq.csv')

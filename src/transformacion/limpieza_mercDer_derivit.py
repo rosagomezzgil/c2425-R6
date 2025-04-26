@@ -13,7 +13,7 @@
 
     """
 
-from Calcular_RSI import calcular_rsi
+from Creacion_variables import crear_variables
 from utils.paths import get_path
 import pandas as pd
 import os
@@ -43,16 +43,7 @@ if __name__ == "__main__":
         .reset_index()
     )
 
-    ###CAMBIO DE NOMBRE DE LAS COLUMNAS PARA EL MERGE POSTERIORMENTE
-    df_diario = df_diario.rename(
-        columns={
-            "open": "mDopen",
-            "high": "mDhigh",
-            "low": "mDlow",
-            "close": "mDclose",
-            "volume": "mDvolume",
-        }
-    )
+    df_diario = df_diario.rename(columns={"volume": "volumen"})
 
     df_diario = df_diario.sort_values(by="timestamp")
 
@@ -62,22 +53,7 @@ if __name__ == "__main__":
     print("\nValores nulos en el dataset:")
     print(df.isnull().sum())
 
-    df_diario["mDvar_diaria"] = df_diario["mDclose"].pct_change() * 100
-    df_diario["mDvolatilidad_50"] = df_diario["mDclose"].rolling(window=50).std()
-    df_diario["mDvolatilidad_200"] = df_diario["mDclose"].rolling(window=200).std()
-    df_diario["mDrango_dia"] = df_diario["mDclose"] - df_diario["mDopen"]
-    df_diario["mDmomentum_50"] = df_diario["mDclose"] - df_diario["mDclose"].shift(50)
-    df_diario["mDmomentum_200"] = df_diario["mDclose"] - df_diario["mDclose"].shift(200)
-    # Media Móvil Simple (SMA)
-    df_diario["mDSMA_50"] = df_diario["mDclose"].rolling(window=50).mean()  # 50 días
-    df_diario["mDSMA_200"] = df_diario["mDclose"].rolling(window=200).mean()  # 200 días
-
-    # Media Móvil Exponencial (EMA)
-    df_diario["mDEMA_50"] = df_diario["mDclose"].ewm(span=50, adjust=False).mean()
-    df_diario["mDEMA_200"] = df_diario["mDclose"].ewm(span=200, adjust=False).mean()
-
-    df_diario = calcular_rsi(df_diario, "mDclose")
-    df_diario = df_diario.rename(columns={"RSI": "mD_RSI"})
+    df_diario = crear_variables(df_diario)
 
     # Guardar el conjunto de datos
     output_path = get_path('data', 'limpieza', 'limpios_mercadoDerivados_deribit.csv')

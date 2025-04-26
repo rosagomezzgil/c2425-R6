@@ -4,8 +4,6 @@
     valores monetarios (incluyendo volúmenes expresados en billones) a tipos numéricos.
 
     También se renombran columnas para mantener consistencia con otros datasets.
-    Se eliminan duplicados y valores nulos, y se detectan outliers usando el método IQR,
-    aunque no se eliminan porque pueden ser muy relevantes en análisis predictivos.
 
     Además, se calculan nuevas métricas como variación diaria, volatilidad,
     momentum, medias móviles (SMA y EMA) y el RSI utilizando la función
@@ -16,7 +14,7 @@
     """
 
 
-from Calcular_RSI import calcular_rsi
+from Creacion_variables import crear_variables
 from utils.paths import get_path
 import pandas as pd
 import os
@@ -41,19 +39,6 @@ def convertir_volumen(vol):
         return convertir_euros(vol.replace("B", "")) * 1e9  # Convertir a número real
 
     return convertir_euros(vol)
-
-
-def detectar_outliers_iqr(data, col):
-    """
-    Definir una función para detectar outliers con el método IQR
-    """
-    Q1 = data[col].quantile(0.25)
-    Q3 = data[col].quantile(0.75)
-    IQR = Q3 - Q1
-    limite_inferior = Q1 - 1.5 * IQR
-    limite_superior = Q3 + 1.5 * IQR
-    outliers = data[(data[col] < limite_inferior) | (data[col] > limite_superior)]
-    return outliers
 
 
 if __name__ == "__main__":
@@ -102,40 +87,11 @@ if __name__ == "__main__":
     print(df.head())
     print(df.info())
 
-    ### DETECCIÓN Y TRATAMIENTO DE VALORES NULOS ###
-    print("\nValores nulos en el dataset:")
-    print(df.isnull().sum())
-
-    ### DETECCIÓN DE OUTLIERS ###
-
-    print("\nOutliers detectados en el dataset:")
-    for col in columnas_monetarias + ["volumen"]:
-        outliers = detectar_outliers_iqr(df, col)
-        if not outliers.empty:
-            print(f"\nOutliers en {col}:")
-            print(outliers)
-
-    # No vamos a eliminar outliers ya que pueden ser utiles para la prediccion, solamente los detectamos
-
     ### RESULTADO FINAL ###
     print("\nDataset limpio y listo para su análisis:")
     print(df.head())
 
-    df["var_diaria"] = df["close"].pct_change() * 100  # % de variación
-    df["volatilidad_50"] = df["close"].rolling(window=50).std()
-    df["volatilidad_200"] = df["close"].rolling(window=200).std()
-    df["rango_dia"] = df["high"] - df["low"]
-    df["momentum_50"] = df["close"] - df["close"].shift(50)
-    df["momentum_200"] = df["close"] - df["close"].shift(200)
-    # Media Móvil Simple (SMA)
-    df["SMA_50"] = df["close"].rolling(window=50).mean()  # 50 días
-    df["SMA_200"] = df["close"].rolling(window=200).mean()  # 200 días
-
-    # Media Móvil Exponencial (EMA)
-    df["EMA_50"] = df["close"].ewm(span=50, adjust=False).mean()
-    df["EMA_200"] = df["close"].ewm(span=200, adjust=False).mean()
-
-    df = calcular_rsi(df, "close")
+    df = crear_variables(df)
 
     output_path = get_path('data', 'limpieza', 'limpios_bitget_scrapping.csv')
     os.makedirs(os.path.dirname(output_path), exist_ok=True)

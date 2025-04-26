@@ -14,7 +14,7 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 from utils.paths import get_path
-from Calcular_RSI import calcular_rsi
+from Creacion_variables import crear_variables
 
 if __name__ == "__main__":
     # Cargar datos desde un CSV (ajusta la ruta a tu archivo)
@@ -32,17 +32,10 @@ if __name__ == "__main__":
     # Ver si hay valores nulos
     print(df.isnull().sum())  # No tiene valores nulos
 
-    # Transformamos el volumen a dolares (está en cantidad de BTC y lo queremos en $)
-    df["volumen"] = df["volume"] * df["close"]
+    df = df.rename(columns={"volume": "volumen"})
 
-    # annadir columnas: Medias moviles
-    # Media Móvil Simple (SMA)
-    df["SMA_50"] = df["close"].rolling(window=50).mean()  # 50 días
-    df["SMA_200"] = df["close"].rolling(window=200).mean()  # 200 días
-
-    # Media Móvil Exponencial (EMA)
-    df["EMA_50"] = df["close"].ewm(span=50, adjust=False).mean()
-    df["EMA_200"] = df["close"].ewm(span=200, adjust=False).mean()
+    # Crear variables
+    df = crear_variables(df)
 
     # Graficar las medias moviles para ver si reflejan bien la tendencia
     plt.figure(figsize=(12, 6))
@@ -51,23 +44,15 @@ if __name__ == "__main__":
     plt.plot(df["timestamp"], df["close"], label="Precio de cierre", color="blue")
 
     # Graficamos las medias móviles
-    plt.plot(df["timestamp"], df["SMA_50"], label="SMA 50", color="orange")
-    plt.plot(df["timestamp"], df["SMA_200"], label="SMA 200", color="red")
+    plt.plot(df["timestamp"], df["SMA_7"], label="SMA 7", color="orange")
+    plt.plot(df["timestamp"], df["SMA_14"], label="SMA 14", color="red")
+    plt.plot(df["timestamp"], df["SMA_30"], label="SMA 30", color="yellow")
 
     plt.title("Bitcoin - Precio y Medias Móviles")
     plt.xlabel("Fecha")
     plt.ylabel("Precio")
     plt.legend()
     plt.show()
-
-    df["var_diaria"] = df["close"].pct_change() * 100
-    df["volatilidad_50"] = df["close"].rolling(window=50).std()
-    df["volatilidad_200"] = df["close"].rolling(window=200).std()
-    df["rango_dia"] = df["high"] - df["low"]
-    df["momentum_50"] = df["close"] - df["close"].shift(50)
-    df["momentum_200"] = df["close"] - df["close"].shift(200)
-
-    df = calcular_rsi(df, "close")
 
     output_path = get_path('data', 'limpieza', 'limpios_binance.csv')
     os.makedirs(os.path.dirname(output_path), exist_ok=True)

@@ -119,10 +119,10 @@ def interpretar_metrica(mae: float, r: float, nombre: str):
 
 
 def calcular_tendencia(
-    df: pd.DataFrame,
-    horizonte: int,
-    threshold: float = 0,
-    output_path: Optional[str] = None,
+        df: pd.DataFrame,
+        horizonte: int,
+        threshold: float = 0,
+        output_path: Optional[str] = None,
 ):
     """
     Calcula la tendencia futura basada en la variación porcentual del precio medio.
@@ -133,30 +133,34 @@ def calcular_tendencia(
     :param output_path: (str, opcional) Ruta donde guardar el CSV procesado. Default: None
     :return: pd.DataFrame con la tendencia calculada.
     """
+    # Crear una copia del DataFrame para no modificar el original
+    df_result = df.copy()
 
     # Calcular el precio medio en la ventana
-    precio_medio = df["close_binance"].rolling(window=horizonte).mean()
+    df_result["precio_medio"] = df_result["close_binance"].rolling(window=horizonte).mean()
 
-    # Calcular la variación porcentual
-    df[f"pct_cambio_{horizonte}d"] = (
-            (precio_medio.shift(-horizonte) - precio_medio) / precio_medio * 100
+    # Calcular la variación porcentual futura (sin data leakage)
+    # Usamos el precio actual y el precio futuro después de 'horizonte' días
+    future_price = df_result["close_binance"].shift(-horizonte)
+    df_result[f"pct_cambio_{horizonte}d"] = (
+            (future_price - df_result["close_binance"]) / df_result["close_binance"] * 100
     )
 
     # Definir la tendencia futura
-    df[f"tendencia_futura_{horizonte}d"] = 0  # Neutral por defecto
-    df.loc[
-        df[f"pct_cambio_{horizonte}d"] > threshold, f"tendencia_futura_{horizonte}d"
+    df_result[f"tendencia_futura_{horizonte}d"] = 0  # Neutral por defecto
+    df_result.loc[
+        df_result[f"pct_cambio_{horizonte}d"] > threshold, f"tendencia_futura_{horizonte}d"
     ] = 1  # Alcista
-    df.loc[
-        df[f"pct_cambio_{horizonte}d"] < -threshold, f"tendencia_futura_{horizonte}d"
+    df_result.loc[
+        df_result[f"pct_cambio_{horizonte}d"] < -threshold, f"tendencia_futura_{horizonte}d"
     ] = -1  # Bajista
 
     # Guardar CSV si se proporciona una ruta
     if output_path:
-        df.to_csv(output_path, index=False)
+        df_result.to_csv(output_path, index=False)
         print(f"Datos guardados en: {output_path}")
 
-    return df
+    return df_result
 
 
 if __name__ == "__main__":
@@ -253,18 +257,7 @@ if __name__ == "__main__":
         "high",
         "low",
         "close",
-        "volumen",
-        "var_diaria",
-        "volatilidad_50",
-        "volatilidad_200",
-        "rango_dia",
-        "momentum_50",
-        "momentum_200",
-        "SMA_50",
-        "SMA_200",
-        "EMA_50",
-        "EMA_200",
-        "RSI",
+        "volumen"
     ]
 
     # Calcular métricas para cada columna
@@ -279,8 +272,7 @@ if __name__ == "__main__":
 
     """
     En general, Binance y Bitget muestran una alta coherencia en la mayoría de las métricas clave,
-    con diferencias mínimas en precios, volatilidad y medias móviles,
-    lo que indica que ambas plataformas reflejan tendencias similares del mercado.
+    con diferencias mínimas en precios, lo que indica que ambas plataformas reflejan tendencias similares del mercado.
     """
 
     """
@@ -290,17 +282,7 @@ if __name__ == "__main__":
     columns = [
         "close",
         "volumen",
-        "var_diaria",
-        "volatilidad_50",
-        "volatilidad_200",
-        "rango_dia",
-        "momentum_50",
-        "momentum_200",
-        "SMA_50",
-        "SMA_200",
-        "EMA_50",
-        "EMA_200",
-        "RSI",
+        "var_diaria"
     ]
 
     # Calcular métricas para cada columna
@@ -325,22 +307,11 @@ if __name__ == "__main__":
 
     # Columnas a evaluar
     columns = [
-        "mDopen",
-        "mDhigh",
-        "mDlow",
-        "mDclose",
-        "mDvolume",
-        "mDvar_diaria",
-        "mDvolatilidad_50",
-        "mDvolatilidad_200",
-        "mDrango_dia",
-        "mDmomentum_50",
-        "mDmomentum_200",
-        "mDSMA_50",
-        "mDSMA_200",
-        "mDEMA_50",
-        "mDEMA_200",
-        "mD_RSI",
+        "open",
+        "high",
+        "low",
+        "close",
+        "volumen"
     ]
 
     # Calcular métricas para cada columna

@@ -5,7 +5,7 @@ from statsmodels.tsa.stattools import adfuller
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-def seleccionar_variables(X, y, tecnica, umbral_correlacion=0.1):
+def seleccionar_variables(X, y, tecnica):
     """
     Selecciona variables en función de la técnica especificada.
     Para 'var', se seleccionan aquellas con alta correlación con la variable objetivo.
@@ -13,7 +13,6 @@ def seleccionar_variables(X, y, tecnica, umbral_correlacion=0.1):
     :param X: DataFrame de características
     :param y: Serie objetivo
     :param tecnica: Nombre del modelo (e.g. 'svr', 'var', etc.)
-    :param umbral_correlacion: Mínimo valor absoluto de correlación para incluir una variable
     :return: X reducido y el selector (o None)
     """
     if tecnica == "svr":

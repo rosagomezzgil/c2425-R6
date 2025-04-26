@@ -361,7 +361,7 @@ if __name__ == "__main__":
     print(merged_limpio.head())
 
     # CREACION DE LA VARIABLE RESPUESTA
-    df = calcular_tendencia(df=merged_limpio, horizonte=7, pct_promedio=False)
+    df = calcular_tendencia(df=merged_limpio, horizonte=7, pct_promedio=True)
     df = calcular_tendencia(df=df, horizonte=30, pct_promedio=True)
 
     # Guardar el dataframe final

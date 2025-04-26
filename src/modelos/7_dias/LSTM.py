@@ -181,8 +181,6 @@ def main():
                 y_train,
                 param_grid,
                 strategy="random",  # Para usar RandomizedSearchCV
-                scoring="neg_mean_squared_error",
-                n_splits=3,
                 verbose=1
             )
 

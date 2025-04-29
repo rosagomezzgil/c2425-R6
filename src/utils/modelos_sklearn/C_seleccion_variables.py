@@ -4,6 +4,8 @@ from statsmodels.stats.outliers_influence import variance_inflation_factor
 from statsmodels.tsa.stattools import adfuller
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
+from statsmodels.tsa.stattools import grangercausalitytests
+from sklearn.base import BaseEstimator
 
 def seleccionar_variables(X, y, tecnica):
     """
@@ -61,8 +63,40 @@ def seleccionar_variables(X, y, tecnica):
         return X_pca_df, None
 
     elif tecnica == "lstm":
+        """
+            Selecciona variables relevantes para un modelo LSTM usando pruebas de Granger Causality.
 
-        return X, None
+            :param X: DataFrame de características
+            :param y: Serie objetivo
+            :param tecnica: Técnica de modelado (para condicionales futuras)
+            :param maxlag: Máximo desfase para la prueba de Granger
+            :param threshold: Umbral de significancia para seleccionar variables
+            :return: Subconjunto de X con variables seleccionadas y lista de seleccionadas
+            """
+        # Ajustar parámetros en función de mejores resultados
+        maxlag = 5
+        threshold = 0.05
+        if tecnica != "lstm":
+            raise NotImplementedError("Actualmente solo se implementa la selección para LSTM.")
+
+        seleccionadas = []
+        for col in X.columns:
+            try:
+                df_temp = pd.concat([y, X[col]], axis=1).dropna()
+                df_temp.columns = ['target', 'feature']
+                result = grangercausalitytests(df_temp, maxlag=maxlag, verbose=False)
+
+                # Verifica si alguno de los lags tiene p-value < threshold
+                p_values = [result[i + 1][0]['ssr_ftest'][1] for i in range(maxlag)]
+                if any(p < threshold for p in p_values):
+                    seleccionadas.append(col)
+            except Exception as e:
+                print(f"[Aviso] Error al procesar {col}: {e}")
+                continue
+
+        print(f"\n[Selección de Variables] Variables seleccionadas: {seleccionadas}")
+
+        return X[seleccionadas], seleccionadas
 
     else:
         return X, None

@@ -78,8 +78,8 @@ if __name__ == "__main__":
         get_path("src", "extraccion", "mercadoDerivados_deribit.py"),
         get_path("src", "extraccion", "Yahoo_Finance.py")
     ]
-    # for ruta in rutas_extraccion:
-    #     ejecutar_script(ruta)
+    for ruta in rutas_extraccion:
+        ejecutar_script(ruta)
 
     # -------- ETAPA 2: Limpieza y transformación --------
     print("\n ETAPA 2: Limpieza y transformación")
@@ -105,32 +105,32 @@ if __name__ == "__main__":
     ejecutar_script(get_path("src", "transformacion", "merge.py"))
 
     # -------- ETAPA 4: Generación de datasets de modelado --------
-    # print("\n ETAPA 4: Generación de datasets 7d y 30d")
-    # ejecutar_notebook(get_path("src", "modelos", "eliminacion de variables.ipynb"))
-    #
-    # # -------- ETAPA 5: BACKUP antes de guardar parquet final --------
-    # archivos_a_respaldar = {
-    #     "data": "data.parquet",
-    #     "data_7d": "data_7d.parquet",
-    #     "data_30d": "data_30d.parquet",
-    # }
-    #
-    # backups_dir = get_path("data", "parquet", "backups")
-    # os.makedirs(backups_dir, exist_ok=True)
-    #
-    # for nombre_logico, nombre_archivo in archivos_a_respaldar.items():
-    #     parquet_path = get_path("data", "parquet", nombre_archivo)
-    #
-    #     if os.path.exists(parquet_path):
-    #         fecha_hora = datetime.now().strftime("%Y%m%d_%H%M%S")
-    #         nombre_backup = f"{nombre_logico}_BACKUP_{fecha_hora}.parquet"
-    #         ruta_backup = os.path.join(backups_dir, nombre_backup)
-    #         shutil.copy2(parquet_path, ruta_backup)
-    #         print(f" Backup creado para '{nombre_logico}': {ruta_backup}")
-    #     else:
-    #         print(f" No se encontró el archivo Parquet '{nombre_archivo}', no se creó backup.")
-    #
-    # # -------- ETAPA 6: Guardado del nuevo parquet -------
-    # ejecutar_script(get_path("src", "transformacion", "parquet_merged_data.py"))
-    #
-    # print("\n Pipeline de actualización completado.")
+    print("\n ETAPA 4: Generación de datasets 7d y 30d")
+    ejecutar_notebook(get_path("src", "modelos", "eliminacion de variables.ipynb"))
+
+    # -------- ETAPA 5: BACKUP antes de guardar parquet final --------
+    archivos_a_respaldar = {
+        "data": "data.parquet",
+        "data_7d": "data_7d.parquet",
+        "data_30d": "data_30d.parquet",
+    }
+
+    backups_dir = get_path("data", "parquet", "backups")
+    os.makedirs(backups_dir, exist_ok=True)
+
+    for nombre_logico, nombre_archivo in archivos_a_respaldar.items():
+        parquet_path = get_path("data", "parquet", nombre_archivo)
+
+        if os.path.exists(parquet_path):
+            fecha_hora = datetime.now().strftime("%Y%m%d_%H%M%S")
+            nombre_backup = f"{nombre_logico}_BACKUP_{fecha_hora}.parquet"
+            ruta_backup = os.path.join(backups_dir, nombre_backup)
+            shutil.copy2(parquet_path, ruta_backup)
+            print(f" Backup creado para '{nombre_logico}': {ruta_backup}")
+        else:
+            print(f" No se encontró el archivo Parquet '{nombre_archivo}', no se creó backup.")
+
+    # -------- ETAPA 6: Guardado del nuevo parquet -------
+    ejecutar_script(get_path("src", "transformacion", "parquet_merged_data.py"))
+
+    print("\n Pipeline de actualización completado.")

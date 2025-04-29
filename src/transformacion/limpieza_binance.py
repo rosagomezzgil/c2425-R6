@@ -44,9 +44,8 @@ if __name__ == "__main__":
     plt.plot(df["timestamp"], df["close"], label="Precio de cierre", color="blue")
 
     # Graficamos las medias móviles
-    plt.plot(df["timestamp"], df["SMA_7"], label="SMA 7", color="orange")
-    plt.plot(df["timestamp"], df["SMA_14"], label="SMA 14", color="red")
-    plt.plot(df["timestamp"], df["SMA_30"], label="SMA 30", color="yellow")
+    plt.plot(df["timestamp"], df["SMA_50"], label="SMA 50", color="orange")
+    plt.plot(df["timestamp"], df["SMA_200"], label="SMA 200", color="red")
 
     plt.title("Bitcoin - Precio y Medias Móviles")
     plt.xlabel("Fecha")

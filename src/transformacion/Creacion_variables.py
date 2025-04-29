@@ -62,7 +62,8 @@ def crear_variables(df: pd.DataFrame) -> pd.DataFrame:
     else:
         df["rango_dia"] = df["close"].diff().abs()
 
-    for periodo in [7, 14, 30]:
+    #              [7, 14, 30]
+    for periodo in [50, 200]:
         # Medidas de volatilidad
         df[f"volatilidad_{periodo}"] = df["close"].rolling(window=periodo).std()
 
@@ -71,7 +72,8 @@ def crear_variables(df: pd.DataFrame) -> pd.DataFrame:
 
 
     # Medias móviles
-    dias = [7, 14, 30, 50, 200]  # Añadidos 50 y 200 días (muy usados)
+    # dias = [7, 14, 30, 50, 200]  # Añadidos 50 y 200 días (muy usados)
+    dias = [50, 200]
     for d in dias:
         # Media Móvil Simple (SMA)
         df[f"SMA_{d}"] = df["close"].rolling(window=d).mean()
@@ -83,10 +85,10 @@ def crear_variables(df: pd.DataFrame) -> pd.DataFrame:
     df = calcular_rsi(df, "close")
 
     # MACD (Moving Average Convergence Divergence)
-    EMA_12 = df["close"].ewm(span=12, adjust=False).mean()
-    EMA_26 = df["close"].ewm(span=26, adjust=False).mean()
-    df["MACD"] = EMA_12 - EMA_26
-    df["MACD_signal"] = df["MACD"].ewm(span=9, adjust=False).mean()
-    df["MACD_hist"] = df["MACD"] - df["MACD_signal"]
+    # EMA_12 = df["close"].ewm(span=12, adjust=False).mean()
+    # EMA_26 = df["close"].ewm(span=26, adjust=False).mean()
+    # df["MACD"] = EMA_12 - EMA_26
+    # df["MACD_signal"] = df["MACD"].ewm(span=9, adjust=False).mean()
+    # df["MACD_hist"] = df["MACD"] - df["MACD_signal"]
 
     return df

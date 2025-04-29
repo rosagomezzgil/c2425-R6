@@ -60,6 +60,10 @@ def seleccionar_variables(X, y, tecnica):
 
         return X_pca_df, None
 
+    elif tecnica == "lstm":
+
+        return X, None
+
     else:
         return X, None
 

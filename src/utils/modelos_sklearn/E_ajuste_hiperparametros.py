@@ -104,5 +104,7 @@ def validar_modelo_timeseries(y, param_grid, model_class, seasonal=False, season
                 best_params = order
                 best_model = model_class(y, order=order).fit()
 
+
+    print(best_params)
     return best_model, best_params
 

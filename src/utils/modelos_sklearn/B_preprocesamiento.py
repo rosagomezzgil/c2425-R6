@@ -32,12 +32,11 @@ def preprocesar_datos_7d(df, tecnica, target_col, scaler = None):
     return X, y, scaler
 
 def preprocesar_datos_30d(df: pd.DataFrame, target_col: str):
-
     df = df.copy()
     df = df.dropna()
 
-    df.drop_duplicates(inplace=True)
-    
+    # Ya no es necesario eliminar duplicados aquí, se hace en cargar_datos_30d
+
     adf_result = adfuller(df[target_col])
     if adf_result[1] > 0.05:
         print("La serie no es estacionaria, se aplicará diferenciación")

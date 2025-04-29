@@ -2,27 +2,30 @@ from sklearn.preprocessing import StandardScaler
 from statsmodels.tsa.stattools import adfuller
 import pandas as pd
 
-def preprocesar_datos_7d(df, tecnica, target_col):
+def preprocesar_datos_7d(df, tecnica, target_col, scaler = None):
     """
-    Preprocesa los datos según la técnica:
+    Preprocesa los datos:
     - Separa X e y
     - Escala si es necesario
+    - Si scaler es None, lo crea y hace fit_transform (entrenamiento)
+    - Si scaler ya existe, solo hace transform (predicción)
 
-    :param df: DataFrame ya limpio (ya contiene solo variables relevantes)
+    :param df: DataFrame
     :param tecnica: 'svr', 'lstm', 'arbol', etc.
     :param target_col: nombre de la columna objetivo
-    :return: X, y, scaler o None
+    :param scaler: scaler existente o None
+    :return: X procesado, y, scaler
     """
     y = df[target_col]
     X = df.drop(columns=[target_col])
 
-    scaler = None
     if tecnica in ["svr", "lstm"]:
-        scaler = StandardScaler()
-        X = scaler.fit_transform(X)
-
+        if scaler is None:
+            scaler = StandardScaler()
+            X = scaler.fit_transform(X)  # Entrenamiento
+        else:
+            X = scaler.transform(X)  # Predicción
     return X, y, scaler
-
 
 def preprocesar_datos_30d(df: pd.DataFrame, target_col: str):
     df = df.copy()

@@ -52,18 +52,18 @@ if __name__ == "__main__":
     # Aplicar interpolación lineal
     df_merged["hashrate"] = df_merged["hashrate"].interpolate(method="linear")
 
-    # Calcular medias móviles con ventanas de 7 y 30 días
-    df_merged["SMA_7"] = (
-        df_merged["hashrate"].rolling(window=7).mean()
-    )  # Media móvil simple 7 días
-    df_merged["SMA_30"] = (
-        df_merged["hashrate"].rolling(window=30).mean()
-    )  # Media móvil simple 30 días
-    df_merged["EMA_7"] = (
-        df_merged["hashrate"].ewm(span=7, adjust=False).mean()
-    )  # Media móvil exponencial 7 días
-    df_merged["EMA_30"] = (
-        df_merged["hashrate"].ewm(span=30, adjust=False).mean()
+    # Calcular medias móviles con ventanas de 50 y 200 días
+    df_merged["SMA_50"] = (
+        df_merged["hashrate"].rolling(window=50).mean()
+    )  # Media móvil simple 50 días
+    df_merged["SMA_200"] = (
+        df_merged["hashrate"].rolling(window=200).mean()
+    )  # Media móvil simple 200 días
+    df_merged["EMA_50"] = (
+        df_merged["hashrate"].ewm(span=50, adjust=False).mean()
+    )  # Media móvil exponencial 50 días
+    df_merged["EMA_200"] = (
+        df_merged["hashrate"].ewm(span=200, adjust=False).mean()
     )  # Media móvil exponencial 30 días
 
     # Ver si hay valores nulos

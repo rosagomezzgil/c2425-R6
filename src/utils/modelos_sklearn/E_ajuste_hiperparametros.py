@@ -1,8 +1,8 @@
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, TimeSeriesSplit
 import numpy as np
 
-def ajustar_modelo(modelo, X, y, param_grid, strategy="grid", scoring="neg_mean_absolute_percentage_error",
-                   n_splits=5, random_state=42, verbose=1):
+def ajustar_modelo(modelo, X, y, param_grid, strategy="grid", scoring="r2",
+                   n_splits=5, random_state=42, n_iter = 20, verbose=1):
     """
     Ajusta un modelo sklearn usando validación cruzada temporal.
 
@@ -33,7 +33,7 @@ def ajustar_modelo(modelo, X, y, param_grid, strategy="grid", scoring="neg_mean_
         search = RandomizedSearchCV(
             estimator=modelo,
             param_distributions=param_grid,
-            n_iter=20,
+            n_iter=n_iter,
             scoring=scoring,
             cv=cv,
             n_jobs=-1,

@@ -16,6 +16,10 @@ def preprocesar_datos_7d(df, tecnica, target_col, scaler = None):
     :param scaler: scaler existente o None
     :return: X procesado, y, scaler
     """
+
+    df = df.copy()
+    df = df.dropna()
+
     y = df[target_col]
     X = df.drop(columns=[target_col])
 
@@ -28,9 +32,12 @@ def preprocesar_datos_7d(df, tecnica, target_col, scaler = None):
     return X, y, scaler
 
 def preprocesar_datos_30d(df: pd.DataFrame, target_col: str):
+
     df = df.copy()
     df = df.dropna()
 
+    df.drop_duplicates(inplace=True)
+    
     adf_result = adfuller(df[target_col])
     if adf_result[1] > 0.05:
         print("La serie no es estacionaria, se aplicará diferenciación")

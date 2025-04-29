@@ -6,7 +6,6 @@ from utils.modelos_sklearn.D_division_temporal import dividir_datos_temporalment
 from utils.modelos_sklearn.G_graficar_predicciones import  plot_predictions
 from utils.mlflow_utils import setup_mlflow
 from utils.paths import get_path
-
 import mlflow
 from datetime import datetime
 from statsmodels.tsa.arima.model import ARIMA

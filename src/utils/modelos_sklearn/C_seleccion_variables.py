@@ -1,4 +1,4 @@
-from sklearn.feature_selection import SelectKBest, f_regression
+from sklearn.feature_selection import SelectKBest, mutual_info_regression, f_regression
 import pandas as pd
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from statsmodels.tsa.stattools import adfuller
@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 from statsmodels.tsa.stattools import grangercausalitytests
 from sklearn.base import BaseEstimator
 
-def seleccionar_variables(X, y, tecnica):
+def seleccionar_variables(X, y, tecnica, k_vars = 0):
     """
     Selecciona variables en función de la técnica especificada.
     Para 'var', se seleccionan aquellas con alta correlación con la variable objetivo.
@@ -18,20 +18,29 @@ def seleccionar_variables(X, y, tecnica):
     :return: X reducido y el selector (o None)
     """
     if tecnica == "svr":
+        resultados = {}
 
-        if not isinstance(X, pd.DataFrame):
-            X = pd.DataFrame(X, columns=[f"var_{i}" for i in range(X.shape[1])])
+        # Guardar los nombres de las columnas originales
+        original_columns = X.columns
 
-        # Seleccionar las mejores variables con SelectKBest
-        selector = SelectKBest(score_func=f_regression, k=min(15, X.shape[1]))
-        X_kbest_array = selector.fit_transform(X, y)
-        selected_columns = X.columns[selector.get_support()]
-        X_kbest = pd.DataFrame(X_kbest_array, columns=selected_columns, index=X.index)
+        # 1. Usando f_regression (relación lineal)
+        selector_f = SelectKBest(score_func=f_regression, k=min(k_vars, X.shape[1]))
+        X_kbest_f = selector_f.fit_transform(X, y)
+        selected_columns_indices_f = selector_f.get_support()
+        selected_columns_f = original_columns[selected_columns_indices_f]
+        resultados['f_regression'] = pd.DataFrame(X_kbest_f, columns=selected_columns_f, index=X.index)
 
-        # Reducir VIF iterativamente
-        X_kbest = reducir_vif(X_kbest)
+        # 2. Usando mutual_info_regression (relación no lineal)
+        selector_mi = SelectKBest(score_func=mutual_info_regression, k=min(k_vars, X.shape[1]))
+        X_kbest_mi = selector_mi.fit_transform(X, y)
+        selected_columns_indices_mi = selector_mi.get_support()
+        selected_columns_mi = original_columns[selected_columns_indices_mi]
+        resultados['mutual_info'] = pd.DataFrame(X_kbest_mi, columns=selected_columns_mi, index=X.index)
 
-        return X_kbest, selector
+        # 3. Todas las variables
+        resultados['all'] = X.copy()
+
+        return resultados
 
     elif tecnica == "var":
 

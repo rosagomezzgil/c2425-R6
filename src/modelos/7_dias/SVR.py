@@ -1,3 +1,42 @@
+"""
+Módulo: SVR.py
+
+Descripción:
+Este script implementa una serie de experimentos para entrenar modelos de regresión por
+vectores de soporte (SVR) aplicados a series temporales financieras. Se exploran diferentes
+estrategias de selección de variables y se prueban hiperparámetros para abordar el sobreajuste.
+
+Características principales:
+- Carga y preprocesamiento de datos.
+- Selección de características mediante técnicas como `f_regression` o `mutual_info_regression`.
+- Escalado de datos con `StandardScaler`.
+- Entrenamiento y validación de modelos SVR con búsqueda aleatoria (`RandomizedSearchCV`).
+- Evaluación del modelo en datos fuera de muestra (test set).
+- Reentrenamiento del mejor modelo con todos los datos de entrenamiento y validación.
+- Registro automático de métricas, parámetros y visualizaciones usando MLflow.
+
+Dependencias:
+- pandas
+- numpy
+- scikit-learn
+- mlflow
+- matplotlib
+- utils personalizados:
+    - utils.modelos_sklearn.* (funciones de carga, preprocesamiento, evaluación, etc.)
+    - utils.paths (gestión de rutas)
+    - utils.mlflow_utils (configuración y logging en MLflow)
+
+Uso:
+Ejecutar este script para entrenar múltiples modelos SVR con distintas combinaciones de
+características seleccionadas y configuraciones de hiperparámetros, y registrar todo el
+proceso con MLflow para su posterior análisis.
+
+"""
+
+
+
+
+
 from utils.modelos_sklearn.A_cargar_datos import cargar_datos_7d  # Función de carga de datos
 from utils.modelos_sklearn.D_division_temporal import dividir_datos_temporalmente_7d  # Función para dividir los datos temporalmente
 from sklearn.feature_selection import SelectKBest, mutual_info_regression, f_regression

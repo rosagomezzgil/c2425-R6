@@ -1,6 +1,7 @@
 # Datos de Halving
 """
-Este script obtiene las fechas de los eventos de halving de Bitcoin junto con el bloque y la recompensa correspondiente a cada uno de estos eventos. Los datos se almacenan en un DataFrame de Pandas y se guardan en un archivo CSV. La función principal `get_halving_dates` genera los datos históricos del halving, incluyendo la fecha, el bloque y la recompensa en cada evento de halving, y guarda esta información en un archivo CSV para su posterior análisis.
+Este script obtiene las fechas de los eventos de halving de Bitcoin junto con el bloque y la recompensa correspondiente a cada uno de estos eventos. Los datos se almacenan en un DataFrame de Pandas y se guardan en un archivo CSV.
+ La función principal `get_halving_dates` genera los datos históricos del halving, incluyendo la fecha, el bloque y la recompensa en cada evento de halving, y guarda esta información en un archivo CSV para su posterior análisis.
 
 Eventos de Halving incluidos:
     - 2012-11-28: Bloque 210000, Recompensa: 25 BTC

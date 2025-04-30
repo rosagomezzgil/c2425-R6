@@ -1,3 +1,36 @@
+"""
+Módulo: LSTM.py
+
+Descripción:
+Este script implementa un flujo completo de experimentación con modelos LSTM
+(Long Short-Term Memory) para series temporales. El código entrena múltiples modelos con distintas ventanas temporales
+y realiza la selección automática del mejor modelo basándose en el error cuadrático medio (MSE).
+Incluye visualizaciones de predicción y análisis de atención.
+
+Características principales:
+- Preparación automática de datos (carga, preprocesamiento, selección de variables, ventanas temporales).
+- Entrenamiento y evaluación de modelos LSTM usando una interfaz estilo `sklearn`.
+- Ajuste de hiperparámetros vía búsqueda aleatoria (`RandomizedSearchCV`).
+- Registro de experimentos y resultados usando MLflow.
+- Visualización de predicciones y de los pesos de atención.
+
+Dependencias:
+- pandas
+- numpy
+- matplotlib
+- mlflow
+- sklearn
+- utils personalizados:
+    - utils.modelos_sklearn.* (para carga, preprocesamiento, selección, métricas, etc.)
+    - utils.paths (gestión de rutas)
+    - utils.arquitecturas.lstm_model (modelo LSTM con mecanismo de atención y API tipo sklearn)
+
+Uso:
+Ejecutar este script directamente para realizar múltiples experimentos con diferentes tamaños de ventana,
+seleccionar el mejor modelo y registrar resultados visuales y métricos con MLflow.
+
+"""
+
 import mlflow
 import numpy as np
 import pandas as pd

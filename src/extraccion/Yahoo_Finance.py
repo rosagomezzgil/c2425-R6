@@ -4,11 +4,11 @@ Descripción:
 Este script se utiliza para descargar datos históricos de activos financieros desde Yahoo Finance, utilizando la librería `yfinance`. Permite obtener datos a intervalos personalizados (por ejemplo, diario o por hora) y guarda la información en archivos CSV. Además, maneja errores relacionados con el límite de solicitudes de la API de Yahoo Finance, reintentando la descarga en caso de fallo. El script está diseñado para ser ejecutado en Google Colab debido a un error de "Too Many Requests" en la ejecución local.
 
 Funcionalidad:
-1. **Descarga de datos**: Utiliza `yfinance` para descargar datos históricos de activos financieros a intervalos específicos.
-2. **Manejo de errores**: Si ocurre un error durante la descarga (por ejemplo, por alcanzar el límite de solicitudes), reintenta la descarga hasta un máximo de intentos establecidos.
-3. **Renombrado de columnas**: Permite renombrar las columnas del DataFrame descargado antes de guardarlo.
-4. **Almacenamiento en CSV**: Guarda los datos descargados en un archivo CSV en la ruta especificada.
-5. **Ejecución con parámetros**: El script acepta parámetros para las fechas de inicio y fin, el intervalo de los datos y la ubicación del archivo de salida.
+1. Descarga de dato: Utiliza `yfinance` para descargar datos históricos de activos financieros a intervalos específicos.
+2. Manejo de errores: Si ocurre un error durante la descarga (por ejemplo, por alcanzar el límite de solicitudes), reintenta la descarga hasta un máximo de intentos establecidos.
+3. Renombrado de columnas: Permite renombrar las columnas del DataFrame descargado antes de guardarlo.
+4. Almacenamiento en CSV: Guarda los datos descargados en un archivo CSV en la ruta especificada.
+5. Ejecución con parámetros: El script acepta parámetros para las fechas de inicio y fin, el intervalo de los datos y la ubicación del archivo de salida.
 
 Uso:
 El script descarga los datos de tres activos financieros específicos: el índice DXY, el S&P 500 y el Nasdaq. Los datos se guardan en archivos CSV en el directorio especificado.

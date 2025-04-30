@@ -1,3 +1,37 @@
+"""
+Módulo: ARBOLES_DE:DECISION.py
+
+Descripción:
+Este script entrena y evalúa un modelo de regresión basado en un Árbol de Decisión
+para predecir el cambio porcentual a 7 días (`pct_cambio_7d`) en un conjunto de datos de series temporales.
+El flujo incluye la carga y preprocesamiento de datos, la división temporal en conjuntos de entrenamiento y prueba,
+ajuste de hiperparámetros, evaluación del modelo, visualización de predicciones y análisis de importancia de variables.
+
+También se realiza un reentrenamiento final utilizando únicamente las variables más importantes,
+y todo el proceso es registrado mediante MLflow.
+
+Dependencias:
+
+- pandas
+- scikit-learn (sklearn)
+- mlflow
+- datetime
+- Funciones auxiliares personalizadas desde:
+    - utils.modelos_sklearn.A_cargar_datos
+    - utils.modelos_sklearn.B_preprocesamiento
+    - utils.modelos_sklearn.D_division_temporal
+    - utils.modelos_sklearn.E_ajuste_hiperparametros
+    - utils.modelos_sklearn.F_metricas
+    - utils.modelos_sklearn.G_graficar_predicciones
+    - utils.mlflow_utils
+    - utils.paths
+
+Uso:
+
+Ejecutar directamente este script para entrenar y registrar un modelo de árbol de decisión con MLflow.
+
+"""
+
 import mlflow
 from datetime import datetime
 from sklearn.tree import DecisionTreeRegressor

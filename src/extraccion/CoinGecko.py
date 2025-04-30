@@ -1,5 +1,4 @@
-# DataFrame con precio, market cap y volumen del ultimo anio del bitcoin(mas es de pago)
-# CoinGecko
+
 """
 coingecko.py
 
@@ -10,8 +9,6 @@ Permite especificar la criptomoneda, la moneda base (usd, eur), y la cantidad de
 de historial a recuperar (hasta 365 días en la versión gratuita). Los datos se guardan
 en un archivo CSV si se proporciona una ruta de salida.
 
-Ideal para análisis de tendencias de mercado y generación de variables para modelos
-de predicción basados en series temporales.
 """
 import requests
 import argparse

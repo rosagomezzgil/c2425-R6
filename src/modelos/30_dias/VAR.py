@@ -1,3 +1,39 @@
+"""
+Módulo: VAR.py
+
+Descripción:
+Este script implementa un modelo VAR (Vector Autoregressive) para modelar y predecir series temporales multivariadas,
+con foco en predecir la variación porcentual a 30 días (`pct_cambio_30d`). El modelo considera la influencia conjunta
+de múltiples variables temporales en la predicción futura del target.
+
+Características principales:
+- Carga y preprocesamiento del dataset multivariado.
+- Selección de variables relevantes mediante una técnica adaptada a modelos VAR.
+- División temporal de datos para garantizar la validez temporal.
+- Validación cruzada específica para series temporales para determinar el mejor número de rezagos (lags).
+- Entrenamiento del modelo VAR con el mejor `lag`.
+- Predicción multivariada sobre el conjunto de prueba y evaluación específica del target.
+- Registro del experimento, parámetros, métricas y visualizaciones con MLflow.
+
+Dependencias:
+- pandas
+- numpy
+- statsmodels
+- scikit-learn
+- matplotlib
+- mlflow
+- utils personalizados:
+    - utils.modelos_sklearn.* (carga, preprocesamiento, división, selección de variables, métricas, gráficos)
+    - utils.paths
+    - utils.mlflow_utils
+
+Uso:
+Ejecutar este script para entrenar un modelo VAR sobre un conjunto de series temporales multivariadas,
+ideal para analizar relaciones dinámicas entre variables financieras o económicas a lo largo del tiempo.
+
+"""
+
+
 from utils.modelos_sklearn.A_cargar_datos import cargar_datos_30d
 from utils.modelos_sklearn.B_preprocesamiento import preprocesar_datos_30d
 from utils.modelos_sklearn.D_division_temporal import dividir_datos_temporalmente_30d

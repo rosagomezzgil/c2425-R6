@@ -1,4 +1,4 @@
-#Bitget
+
 """
 Módulo: extracción de datos históricos de Bitcoin desde la web de Bitget mediante scraping.
 

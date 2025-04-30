@@ -1,6 +1,6 @@
-# Binance
+
 """
-Módulo: extracción de datos OHLCV históricos de Bitcoin desde Binance.
+Módulo: extracción de datos históricos de Bitcoin desde Binance.
 
 Este script se conecta a la API pública de Binance para obtener datos históricos
 de precios en formato OHLCV (Open, High, Low, Close, Volume), junto con el número de transacciones.

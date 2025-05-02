@@ -39,7 +39,6 @@ proceso con MLflow para su posterior análisis.
 
 from utils.modelos_sklearn.A_cargar_datos import cargar_datos_7d  # Función de carga de datos
 from utils.modelos_sklearn.D_division_temporal import dividir_datos_temporalmente_7d  # Función para dividir los datos temporalmente
-from sklearn.feature_selection import SelectKBest, mutual_info_regression, f_regression
 from utils.modelos_sklearn.E_ajuste_hiperparametros import ajustar_modelo
 from utils.modelos_sklearn.C_seleccion_variables import seleccionar_variables
 from utils.modelos_sklearn.F_metricas import evaluar_modelo_7d  # Función de evaluación del modelo
@@ -49,8 +48,6 @@ from utils.paths import get_path
 import mlflow
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
-from sklearn.feature_selection import SelectKBest, mutual_info_regression
-from sklearn.model_selection import train_test_split, TimeSeriesSplit, GridSearchCV, RandomizedSearchCV
 from sklearn.svm import SVR
 from datetime import datetime
 

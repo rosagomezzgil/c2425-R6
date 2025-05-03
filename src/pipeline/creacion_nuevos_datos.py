@@ -43,19 +43,9 @@ def combinar_csvs(csv_antiguo, csv_nuevo, columna_fecha, offset_dias=0):
     df_nuevo = pd.read_csv(get_path('data', 'nuevos', csv_nuevo), parse_dates=[columna_fecha])
 
     # Obtener la fecha máxima del DataFrame original
-    ultima_fecha_7d = df_antiguo[columna_fecha].max()
+    ultima_fecha = df_antiguo[columna_fecha].max()
 
-    ultima_fecha_30d = df_antiguo[columna_fecha].max() - pd.Timedelta(days=30)
-
-    # Determinar si es el dataset de 30 días
-    es_dataset_30d = 'dataset_30d' in csv_nuevo
-
-    if es_dataset_30d:
-
-        df_nuevo_filtrado = df_nuevo[df_nuevo[columna_fecha] > ultima_fecha_30d]
-    else:
-        # Filtrar nuevo_df dejando solo las filas con timestamp mayor a 'ultima_fecha'
-        df_nuevo_filtrado = df_nuevo[df_nuevo[columna_fecha] > ultima_fecha_7d]
+    df_nuevo_filtrado = df_nuevo[df_nuevo[columna_fecha] > ultima_fecha]
 
 
     csv_path = get_path('data', 'nuevos', csv_nuevo)

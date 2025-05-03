@@ -16,7 +16,7 @@ from src.utils.modelos_sklearn.F_metricas import evaluar_modelo_7d, evaluar_mode
 from src.utils.paths import get_path
 
 
-def seleccionar_variables_f_regression_k10(X, y, k_vars=10):
+def seleccionar_variables_f_regression_k10(X, y, k_vars=15):
     """
     Selecciona las mejores k variables usando f_regression con un valor fijo de k.
     """
@@ -66,37 +66,38 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
 
     if tecnica == "svr":
         print(f"\n--- Entrenando, evaluando y reentrenando modelo SVR ---")
+
+        # Paso 1: Cargar y preparar los datos iniciales
         parquet_file_path_7d = get_path('data', 'parquet', 'data_7d.parquet')
         df_7d = cargar_datos_7d(parquet_file_path_7d)
-
-        # Eliminar filas con NaN en la columna objetivo para SVR (datos antiguos)
         df_7d_sin_nan = df_7d.dropna(subset=["pct_cambio_7d"])
         y_7d = df_7d_sin_nan["pct_cambio_7d"]
         X_original_7d = df_7d_sin_nan.drop(columns=["pct_cambio_7d"])
 
-        # Selección de variables inicial
-        X_seleccionado_7d = seleccionar_variables_f_regression_k10(X_original_7d, y_7d, k_vars=10)
-
-        # Dividir los datos para la evaluación inicial
+        # Dividir ANTES de cualquier selección o escalado
         X_train, X_test_eval, y_train, y_test_eval = train_test_split(
-            X_seleccionado_7d, y_7d, test_size=test_size, random_state=42
+            X_original_7d, y_7d, test_size=test_size, random_state=42
         )
 
-        # Escalar las características
-        scaler_eval = StandardScaler()
-        X_scaled_train = scaler_eval.fit_transform(X_train)
-        X_scaled_test_eval = scaler_eval.transform(X_test_eval)
-        X_scaled_df_train = pd.DataFrame(X_scaled_train, columns=X_train.columns, index=X_train.index)
-        X_scaled_df_test_eval = pd.DataFrame(X_scaled_test_eval, columns=X_test_eval.columns, index=X_test_eval.index)
+        # Paso 2: Selección de variables SOLO con datos de entrenamiento
+        X_train_sel = seleccionar_variables_f_regression_k10(X_train, y_train)
 
-        # Entrenar y evaluar el modelo inicial
-        best_params_svr = {'kernel': 'linear', 'epsilon': 0.1, 'C': 0.1}
+        # Aplicar la misma selección al conjunto de prueba
+        X_test_sel = X_test_eval[X_train_sel.columns]
+
+        # Paso 3: Escalado con datos de entrenamiento
+        scaler_eval = StandardScaler()
+        X_scaled_train = scaler_eval.fit_transform(X_train_sel)
+        X_scaled_test_eval = scaler_eval.transform(X_test_sel)
+
+        # Entrenar y evaluar
+        best_params_svr = {'kernel': 'linear', 'epsilon': 0.2, 'C': 0.1}
         modelo_svr_eval = SVR(**best_params_svr)
-        modelo_svr_eval.fit(X_scaled_df_train, y_train)
-        metricas_svr_eval = evaluar_modelo_7d(modelo_svr_eval, X_scaled_df_test_eval, y_test_eval)
+        modelo_svr_eval.fit(X_scaled_train, y_train)
+        metricas_svr_eval = evaluar_modelo_7d(modelo_svr_eval, X_scaled_test_eval, y_test_eval)
         print("Métricas SVR en el conjunto de prueba inicial:", metricas_svr_eval)
 
-        # Guardar el modelo y escalador de la evaluación inicial
+        # Guardar modelo y escalador
         ruta_modelo_svr_eval = "modelos/SVR_eval.joblib"
         ruta_scaler_svr_eval = "modelos/SVR_scaler_eval.joblib"
         joblib.dump(modelo_svr_eval, ruta_modelo_svr_eval)
@@ -104,40 +105,66 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
         print(f"Modelo SVR (evaluación inicial) guardado en: {ruta_modelo_svr_eval}")
         print(f"Escalador SVR (evaluación inicial) guardado en: {ruta_scaler_svr_eval}")
 
-        # Cargar y evaluar con datos nuevos
+        # Paso 4: Obtener y preparar los nuevos datos (NUNCA usados antes)
         parquet_file_path_nuevos_7d = get_path('data', 'parquet nuevos', 'data_7d_nuevos.parquet')
         df_nuevos_7d = cargar_datos_7d(parquet_file_path_nuevos_7d)
-
-        # Eliminar filas con NaN en la columna objetivo para SVR (datos nuevos)
         df_nuevos_7d_sin_nan = df_nuevos_7d.dropna(subset=["pct_cambio_7d"])
         y_nuevos_7d = df_nuevos_7d_sin_nan["pct_cambio_7d"]
         X_original_nuevos_7d = df_nuevos_7d_sin_nan.drop(columns=["pct_cambio_7d"])
 
-        # Seleccionar las mismas variables que en el entrenamiento inicial
-        if X_train.columns.isin(X_original_nuevos_7d.columns).all():
-            X_seleccionado_nuevos_7d = X_original_nuevos_7d[X_train.columns]
+        # Selección y escalado coherente con el modelo
+        if set(X_train_sel.columns).issubset(set(X_original_nuevos_7d.columns)):
+            X_seleccionado_nuevos_7d = X_original_nuevos_7d[X_train_sel.columns]
             X_scaled_nuevos_7d = scaler_eval.transform(X_seleccionado_nuevos_7d)
-            X_scaled_df_nuevos_7d = pd.DataFrame(X_scaled_nuevos_7d, columns=X_seleccionado_nuevos_7d.columns, index=X_seleccionado_nuevos_7d.index)
-            metricas_svr_nuevos = evaluar_modelo_7d(modelo_svr_eval, X_scaled_df_nuevos_7d, y_nuevos_7d)
+            metricas_svr_nuevos = evaluar_modelo_7d(modelo_svr_eval, X_scaled_nuevos_7d, y_nuevos_7d)
             print("Métricas SVR en datos nuevos:", metricas_svr_nuevos)
         else:
-            print("Advertencia: Las columnas de los datos nuevos no coinciden con las del entrenamiento inicial para SVR.")
+            print(
+                "Advertencia: Las columnas de los datos nuevos no coinciden con las del entrenamiento inicial para SVR.")
             metricas_svr_nuevos = None
 
-        # Reentrenamiento final con todos los datos
-        print("\nReentrenando el modelo SVR final con todos los datos...")
-        df_final_7d = pd.concat([df_7d_sin_nan, df_nuevos_7d_sin_nan]) # Asegurarse de no tener NaN en el target
+        # Paso 5: Reentrenar el modelo usando todos los datos (entrenamiento + validación + test + nuevos)
+        df_final_7d = pd.concat([df_7d_sin_nan, df_nuevos_7d_sin_nan])
         y_final_7d = df_final_7d["pct_cambio_7d"]
         X_original_final_7d = df_final_7d.drop(columns=["pct_cambio_7d"])
 
-        # Selección de variables para el reentrenamiento final
-        X_seleccionado_final_7d = seleccionar_variables_f_regression_k10(X_original_final_7d, y_final_7d, k_vars=10)
-        scaler_final_svr = StandardScaler()
-        X_scaled_final_7d = scaler_final_svr.fit_transform(X_seleccionado_final_7d)
-        X_scaled_df_final_7d = pd.DataFrame(X_scaled_final_7d, columns=X_seleccionado_final_7d.columns, index=X_seleccionado_final_7d.index)
+        # Dividir los datos en entrenamiento y prueba para el reentrenamiento final
+        X_train_final, X_test_final, y_train_final, y_test_final = train_test_split(
+            X_original_final_7d, y_final_7d, test_size=0.2, random_state=42
+        )
 
+        # Selección de características solo sobre los datos de entrenamiento final
+        X_train_sel_final = seleccionar_variables_f_regression_k10(X_train_final, y_train_final, k_vars=10)
+
+        # Escalado solo sobre los datos de entrenamiento final
+        scaler_final_svr = StandardScaler()
+        X_scaled_train_final = scaler_final_svr.fit_transform(X_train_sel_final)
+
+        # Transformar los datos de test con el escalador entrenado
+        X_scaled_test_final = scaler_final_svr.transform(X_test_final[X_train_sel_final.columns])
+
+        # Entrenar el modelo con los datos completos escalados
         modelo_svr_final = SVR(**best_params_svr)
-        modelo_svr_final.fit(X_scaled_df_final_7d, y_final_7d)
+        modelo_svr_final.fit(X_scaled_train_final, y_train_final)
+
+        # Evaluar el modelo en los datos de prueba
+        pred_svr_final = modelo_svr_final.predict(X_scaled_test_final)
+        evaluar_modelo(y_test_final, pred_svr_final, "SVR (Reentrenamiento Final)")
+
+        # Reentrenar el modelo con todos los datos (entrenamiento + validación + test + nuevos datos)
+        X_final = pd.concat([X_train_final, X_test_final])
+        y_final = pd.concat([y_train_final, y_test_final])
+
+        # Selección de características para los datos completos
+        X_final_sel = seleccionar_variables_f_regression_k10(X_final, y_final, k_vars=10)
+
+        # Escalado de todos los datos con el escalador entrenado
+        X_scaled_final = scaler_final_svr.fit_transform(X_final_sel)
+
+        # Reentrenar el modelo con todos los datos disponibles
+        modelo_svr_final.fit(X_scaled_final, y_final)
+
+        # Guardar el modelo y el escalador final
         ruta_modelo_svr_final = "modelos/SVR_final.joblib"
         ruta_scaler_svr_final = "modelos/SVR_scaler_final.joblib"
         joblib.dump(modelo_svr_final, ruta_modelo_svr_final)
@@ -145,9 +172,10 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
         print(f"Modelo SVR final reentrenado y guardado en: {ruta_modelo_svr_final}")
         print(f"Escalador SVR final guardado en: {ruta_scaler_svr_final}")
 
-        # Evaluar el modelo SVR final
-        pred_svr_final = modelo_svr_final.predict(X_scaled_df_final_7d)
-        evaluar_modelo(y_final_7d, pred_svr_final, "SVR (Final)")
+        # Evaluación final
+        pred_svr_final_total = modelo_svr_final.predict(X_scaled_final)
+        evaluar_modelo(y_final, pred_svr_final_total, "SVR (Final)")
+
 
     elif tecnica == "arima":
         print(f"\n--- Entrenando, evaluando y reentrenando modelo ARIMA ---")
@@ -175,30 +203,41 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
         joblib.dump(modelo_arima_eval, ruta_modelo_arima_eval)
         print(f"Modelo ARIMA (evaluación inicial) guardado en: {ruta_modelo_arima_eval}")
 
-        # Cargar los datos nuevos
+        # Cargar y evaluar con datos nuevos
         parquet_file_path_nuevos_30d = get_path('data', 'parquet nuevos', 'data_30d_nuevos.parquet')
         df_nuevos_30d = cargar_datos_30d(parquet_file_path_nuevos_30d)
 
-        # Eliminar filas con NaN en la columna objetivo (aunque estará vacío)
+        # Eliminar filas con NaN en la columna objetivo para ARIMA (datos nuevos)
         df_nuevos_30d_sin_nan = df_nuevos_30d.dropna(subset=["pct_cambio_30d"])
         y_nuevos_30d = df_nuevos_30d_sin_nan["pct_cambio_30d"]
 
-        # Comentar o eliminar la evaluación con datos nuevos si la columna objetivo está vacía
-        # if not y_nuevos_30d.empty:
-        #     pred_arima_nuevos = modelo_arima_eval.predict(start=y_nuevos_30d.index[0], end=y_nuevos_30d.index[-1])
-        #     metricas_arima_nuevos = evaluar_modelo_30d(y_nuevos_30d, pred_arima_nuevos)
-        #     print("Métricas ARIMA en datos nuevos:", metricas_arima_nuevos)
-        # else:
-        print("Advertencia: La columna pct_cambio_30d en los datos nuevos para ARIMA está vacía, omitiendo la evaluación.")
+        if not y_nuevos_30d.empty:
+            pred_arima_nuevos = modelo_arima_eval.predict(start=y_nuevos_30d.index[0], end=y_nuevos_30d.index[-1])
+            metricas_arima_nuevos = evaluar_modelo_30d(y_nuevos_30d, pred_arima_nuevos)
+            print("Métricas ARIMA en datos nuevos:", metricas_arima_nuevos)
 
-        # Reentrenamiento final con todos los datos
-        print("\nReentrenando el modelo ARIMA final con todos los datos...")
-        df_final_30d = pd.concat([df_30d_sin_nan, df_nuevos_30d_sin_nan]) # Asegurarse de no tener NaN en el target
-        y_final_30d = df_final_30d["pct_cambio_30d"]
-        modelo_arima_final = ARIMA(y_final_30d, order=best_params_arima).fit()
-        ruta_modelo_arima_final = "modelos/ARIMA_final.joblib"
-        joblib.dump(modelo_arima_final, ruta_modelo_arima_final)
-        print(f"Modelo ARIMA final reentrenado y guardado en: {ruta_modelo_arima_final}")
+            # Reentrenamiento final con todos los datos
+            print("\nReentrenando el modelo ARIMA final con todos los datos...")
+            df_final_30d = pd.concat([df_30d_sin_nan, df_nuevos_30d_sin_nan]) # Asegurarse de no tener NaN en el target
+            y_final_30d = df_final_30d["pct_cambio_30d"]
+            modelo_arima_final = ARIMA(y_final_30d, order=best_params_arima).fit()
+            ruta_modelo_arima_final = "modelos/ARIMA_final.joblib"
+            joblib.dump(modelo_arima_final, ruta_modelo_arima_final)
+            print(f"Modelo ARIMA final reentrenado y guardado en: {ruta_modelo_arima_final}")
 
-        # Evaluar el modelo ARIMA final (esto se hará con los datos combinados)
-        pred_arima_final = modelo_
+            # Evaluar el modelo ARIMA final
+            pred_arima_final = modelo_arima_final.predict(start=y_final_30d.index[0], end=y_final_30d.index[-1])
+            evaluar_modelo(y_final_30d, pred_arima_final, "ARIMA (Final)")
+        else:
+            print("Advertencia: No hay datos nuevos disponibles para evaluar el modelo ARIMA.")
+
+    else:
+        raise ValueError(f"Técnica desconocida: {tecnica}. Debe ser 'svr' o 'arima'.")
+
+
+if __name__ == "__main__":
+    # Entrenar, evaluar y reentrenar SVR
+    entrenar_evaluar_y_reentrenar_modelo(tecnica="svr", test_size=0.2)
+
+    # Entrenar, evaluar y reentrenar ARIMA
+    entrenar_evaluar_y_reentrenar_modelo(tecnica="arima", test_size=0.2)

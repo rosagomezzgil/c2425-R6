@@ -1,5 +1,6 @@
 import os
 import joblib
+from xgboost import XGBRegressor
 from sklearn.svm import SVR
 from statsmodels.tsa.arima.model import ARIMA
 from sklearn.preprocessing import StandardScaler
@@ -8,8 +9,6 @@ from sklearn.feature_selection import SelectKBest, f_regression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import numpy as np
-
-# Importar funciones específicas de tu proyecto
 from src.utils.modelos_sklearn.A_cargar_datos import cargar_datos_7d, cargar_datos_30d
 from src.utils.modelos_sklearn.B_preprocesamiento import preprocesar_datos_7d, preprocesar_datos_30d
 from src.utils.modelos_sklearn.F_metricas import evaluar_modelo_7d, evaluar_modelo_30d
@@ -21,7 +20,7 @@ def seleccionar_variables_f_regression_k10(X, y, k_vars=15):
     Selecciona las mejores k variables usando f_regression con un valor fijo de k.
     """
     original_columns = X.columns
-    selector_f = SelectKBest(score_func=f_regression, k=min(k_vars, X.shape[1]))
+    selector_f = SelectKBest(score_func=mutual_info, k=min(k_vars, X.shape[1]))
     X_kbest_f = selector_f.fit_transform(X, y)
     selected_columns_indices_f = selector_f.get_support()
     selected_columns_f = original_columns[selected_columns_indices_f]
@@ -91,7 +90,7 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
         X_scaled_test_eval = scaler_eval.transform(X_test_sel)
 
         # Entrenar y evaluar
-        best_params_svr = {'kernel': 'linear', 'epsilon': 0.2, 'C': 0.1}
+        best_params_svr = {'kernel': 'linear', 'epsilon': 0.5, 'C': 0.1}
         modelo_svr_eval = SVR(**best_params_svr)
         modelo_svr_eval.fit(X_scaled_train, y_train)
         metricas_svr_eval = evaluar_modelo_7d(modelo_svr_eval, X_scaled_test_eval, y_test_eval)
@@ -176,63 +175,89 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
         pred_svr_final_total = modelo_svr_final.predict(X_scaled_final)
         evaluar_modelo(y_final, pred_svr_final_total, "SVR (Final)")
 
+    elif tecnica == "xgboost":
 
-    elif tecnica == "arima":
-        print(f"\n--- Entrenando, evaluando y reentrenando modelo ARIMA ---")
+        print(f"\n--- Entrenando, evaluando y reentrenando modelo XGBoost ---")
         parquet_file_path_30d = get_path('data', 'parquet', 'data_30d.parquet')
         df_30d = cargar_datos_30d(parquet_file_path_30d)
-
-        # Eliminar filas con NaN en la columna objetivo para ARIMA (si es necesario)
         df_30d_sin_nan = df_30d.dropna(subset=["pct_cambio_30d"])
         y_30d = df_30d_sin_nan["pct_cambio_30d"]
+        X_original_30d = df_30d_sin_nan.drop(columns=["pct_cambio_30d"])
 
-        # Dividir los datos para la evaluación inicial (manteniendo el orden temporal)
-        train_size = int(len(y_30d) * (1 - test_size))
-        y_train_arima = y_30d[:train_size]
-        y_test_arima_eval = y_30d[train_size:]
+        # Dividir los datos
+        X_train, X_test_eval, y_train, y_test_eval = train_test_split(
+            X_original_30d, y_30d, test_size=test_size, random_state=42
+        )
 
-        # Entrenar y evaluar el modelo inicial
-        best_params_arima = (2, 0, 2)
-        modelo_arima_eval = ARIMA(y_train_arima, order=best_params_arima).fit()
-        pred_arima_eval = modelo_arima_eval.predict(start=y_test_arima_eval.index[0], end=y_test_arima_eval.index[-1])
-        metricas_arima_eval = evaluar_modelo_30d(y_test_arima_eval, pred_arima_eval)
-        print("Métricas ARIMA en el conjunto de prueba inicial:", metricas_arima_eval)
+        # Selección de características
+        X_train_sel = seleccionar_variables_f_regression_k10(X_train, y_train, k_vars=15)
+        X_test_sel = X_test_eval[X_train_sel.columns]
 
-        # Guardar el modelo de la evaluación inicial
-        ruta_modelo_arima_eval = "modelos/ARIMA_eval.joblib"
-        joblib.dump(modelo_arima_eval, ruta_modelo_arima_eval)
-        print(f"Modelo ARIMA (evaluación inicial) guardado en: {ruta_modelo_arima_eval}")
+        # Escalado
+        scaler_eval = StandardScaler()
+        X_scaled_train = scaler_eval.fit_transform(X_train_sel)
+        X_scaled_test = scaler_eval.transform(X_test_sel)
 
-        # Cargar y evaluar con datos nuevos
+        # Entrenar y evaluar modelo
+        best_params_xgb = {"n_estimators": 100, "max_depth": 3, "learning_rate": 0.1}
+        modelo_xgb_eval = XGBRegressor(**best_params_xgb)
+        modelo_xgb_eval.fit(X_scaled_train, y_train)
+
+        # Evaluación
+        pred_xgb_eval = modelo_xgb_eval.predict(X_scaled_test)
+        evaluar_modelo(y_test_eval, pred_xgb_eval, "XGBoost (Evaluación Inicial)")
+
+        # Guardar modelo y escalador
+        joblib.dump(modelo_xgb_eval, "modelos/XGB_eval.joblib")
+        joblib.dump(scaler_eval, "modelos/XGB_scaler_eval.joblib")
+
+        # Cargar nuevos datos
         parquet_file_path_nuevos_30d = get_path('data', 'parquet nuevos', 'data_30d_nuevos.parquet')
         df_nuevos_30d = cargar_datos_30d(parquet_file_path_nuevos_30d)
-
-        # Eliminar filas con NaN en la columna objetivo para ARIMA (datos nuevos)
         df_nuevos_30d_sin_nan = df_nuevos_30d.dropna(subset=["pct_cambio_30d"])
         y_nuevos_30d = df_nuevos_30d_sin_nan["pct_cambio_30d"]
+        X_nuevos_30d = df_nuevos_30d_sin_nan.drop(columns=["pct_cambio_30d"])
 
-        if not y_nuevos_30d.empty:
-            pred_arima_nuevos = modelo_arima_eval.predict(start=y_nuevos_30d.index[0], end=y_nuevos_30d.index[-1])
-            metricas_arima_nuevos = evaluar_modelo_30d(y_nuevos_30d, pred_arima_nuevos)
-            print("Métricas ARIMA en datos nuevos:", metricas_arima_nuevos)
+        if set(X_train_sel.columns).issubset(X_nuevos_30d.columns):
+            X_nuevos_sel = X_nuevos_30d[X_train_sel.columns]
+            X_nuevos_scaled = scaler_eval.transform(X_nuevos_sel)
+            pred_xgb_nuevos = modelo_xgb_eval.predict(X_nuevos_scaled)
+            evaluar_modelo(y_nuevos_30d, pred_xgb_nuevos, "XGBoost (Datos Nuevos)")
 
-            # Reentrenamiento final con todos los datos
-            print("\nReentrenando el modelo ARIMA final con todos los datos...")
-            df_final_30d = pd.concat([df_30d_sin_nan, df_nuevos_30d_sin_nan]) # Asegurarse de no tener NaN en el target
-            y_final_30d = df_final_30d["pct_cambio_30d"]
-            modelo_arima_final = ARIMA(y_final_30d, order=best_params_arima).fit()
-            ruta_modelo_arima_final = "modelos/ARIMA_final.joblib"
-            joblib.dump(modelo_arima_final, ruta_modelo_arima_final)
-            print(f"Modelo ARIMA final reentrenado y guardado en: {ruta_modelo_arima_final}")
-
-            # Evaluar el modelo ARIMA final
-            pred_arima_final = modelo_arima_final.predict(start=y_final_30d.index[0], end=y_final_30d.index[-1])
-            evaluar_modelo(y_final_30d, pred_arima_final, "ARIMA (Final)")
         else:
-            print("Advertencia: No hay datos nuevos disponibles para evaluar el modelo ARIMA.")
+            print("Advertencia: Las columnas de los datos nuevos no coinciden con las del entrenamiento.")
 
-    else:
-        raise ValueError(f"Técnica desconocida: {tecnica}. Debe ser 'svr' o 'arima'.")
+        # Reentrenamiento con todos los datos
+        df_final_30d = pd.concat([df_30d_sin_nan, df_nuevos_30d_sin_nan])
+        y_final = df_final_30d["pct_cambio_30d"]
+        X_final = df_final_30d.drop(columns=["pct_cambio_30d"])
+        X_train_final, X_test_final, y_train_final, y_test_final = train_test_split(
+            X_final, y_final, test_size=0.2, random_state=42
+        )
+        X_train_sel_final = seleccionar_variables_f_regression_k10(X_train_final, y_train_final, k_vars=15)
+        X_test_sel_final = X_test_final[X_train_sel_final.columns]
+
+        scaler_final = StandardScaler()
+        X_scaled_train_final = scaler_final.fit_transform(X_train_sel_final)
+        X_scaled_test_final = scaler_final.transform(X_test_sel_final)
+
+        modelo_xgb_final = XGBRegressor(**best_params_xgb)
+        modelo_xgb_final.fit(X_scaled_train_final, y_train_final)
+
+        pred_xgb_final = modelo_xgb_final.predict(X_scaled_test_final)
+        evaluar_modelo(y_test_final, pred_xgb_final, "XGBoost (Reentrenamiento Final)")
+
+        # Entrenar con todos los datos disponibles
+
+        X_final_sel = seleccionar_variables_f_regression_k10(X_final, y_final, k_vars=15)
+        X_scaled_final = scaler_final.fit_transform(X_final_sel)
+        modelo_xgb_final.fit(X_scaled_final, y_final)
+
+        joblib.dump(modelo_xgb_final, "modelos/XGB_final.joblib")
+        joblib.dump(scaler_final, "modelos/XGB_scaler_final.joblib")
+
+        pred_final_total = modelo_xgb_final.predict(X_scaled_final)
+        evaluar_modelo(y_final, pred_final_total, "XGBoost (Final)")
 
 
 if __name__ == "__main__":
@@ -240,4 +265,4 @@ if __name__ == "__main__":
     entrenar_evaluar_y_reentrenar_modelo(tecnica="svr", test_size=0.2)
 
     # Entrenar, evaluar y reentrenar ARIMA
-    entrenar_evaluar_y_reentrenar_modelo(tecnica="arima", test_size=0.2)
+    entrenar_evaluar_y_reentrenar_modelo(tecnica="xgboost", test_size=0.2)

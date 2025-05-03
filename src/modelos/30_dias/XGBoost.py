@@ -1,0 +1,99 @@
+import pandas as pd
+import numpy as np
+import mlflow
+import xgboost as xgb
+from datetime import datetime
+from sklearn.model_selection import TimeSeriesSplit, ParameterGrid
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.preprocessing import StandardScaler
+from utils.modelos_sklearn.A_cargar_datos import cargar_datos_30d
+from utils.modelos_sklearn.B_preprocesamiento import preprocesar_datos_30d
+from utils.modelos_sklearn.D_division_temporal import dividir_datos_temporalmente_30d
+from utils.modelos_sklearn.F_metricas import evaluar_modelo_30d
+from utils.modelos_sklearn.G_graficar_predicciones import plot_predictions
+from utils.mlflow_utils import setup_mlflow
+from utils.paths import get_path
+
+def validar_modelo_xgboost(X, y, param_grid, n_splits=3):
+    tscv = TimeSeriesSplit(n_splits=n_splits)
+    best_mse = np.inf
+    best_params = None
+    best_model = None
+
+    for params in ParameterGrid(param_grid):
+        fold_mse = []
+        for train_idx, test_idx in tscv.split(X):
+            X_train_fold, X_test_fold = X[train_idx], X[test_idx]
+            y_train_fold, y_test_fold = y[train_idx], y[test_idx]
+
+            model = xgb.XGBRegressor(**params)
+            model.fit(X_train_fold, y_train_fold)
+            y_pred_fold = model.predict(X_test_fold)
+            mse = mean_squared_error(y_test_fold, y_pred_fold)
+            fold_mse.append(mse)
+
+        avg_mse = np.mean(fold_mse)
+        if avg_mse < best_mse:
+            best_mse = avg_mse
+            best_params = params
+            best_model = xgb.XGBRegressor(**params)
+            best_model.fit(X, y)
+
+    print(f"Mejores hiperparámetros encontrados: {best_params}")
+    return best_model, best_params
+
+def main():
+    mlflow.set_tracking_uri("mlruns")
+    experiment_name = "XGBoost"
+    setup_mlflow(experiment_name)
+
+    with mlflow.start_run(run_name=f"xgboost_{datetime.now().strftime('%Y%m%d_%H%M%S')}"):
+        # 1. Cargar y preprocesar datos
+        df = cargar_datos_30d(get_path('data', 'parquet', 'data_30d.parquet'))
+        target_col = "pct_cambio_30d"
+        df = preprocesar_datos_30d(df, target_col)
+
+        # 2. División en train/test (multivariado=True para XGBoost)
+        train_df, test_df = dividir_datos_temporalmente_30d(df, target_col, multivariado=True)
+        X_train = train_df.drop(columns=[target_col])
+        y_train = train_df[target_col]
+        X_test = test_df.drop(columns=[target_col])
+        y_test = test_df[target_col]
+
+        # 3. Escalado
+        scaler = StandardScaler()
+        X_train_scaled = scaler.fit_transform(X_train)
+        X_test_scaled = scaler.transform(X_test)
+
+        # 4. Definir búsqueda de hiperparámetros
+        param_grid = {
+            "n_estimators": [100, 200],
+            "max_depth": [3, 5],
+            "learning_rate": [0.01, 0.1],
+            "subsample": [0.8, 1.0],
+            "colsample_bytree": [0.8, 1.0]
+        }
+
+        # 5. Validación y entrenamiento
+        best_model, best_params = validar_modelo_xgboost(X_train_scaled, y_train.values, param_grid, n_splits=3)
+
+        # 6. Predicción y evaluación
+        y_pred = best_model.predict(X_test_scaled)
+        mse, mae, rmse, r2, acc = evaluar_modelo_30d(y_test.values, y_pred)
+
+        # 7. Registro en MLflow
+        mlflow.log_params({"order": best_params})
+        mlflow.log_metrics({
+            "mse": mse,
+            "mae": mae,
+            "rmse": rmse,
+            "r2": r2,
+            "acc": acc
+        })
+
+        fig = plot_predictions(y_test, pred=y_pred)
+        mlflow.log_figure(fig, "prediction_plot.png")
+
+
+if __name__ == "__main__":
+    main()

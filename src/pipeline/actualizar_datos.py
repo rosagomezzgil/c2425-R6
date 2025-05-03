@@ -102,24 +102,24 @@ if __name__ == "__main__":
 
     # -------- ETAPA 3: Merge final y exportación --------
     print("\n ETAPA 3: Unión y exportación")
-    ejecutar_script(get_path("src", "transformacion", "merge.py"))
+    ejecutar_script(get_path("src", "transformacion", "merge_nuevos_datos.py"))
 
     # -------- ETAPA 4: Generación de datasets de modelado --------
     print("\n ETAPA 4: Generación de datasets 7d y 30d")
-    ejecutar_notebook(get_path("src", "modelos", "eliminacion de variables.ipynb"))
+    ejecutar_notebook(get_path("src", "modelos", "eliminacion de variables nuevos datos.ipynb"))
 
     # -------- ETAPA 5: BACKUP antes de guardar parquet final --------
     archivos_a_respaldar = {
-        "data": "data.parquet",
-        "data_7d": "data_7d.parquet",
-        "data_30d": "data_30d.parquet",
+        "data": "data_nuevos.parquet",
+        "data_7d": "data_7d_nuevos.parquet",
+        "data_30d": "data_30d_nuevos.parquet",
     }
 
-    backups_dir = get_path("data", "parquet", "backups")
+    backups_dir = get_path("data", "parquet nuevos", "backups")
     os.makedirs(backups_dir, exist_ok=True)
 
     for nombre_logico, nombre_archivo in archivos_a_respaldar.items():
-        parquet_path = get_path("data", "parquet", nombre_archivo)
+        parquet_path = get_path("data", "parquet nuevos", nombre_archivo)
 
         if os.path.exists(parquet_path):
             fecha_hora = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -131,6 +131,6 @@ if __name__ == "__main__":
             print(f" No se encontró el archivo Parquet '{nombre_archivo}', no se creó backup.")
 
     # -------- ETAPA 6: Guardado del nuevo parquet -------
-    ejecutar_script(get_path("src", "transformacion", "parquet_merged_data.py"))
+    ejecutar_script(get_path("src", "pipeline", "creacion_nuevos_datos.py"))
 
     print("\n Pipeline de actualización completado.")

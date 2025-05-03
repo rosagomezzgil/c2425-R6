@@ -7,7 +7,7 @@ Pasos:
 3. Guarda los archivos optimizados en el directorio correspondiente.
 4. Muestra las primeras filas como verificación.
 
-IMPORTANTE: Ejecutar primero los notebooks de análisis antes de correr este script.
+IMPORTANTE: Ejecutar primero los notebooks de análisis (eliminación de variables y estudio de correlaciones) antes de correr este script.
 """
 
 import os

@@ -5,6 +5,7 @@ from sklearn.svm import SVR
 from statsmodels.tsa.arima.model import ARIMA
 from sklearn.preprocessing import StandardScaler
 from sklearn.impute import SimpleImputer
+from sklearn.model_selection import TimeSeriesSplit
 import pandas as pd
 from sklearn.feature_selection import SelectKBest, f_regression, mutual_info_regression
 from sklearn.model_selection import train_test_split
@@ -30,22 +31,6 @@ def accuracy_direccion(y_true, y_pred):
     true_direction = np.sign(np.diff(y_true))
     pred_direction = np.sign(np.diff(y_pred))
     return np.mean(true_direction == pred_direction)
-
-
-def evaluar_modelo(y_true, y_pred, modelo_nombre):
-    """Evalúa el modelo con varias métricas."""
-    mse = mean_squared_error(y_true, y_pred)
-    mae = mean_absolute_error(y_true, y_pred)
-    rmse = np.sqrt(mse)
-    r2 = r2_score(y_true, y_pred)
-    acc_dir = accuracy_direccion(y_true, y_pred)
-    print(f"Métricas {modelo_nombre}:")
-    print(f"MSE: {mse:.4f}")
-    print(f"RMSE: {rmse:.4f}")
-    print(f"MAE: {mae:.4f}")
-    print(f"R²: {r2:.4f}")
-    print(f"Accuracy Direccional: {acc_dir:.4f}")
-    return mse, mae, rmse, r2, acc_dir
 
 
 def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
@@ -145,22 +130,105 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
 
         # Evaluación final
         pred_final = modelo_svr_final.predict(X_final_escalado)
-        evaluar_modelo(y_final, pred_final, "SVR Final")
-
+        print("SVR (Final):")
+        evaluar_modelo_30d(y_final, pred_final)
 
     elif tecnica == "xgboost":
 
         print(f"\n--- Entrenando, evaluando y reentrenando modelo XGBoost ---")
 
-        """
+        # Cargar y preparar datos de entrenamiento
+        parquet_file_path_train = get_path('data', 'parquet', 'data_30d.parquet')
+        df_train = cargar_datos_30d(parquet_file_path_train)
+        df_train_sin_nan = df_train.dropna(subset=["pct_cambio_30d"])
 
+        y_train = df_train_sin_nan["pct_cambio_30d"]
+        X_train = df_train_sin_nan.drop(columns=["pct_cambio_30d"])
+
+        # Imputación y escalado (sin selección de variables)
+        scaler = StandardScaler()
+        X_train_scaled = scaler.fit_transform(X_train)
+
+        # Hiperparámetros más conservadores para evitar overfitting
+        best_params_xgb = {
+            'colsample_bytree': 0.8,
+            'learning_rate': 0.05,
+            'max_depth': 2,
+            'n_estimators': 100,
+            'reg_alpha': 1,
+            'reg_lambda': 5,
+            'subsample': 0.8
+        }
+
+        # -----------------------------
+        # Validación cruzada temporal sin data leakage
+        # -----------------------------
+        print("Validación cruzada con TimeSeriesSplit:")
+        tscv = TimeSeriesSplit(n_splits=5)
+        r2_scores = []
+
+        for fold, (train_idx, val_idx) in enumerate(tscv.split(X_train)):
+            X_train_cv, X_val_cv = X_train.iloc[train_idx], X_train.iloc[val_idx]
+            y_train_cv, y_val_cv = y_train.iloc[train_idx], y_train.iloc[val_idx]
+
+            # Imputación y escalado dentro del split (evita leakage)
+            imputador_cv = SimpleImputer(strategy="mean")
+            X_train_cv_imp = imputador_cv.fit_transform(X_train_cv)
+            X_val_cv_imp = imputador_cv.transform(X_val_cv)
+
+            scaler_cv = StandardScaler()
+            X_train_cv_scaled = scaler_cv.fit_transform(X_train_cv_imp)
+            X_val_cv_scaled = scaler_cv.transform(X_val_cv_imp)
+
+            modelo_cv = XGBRegressor(**best_params_xgb)
+            modelo_cv.fit(X_train_cv_scaled, y_train_cv)
+
+            pred_cv = modelo_cv.predict(X_val_cv_scaled)
+            r2 = r2_score(y_val_cv, pred_cv)
+            r2_scores.append(r2)
+
+        # Entrenamiento completo con todos los datos disponibles
+        modelo_xgb = XGBRegressor(**best_params_xgb)
+        modelo_xgb.fit(X_train_scaled, y_train)
+        print("Reentrenamiento XGBoost:")
+        evaluar_modelo_7d(modelo_xgb, X_train_scaled, y_train)
+
+        # Evaluación en nuevos datos
+        parquet_file_path_nuevos = get_path('data', 'parquet nuevos', 'data_30d_nuevos.parquet')
+        df_nuevos = cargar_datos_30d(parquet_file_path_nuevos)
+        df_nuevos_sin_nan = df_nuevos.dropna(subset=["pct_cambio_30d"])
+        y_nuevos = df_nuevos_sin_nan["pct_cambio_30d"]
+        X_nuevos = df_nuevos_sin_nan.drop(columns=["pct_cambio_30d"])
+
+        for col in X_train.columns:
+            if col not in X_nuevos.columns:
+                X_nuevos[col] = np.nan
+
+        X_nuevos = X_nuevos[X_train.columns]
+        X_nuevos_escalado = scaler.transform(X_nuevos)
+        print("Métricas XGBoost en datos nuevos:")
+        evaluar_modelo_7d(modelo_xgb, X_nuevos_escalado, y_nuevos)
+
+        # Reentrenamiento con todos los datos
+        df_final = pd.concat([df_train_sin_nan, df_nuevos_sin_nan])
+        y_final = df_final["pct_cambio_30d"]
+        X_final = df_final.drop(columns=["pct_cambio_30d"])
+
+        for col in X_train.columns:
+            if col not in X_final.columns:
+                X_final[col] = np.nan
+
+        X_final = X_final[X_train.columns]
+        X_scaled_final = scaler.fit_transform(X_final)
+        modelo_xgb_final = XGBRegressor(**best_params_xgb)
+        modelo_xgb_final.fit(X_scaled_final, y_final)
         joblib.dump(modelo_xgb_final, "modelos/XGB.joblib")
-        joblib.dump(scaler_final, "modelos/XGB_scaler.joblib")
-        
+        joblib.dump(scaler, "modelos/XGB_scaler.joblib")
         pred_final_total = modelo_xgb_final.predict(X_scaled_final)
-        evaluar_modelo(y_final, pred_final_total, "XGBoost (Final)")
 
-        """
+        print("XGBoost (Final):")
+        evaluar_modelo_30d(y_final, pred_final_total)
+
 if __name__ == "__main__":
     # Entrenar, evaluar y reentrenar SVR
     entrenar_evaluar_y_reentrenar_modelo(tecnica="svr", test_size=0.2)

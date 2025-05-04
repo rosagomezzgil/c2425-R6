@@ -22,6 +22,8 @@ src/c2425_r6.egg-info/
 data/extraccion/
 data/limpieza/
 data/parquet/
+data/nuevos
+data/parquet nuevos
 
 # Jupyter notebooks
 .ipynb_checkpoints/

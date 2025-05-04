@@ -51,7 +51,7 @@ def analyze_tweets(file_path):
 
 if __name__ == "__main__":
     # Ruta del archivo (modificar según sea necesario)
-    file_path = get_path('data', '1 extraccion', 'tweets_bitcoin.csv')
+    file_path = get_path('data', 'extraccion', 'tweets_bitcoin.csv')
     df_resultado = analyze_tweets(file_path)
     print(df_resultado.head())
 

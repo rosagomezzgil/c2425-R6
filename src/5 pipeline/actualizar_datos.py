@@ -102,11 +102,11 @@ if __name__ == "__main__":
 
     # -------- ETAPA 3: Merge final y exportación --------
     print("\n ETAPA 3: Unión y exportación")
-    ejecutar_script(get_path("src", "6 nuevos datos", "merge_nuevos_datos.py"))
+    ejecutar_script(get_path("src", "2 transformacion", "merge_nuevos_datos.py"))
 
     # -------- ETAPA 4: Generación de datasets de modelado --------
     print("\n ETAPA 4: Generación de datasets 7d y 30d")
-    ejecutar_notebook(get_path("src", "6 nuevos datos", "eliminacion de variables nuevos datos.ipynb"))
+    ejecutar_notebook(get_path("src", "4 modelos", "eliminacion de variables nuevos datos.ipynb"))
 
     # -------- ETAPA 5: BACKUP antes de guardar parquet final --------
     archivos_a_respaldar = {
@@ -131,6 +131,6 @@ if __name__ == "__main__":
             print(f" No se encontró el archivo Parquet '{nombre_archivo}', no se creó backup.")
 
     # -------- ETAPA 6: Guardado del nuevo parquet -------
-    ejecutar_script(get_path("src", "6 nuevos datos", "creacion_nuevos_datos.py"))
+    ejecutar_script(get_path("src", "5 pipeline", "creacion_nuevos_datos.py"))
 
     print("\n Pipeline de actualización completado.")

@@ -51,13 +51,3 @@ if __name__ == "__main__":
         ["data", "limpieza", "dataset_30d.csv"],
         ["data", "parquet", "data_30d.parquet"],
     )
-
-    convertir_csv_a_parquet(
-        ["data", "limpieza", "pred_7d.csv"],
-        ["data", "parquet", "pred_7d.parquet"],
-    )
-
-    convertir_csv_a_parquet(
-        ["data", "limpieza", "pred_30d.csv"],
-        ["data", "parquet", "pred_30d.parquet"],
-    )

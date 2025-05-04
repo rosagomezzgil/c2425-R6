@@ -78,8 +78,8 @@ if __name__ == "__main__":
         get_path("src", "1 extraccion", "mercadoDerivados_deribit.py"),
         get_path("src", "1 extraccion", "yahoo_finance.py")
     ]
-    for ruta in rutas_extraccion:
-        ejecutar_script(ruta)
+    # for ruta in rutas_extraccion:
+    #     ejecutar_script(ruta)
 
     # -------- ETAPA 2: Limpieza y transformación --------
     print("\n ETAPA 2: Limpieza y transformación")
@@ -106,7 +106,7 @@ if __name__ == "__main__":
 
     # -------- ETAPA 4: Generación de datasets de modelado --------
     print("\n ETAPA 4: Generación de datasets 7d y 30d")
-    ejecutar_notebook(get_path("src", "modelos", "eliminacion de variables nuevos datos.ipynb"))
+    ejecutar_notebook(get_path("src", "4 modelos", "eliminacion de variables nuevos datos.ipynb"))
 
     # -------- ETAPA 5: BACKUP antes de guardar parquet final --------
     archivos_a_respaldar = {

@@ -1,4 +1,3 @@
-# Ejecutar en Google Colab, porque en local da error de Too Many Requests
 """
 Descripción:
 Este script se utiliza para descargar datos históricos de activos financieros desde Yahoo Finance, utilizando la librería `yfinance`. Permite obtener datos a intervalos personalizados (por ejemplo, diario o por hora) y guarda la información en archivos CSV. Además, maneja errores relacionados con el límite de solicitudes de la API de Yahoo Finance, reintentando la descarga en caso de fallo. El script está diseñado para ser ejecutado en Google Colab debido a un error de "Too Many Requests" en la ejecución local.
@@ -10,9 +9,7 @@ Funcionalidad:
 4. Almacenamiento en CSV: Guarda los datos descargados en un archivo CSV en la ruta especificada.
 5. Ejecución con parámetros: El script acepta parámetros para las fechas de inicio y fin, el intervalo de los datos y la ubicación del archivo de salida.
 
-Uso:
-El script descarga los datos de tres activos financieros específicos: el índice DXY, el S&P 500 y el Nasdaq. Los datos se guardan en archivos CSV en el directorio especificado.
-
+Ejecutar en Google Colab, porque en local da error de Too Many Requests
 """
 
 import yfinance as yf
@@ -22,6 +19,7 @@ import time
 from typing import Optional
 from utils.paths import get_path
 from datetime import datetime
+
 
 def download_data(
     ticker: str,

@@ -1,4 +1,3 @@
-
 """
 coingecko.py
 
@@ -10,6 +9,7 @@ de historial a recuperar (hasta 365 días en la versión gratuita). Los datos se
 en un archivo CSV si se proporciona una ruta de salida.
 
 """
+
 import requests
 import argparse
 import pandas as pd

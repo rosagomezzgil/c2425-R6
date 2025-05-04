@@ -1,4 +1,3 @@
-
 """
 Módulo: extracción de datos históricos de Bitcoin desde Binance.
 
@@ -9,9 +8,6 @@ el número de registros a recuperar, y opcionalmente un rango temporal específi
 
 Los datos se pueden guardar automáticamente en un archivo CSV para su posterior análisis
 financiero, modelado o visualización.
-
-Uso:
-    python script.py --symbol BTCUSDT --interval 1d --limit 500 --output_path ./binance.csv
 
 Este script forma parte del conjunto de herramientas de extracción de datos para análisis del mercado de criptomonedas.
 """

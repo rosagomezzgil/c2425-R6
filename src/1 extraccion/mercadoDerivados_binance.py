@@ -20,6 +20,7 @@ import os
 from typing import Optional
 from utils.paths import get_path
 
+
 def get_binance_futures_historical_data(
     symbol: str = "BTCUSDT",
     days: int = 365,

@@ -8,10 +8,11 @@ recuperar un número definido de tweets recientes y guardarlos en un archivo CSV
 Se enfoca en la recolección de contenido textual para análisis de sentimiento, tendencias,
 popularidad o correlaciones con precios del mercado de criptomonedas.
 
-Uso:
-    python script.py --query "(Bitcoin OR BTC) lang:en" --max_results 100 --output_path ./tweets.csv
-
 Este módulo forma parte del sistema de extracción de datos para análisis en el contexto de Bitcoin y criptomonedas.
+El analisis se hace en la carpeta 2 transformacion, en el archivo sentiment_analysis.py
+
+Solamente se puede ejecutar una vez al día ya que saltan excepciones de tweepy por querer extraer demasiada información
+(too many requests).
 """
 
 import tweepy

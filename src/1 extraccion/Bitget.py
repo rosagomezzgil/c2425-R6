@@ -1,4 +1,3 @@
-
 """
 Módulo: extracción de datos históricos de Bitcoin desde la web de Bitget mediante scraping.
 
@@ -12,8 +11,6 @@ Se puede configurar:
 - el tiempo de espera entre acciones (para asegurar que los elementos carguen correctamente),
 - y la ruta de salida para guardar los datos en formato CSV.
 
-Uso:
-    python script.py --max_pages 5 --output_path ./bitget.csv
 
 Este script forma parte del módulo de extracción de datos para análisis de criptomonedas.
 """

@@ -20,7 +20,7 @@ import pandas as pd
 from utils.paths import get_path
 
 if __name__ == "__main__":
-    df = pd.read_csv(get_path('data', '1 extraccion', 'datos_google_trends.csv'))
+    df = pd.read_csv(get_path('data', 'extraccion', 'datos_google_trends.csv'))
     df = df.reset_index(drop=True)
 
     # Convertir timestamp a datetime

@@ -60,12 +60,8 @@ def main():
         X_test = test_df.drop(columns=[target_col])
         y_test = test_df[target_col]
 
-        # 3. Escalado
-        scaler = StandardScaler()
-        X_train_scaled = scaler.fit_transform(X_train)
-        X_test_scaled = scaler.transform(X_test)
 
-        # 4. Definir búsqueda de hiperparámetros
+        # 3. Definir búsqueda de hiperparámetros
         param_grid = {
             "n_estimators": [100, 200],
             "max_depth": [3, 5],
@@ -76,14 +72,14 @@ def main():
             "reg_lambda": [1, 5, 10, 100]  # Regularización L2 (Ridge)
         }
 
-        # 5. Validación y entrenamiento
-        best_model, best_params = validar_modelo_xgboost(X_train_scaled, y_train.values, param_grid, n_splits=3)
+        # 4. Validación y entrenamiento
+        best_model, best_params = validar_modelo_xgboost(X_train, y_train.values, param_grid, n_splits=3)
 
-        # 6. Predicción y evaluación
-        y_pred = best_model.predict(X_test_scaled)
+        # 5. Predicción y evaluación
+        y_pred = best_model.predict(X_test)
         mse, mae, rmse, r2, acc = evaluar_modelo_30d(y_test.values, y_pred)
 
-        # 7. Registro en MLflow
+        # 6. Registro en MLflow
         mlflow.log_params({"order": best_params})
         mlflow.log_metrics({
             "mse": mse,

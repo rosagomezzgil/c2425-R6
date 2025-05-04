@@ -78,8 +78,8 @@ if __name__ == "__main__":
         get_path("src", "1 extraccion", "mercadoDerivados_deribit.py"),
         get_path("src", "1 extraccion", "yahoo_finance.py")
     ]
-    # for ruta in rutas_extraccion:
-    #     ejecutar_script(ruta)
+    for ruta in rutas_extraccion:
+        ejecutar_script(ruta)
 
     # -------- ETAPA 2: Limpieza y transformación --------
     print("\n ETAPA 2: Limpieza y transformación")

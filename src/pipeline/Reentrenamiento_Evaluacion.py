@@ -4,8 +4,9 @@ from xgboost import XGBRegressor
 from sklearn.svm import SVR
 from statsmodels.tsa.arima.model import ARIMA
 from sklearn.preprocessing import StandardScaler
+from sklearn.impute import SimpleImputer
 import pandas as pd
-from sklearn.feature_selection import SelectKBest, f_regression
+from sklearn.feature_selection import SelectKBest, f_regression, mutual_info_regression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import numpy as np
@@ -15,16 +16,13 @@ from src.utils.modelos_sklearn.F_metricas import evaluar_modelo_7d, evaluar_mode
 from src.utils.paths import get_path
 
 
-def seleccionar_variables_f_regression_k10(X, y, k_vars=15):
-    """
-    Selecciona las mejores k variables usando f_regression con un valor fijo de k.
-    """
-    original_columns = X.columns
-    selector_f = SelectKBest(score_func=mutual_info, k=min(k_vars, X.shape[1]))
-    X_kbest_f = selector_f.fit_transform(X, y)
-    selected_columns_indices_f = selector_f.get_support()
-    selected_columns_f = original_columns[selected_columns_indices_f]
-    return pd.DataFrame(X_kbest_f, columns=selected_columns_f, index=X.index)
+
+def seleccionar_variables_mutual_info_k15(X, y, k_vars=15):
+    mi = mutual_info_regression(X, y)
+    mi_series = pd.Series(mi, index=X.columns)
+    columnas_seleccionadas = mi_series.sort_values(ascending=False).head(k_vars).index.tolist()
+    return X[columnas_seleccionadas], columnas_seleccionadas
+
 
 
 def accuracy_direccion(y_true, y_pred):
@@ -64,116 +62,94 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
     os.makedirs("modelos", exist_ok=True)
 
     if tecnica == "svr":
-        print(f"\n--- Entrenando, evaluando y reentrenando modelo SVR ---")
+        # Cargar y preparar datos de entrenamiento
+        parquet_file_path_train = get_path('data', 'parquet', 'data_7d.parquet')
+        df_train = cargar_datos_7d(parquet_file_path_train)
+        df_train_sin_nan = df_train.dropna(subset=["pct_cambio_7d"])
+        y_train = df_train_sin_nan["pct_cambio_7d"]
+        X_train = df_train_sin_nan.drop(columns=["pct_cambio_7d"])
 
-        # Paso 1: Cargar y preparar los datos iniciales
-        parquet_file_path_7d = get_path('data', 'parquet', 'data_7d.parquet')
-        df_7d = cargar_datos_7d(parquet_file_path_7d)
-        df_7d_sin_nan = df_7d.dropna(subset=["pct_cambio_7d"])
-        y_7d = df_7d_sin_nan["pct_cambio_7d"]
-        X_original_7d = df_7d_sin_nan.drop(columns=["pct_cambio_7d"])
+        # Selección de columnas con mutual_info_regression
+        X_train_sel, columnas_seleccionadas = seleccionar_variables_mutual_info_k15(X_train, y_train, k_vars=15)
 
-        # Dividir ANTES de cualquier selección o escalado
-        X_train, X_test_eval, y_train, y_test_eval = train_test_split(
-            X_original_7d, y_7d, test_size=test_size, random_state=42
-        )
+        # Imputación y escalado
+        imputador = SimpleImputer(strategy="mean")
+        X_train_sel = imputador.fit_transform(X_train_sel)
+        X_train_sel = pd.DataFrame(X_train_sel, columns=columnas_seleccionadas)
 
-        # Paso 2: Selección de variables SOLO con datos de entrenamiento
-        X_train_sel = seleccionar_variables_f_regression_k10(X_train, y_train)
+        scaler = StandardScaler()
+        X_train_scaled = scaler.fit_transform(X_train_sel)
 
-        # Aplicar la misma selección al conjunto de prueba
-        X_test_sel = X_test_eval[X_train_sel.columns]
-
-        # Paso 3: Escalado con datos de entrenamiento
-        scaler_eval = StandardScaler()
-        X_scaled_train = scaler_eval.fit_transform(X_train_sel)
-        X_scaled_test_eval = scaler_eval.transform(X_test_sel)
-
-        # Entrenar y evaluar
+        # Entrenar SVR con mejores parámetros
         best_params_svr = {'kernel': 'linear', 'epsilon': 0.5, 'C': 0.1}
-        modelo_svr_eval = SVR(**best_params_svr)
-        modelo_svr_eval.fit(X_scaled_train, y_train)
-        metricas_svr_eval = evaluar_modelo_7d(modelo_svr_eval, X_scaled_test_eval, y_test_eval)
-        print("Métricas SVR en el conjunto de prueba inicial:", metricas_svr_eval)
+        modelo_svr = SVR(**best_params_svr)
+        modelo_svr.fit(X_train_scaled, y_train)
 
-        # Guardar modelo y escalador
-        ruta_modelo_svr_eval = "modelos/SVR_eval.joblib"
-        ruta_scaler_svr_eval = "modelos/SVR_scaler_eval.joblib"
-        joblib.dump(modelo_svr_eval, ruta_modelo_svr_eval)
-        joblib.dump(scaler_eval, ruta_scaler_svr_eval)
-        print(f"Modelo SVR (evaluación inicial) guardado en: {ruta_modelo_svr_eval}")
-        print(f"Escalador SVR (evaluación inicial) guardado en: {ruta_scaler_svr_eval}")
+        # Ver resultados
+        print("Reentrenamiento SVR:")
+        metricas_svr_nuevos = evaluar_modelo_7d(modelo_svr, X_train_scaled, y_train)
 
-        # Paso 4: Obtener y preparar los nuevos datos (NUNCA usados antes)
-        parquet_file_path_nuevos_7d = get_path('data', 'parquet nuevos', 'data_7d_nuevos.parquet')
-        df_nuevos_7d = cargar_datos_7d(parquet_file_path_nuevos_7d)
-        df_nuevos_7d_sin_nan = df_nuevos_7d.dropna(subset=["pct_cambio_7d"])
-        y_nuevos_7d = df_nuevos_7d_sin_nan["pct_cambio_7d"]
-        X_original_nuevos_7d = df_nuevos_7d_sin_nan.drop(columns=["pct_cambio_7d"])
+        # Guardar modelo, escalador e imputador
+        joblib.dump(modelo_svr, 'modelos/SVR_eval_7d.joblib')
+        joblib.dump(scaler, 'modelos/SVR_scaler_eval_7d.joblib')
+        joblib.dump(imputador, 'modelos/SVR_imputador_eval_7d.joblib')
 
-        # Selección y escalado coherente con el modelo
-        if set(X_train_sel.columns).issubset(set(X_original_nuevos_7d.columns)):
-            X_seleccionado_nuevos_7d = X_original_nuevos_7d[X_train_sel.columns]
-            X_scaled_nuevos_7d = scaler_eval.transform(X_seleccionado_nuevos_7d)
-            metricas_svr_nuevos = evaluar_modelo_7d(modelo_svr_eval, X_scaled_nuevos_7d, y_nuevos_7d)
-            print("Métricas SVR en datos nuevos:", metricas_svr_nuevos)
-        else:
-            print(
-                "Advertencia: Las columnas de los datos nuevos no coinciden con las del entrenamiento inicial para SVR.")
-            metricas_svr_nuevos = None
+        # ------------------------
+        # Evaluación en nuevos datos
+        # ------------------------
+        parquet_file_path_nuevos = get_path('data', 'parquet nuevos', 'data_7d_nuevos.parquet')
+        df_nuevos = cargar_datos_7d(parquet_file_path_nuevos)
+        df_nuevos_sin_nan = df_nuevos.dropna(subset=["pct_cambio_7d"])
+        y_nuevos = df_nuevos_sin_nan["pct_cambio_7d"]
+        X_nuevos = df_nuevos_sin_nan.drop(columns=["pct_cambio_7d"])
 
-        # Paso 5: Reentrenar el modelo usando todos los datos (entrenamiento + validación + test + nuevos)
-        df_final_7d = pd.concat([df_7d_sin_nan, df_nuevos_7d_sin_nan])
-        y_final_7d = df_final_7d["pct_cambio_7d"]
-        X_original_final_7d = df_final_7d.drop(columns=["pct_cambio_7d"])
+        # Asegurar columnas consistentes
+        for col in columnas_seleccionadas:
+            if col not in X_nuevos.columns:
+                X_nuevos[col] = np.nan
+        X_nuevos_sel = X_nuevos[columnas_seleccionadas]
 
-        # Dividir los datos en entrenamiento y prueba para el reentrenamiento final
-        X_train_final, X_test_final, y_train_final, y_test_final = train_test_split(
-            X_original_final_7d, y_final_7d, test_size=0.2, random_state=42
-        )
+        # Imputar y escalar nuevos
+        X_nuevos_imputado = imputador.transform(X_nuevos_sel)
+        X_nuevos_escalado = scaler.transform(X_nuevos_imputado)
 
-        # Selección de características solo sobre los datos de entrenamiento final
-        X_train_sel_final = seleccionar_variables_f_regression_k10(X_train_final, y_train_final, k_vars=10)
+        print("Métricas SVR en datos nuevos 7d:")
+        metricas_svr_nuevos = evaluar_modelo_7d(modelo_svr, X_nuevos_escalado, y_nuevos)
 
-        # Escalado solo sobre los datos de entrenamiento final
-        scaler_final_svr = StandardScaler()
-        X_scaled_train_final = scaler_final_svr.fit_transform(X_train_sel_final)
+        # ------------------------
+        # Reentrenamiento con todos los datos
+        # ------------------------
+        df_final = pd.concat([df_train_sin_nan, df_nuevos_sin_nan])
+        y_final = df_final["pct_cambio_7d"]
+        X_final = df_final.drop(columns=["pct_cambio_7d"])
 
-        # Transformar los datos de test con el escalador entrenado
-        X_scaled_test_final = scaler_final_svr.transform(X_test_final[X_train_sel_final.columns])
+        # Usar las mismas columnas seleccionadas
+        for col in columnas_seleccionadas:
+            if col not in X_final.columns:
+                X_final[col] = np.nan
+        X_final_sel = X_final[columnas_seleccionadas]
 
-        # Entrenar el modelo con los datos completos escalados
+        # Imputar y escalar
+        X_final_imputado = imputador.fit_transform(X_final_sel)
+        X_final_escalado = scaler.fit_transform(X_final_imputado)
+
+        # Reentrenar modelo final
         modelo_svr_final = SVR(**best_params_svr)
-        modelo_svr_final.fit(X_scaled_train_final, y_train_final)
+        modelo_svr_final.fit(X_final_escalado, y_final)
 
-        # Evaluar el modelo en los datos de prueba
-        pred_svr_final = modelo_svr_final.predict(X_scaled_test_final)
-        evaluar_modelo(y_test_final, pred_svr_final, "SVR (Reentrenamiento Final)")
+        # Guardar modelo final
+        ruta_modelo_final = "modelos/SVR_final_7d.joblib"
+        ruta_scaler_final = "modelos/SVR_scaler_final_7d.joblib"
+        joblib.dump(modelo_svr_final, ruta_modelo_final)
+        joblib.dump(scaler, ruta_scaler_final)
 
-        # Reentrenar el modelo con todos los datos (entrenamiento + validación + test + nuevos datos)
-        X_final = pd.concat([X_train_final, X_test_final])
-        y_final = pd.concat([y_train_final, y_test_final])
-
-        # Selección de características para los datos completos
-        X_final_sel = seleccionar_variables_f_regression_k10(X_final, y_final, k_vars=10)
-
-        # Escalado de todos los datos con el escalador entrenado
-        X_scaled_final = scaler_final_svr.fit_transform(X_final_sel)
-
-        # Reentrenar el modelo con todos los datos disponibles
-        modelo_svr_final.fit(X_scaled_final, y_final)
-
-        # Guardar el modelo y el escalador final
-        ruta_modelo_svr_final = "modelos/SVR_final.joblib"
-        ruta_scaler_svr_final = "modelos/SVR_scaler_final.joblib"
-        joblib.dump(modelo_svr_final, ruta_modelo_svr_final)
-        joblib.dump(scaler_final_svr, ruta_scaler_svr_final)
-        print(f"Modelo SVR final reentrenado y guardado en: {ruta_modelo_svr_final}")
-        print(f"Escalador SVR final guardado en: {ruta_scaler_svr_final}")
+        print(f"Modelo SVR final guardado en: {ruta_modelo_final}")
+        print(f"Scaler final guardado en: {ruta_scaler_final}")
 
         # Evaluación final
-        pred_svr_final_total = modelo_svr_final.predict(X_scaled_final)
-        evaluar_modelo(y_final, pred_svr_final_total, "SVR (Final)")
+        pred_final = modelo_svr_final.predict(X_final_escalado)
+        evaluar_modelo(y_final, pred_final, "SVR (Final 7d)")
+
 
     elif tecnica == "xgboost":
 

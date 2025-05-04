@@ -71,7 +71,9 @@ def main():
             "max_depth": [3, 5],
             "learning_rate": [0.01, 0.1],
             "subsample": [0.8, 1.0],
-            "colsample_bytree": [0.8, 1.0]
+            "colsample_bytree": [0.8, 1.0],
+            "reg_alpha": [0, 0.1, 1, 10],  # Regularización L1 (Lasso)
+            "reg_lambda": [1, 5, 10, 100]  # Regularización L2 (Ridge)
         }
 
         # 5. Validación y entrenamiento

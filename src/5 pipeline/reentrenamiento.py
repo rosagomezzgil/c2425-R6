@@ -17,7 +17,6 @@ from utils.modelos_sklearn.F_metricas import evaluar_modelo_7d, evaluar_modelo_3
 from utils.paths import get_path
 
 
-
 def seleccionar_variables_mutual_info_k15(X, y, k_vars=15):
     mi = mutual_info_regression(X, y)
     mi_series = pd.Series(mi, index=X.columns)
@@ -120,8 +119,8 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
         modelo_svr_final.fit(X_final_escalado, y_final)
 
         # Guardar modelo final
-        ruta_modelo_final = "4 modelos/SVR.joblib"
-        ruta_scaler_final = "4 modelos/SVR_scaler.joblib"
+        ruta_modelo_final = "modelos/SVR.joblib"
+        ruta_scaler_final = "modelos/SVR_scaler.joblib"
         joblib.dump(modelo_svr_final, ruta_modelo_final)
         joblib.dump(scaler, ruta_scaler_final)
 
@@ -220,10 +219,15 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
 
         X_final = X_final[X_train.columns]
         X_scaled_final = scaler.fit_transform(X_final)
+
+        print(X_final.columns)
+
         modelo_xgb_final = XGBRegressor(**best_params_xgb)
         modelo_xgb_final.fit(X_scaled_final, y_final)
-        joblib.dump(modelo_xgb_final, "4 modelos/XGB.joblib")
-        joblib.dump(scaler, "4 modelos/XGB_scaler.joblib")
+
+        os.makedirs("modelos", exist_ok=True)
+        joblib.dump(modelo_xgb_final, "modelos/XGB.joblib")
+        joblib.dump(scaler, "modelos/XGB_scaler.joblib")
         pred_final_total = modelo_xgb_final.predict(X_scaled_final)
 
         print("XGBoost (Final):")

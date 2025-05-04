@@ -22,7 +22,7 @@ from utils.paths import get_path
 
 if __name__ == "__main__":
 
-    dxy = pd.read_csv(get_path('data', '1 extraccion', 'datos_dxy.csv'))
+    dxy = pd.read_csv(get_path('data', 'extraccion', 'datos_dxy.csv'))
 
     # Hacemos un 3 analisis inicial de como se comporta el df
     print(dxy.head())

@@ -92,7 +92,7 @@ def main():
     args = parser.parse_args()
 
     if args.output_path is None:
-        output_path = get_path('data', '1 extraccion', 'datos_bitcoin_fear_greed.csv')
+        output_path = get_path('data', 'extraccion', 'datos_bitcoin_fear_greed.csv')
     else:
         output_path = args.output_path
 

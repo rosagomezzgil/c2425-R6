@@ -100,7 +100,7 @@ def main():
     args = parser.parse_args()
 
     if args.output_path is None:
-        output_path = get_path('data', '1 extraccion', 'datos_google_trends.csv')
+        output_path = get_path('data', 'extraccion', 'datos_google_trends.csv')
     else:
         output_path = args.output_path
 

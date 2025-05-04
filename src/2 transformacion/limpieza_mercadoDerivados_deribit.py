@@ -21,7 +21,7 @@ import os
 if __name__ == "__main__":
     # Cargar el DataFrame
     df = pd.read_csv(
-        get_path('data', '1 extraccion', 'datos_mercadoDerivados_deribit.csv'),
+        get_path('data', 'extraccion', 'datos_mercadoDerivados_deribit.csv'),
         parse_dates=["timestamp"],
     )
 

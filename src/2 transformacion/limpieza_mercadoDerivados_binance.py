@@ -20,7 +20,7 @@ import pandas as pd
 import os
 
 if __name__ == "__main__":
-    df = pd.read_csv(get_path('data', '1 extraccion', 'datos_mercadoDerivados_binance.csv'))
+    df = pd.read_csv(get_path('data', 'extraccion', 'datos_mercadoDerivados_binance.csv'))
 
     # Mostrar las primeras filas del DataFrame
     print("Primeras filas del archivo CSV:")

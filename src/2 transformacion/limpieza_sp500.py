@@ -27,7 +27,7 @@ import os
 
 if __name__ == "__main__":
     # Cargar datos desde CSV
-    sp500 = pd.read_csv(get_path('data', '1 extraccion', 'datos_sp500.csv'))
+    sp500 = pd.read_csv(get_path('data', 'extraccion', 'datos_sp500.csv'))
 
     # Ver si hay valores nulos
     print(sp500.isnull().sum())  # No tiene valores nulos

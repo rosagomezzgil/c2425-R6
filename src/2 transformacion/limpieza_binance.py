@@ -14,7 +14,7 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 from utils.paths import get_path
-from Creacion_variables import crear_variables
+from creacion_variables import crear_variables
 
 if __name__ == "__main__":
     # Cargar datos desde un CSV (ajusta la ruta a tu archivo)

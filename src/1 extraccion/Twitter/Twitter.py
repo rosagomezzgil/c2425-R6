@@ -1,8 +1,8 @@
 """
-Módulo: extracción de tweets relacionados con Bitcoin mediante la API de Twitter (v2).
+Módulo: extracción de tweets relacionados con Bitcoin mediante la API de twitter (v2).
 
 Este script utiliza la librería `tweepy` y credenciales almacenadas en el módulo `config`
-para autenticar y conectarse a la API de Twitter. Permite realizar consultas personalizadas,
+para autenticar y conectarse a la API de twitter. Permite realizar consultas personalizadas,
 recuperar un número definido de tweets recientes y guardarlos en un archivo CSV.
 
 Se enfoca en la recolección de contenido textual para análisis de sentimiento, tendencias,
@@ -29,7 +29,7 @@ def fetch_tweets(
     """
     Descarga tweets según una consulta dada y los guarda en un CSV.
 
-    :param query: Consulta de búsqueda en Twitter.
+    :param query: Consulta de búsqueda en twitter.
     :param max_results: Número máximo de tweets a recuperar.
     :param output_filename: Ruta del archivo CSV donde se guardarán los tweets.
     :return: DataFrame con los tweets descargados.
@@ -75,7 +75,7 @@ def main():
         "--query",
         type=str,
         default="(Bitcoin OR BTC OR #Bitcoin) -is:retweet lang:en",
-        help="Consulta de búsqueda en Twitter",
+        help="Consulta de búsqueda en twitter",
     )
     parser.add_argument(
         "--max_results",

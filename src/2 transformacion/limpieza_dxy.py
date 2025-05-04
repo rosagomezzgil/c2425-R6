@@ -17,7 +17,7 @@
 
 import os
 import pandas as pd
-from Creacion_variables import crear_variables
+from creacion_variables import crear_variables
 from utils.paths import get_path
 
 if __name__ == "__main__":

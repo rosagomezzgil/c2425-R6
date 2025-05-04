@@ -18,7 +18,7 @@
     """
 
 
-from Creacion_variables import crear_variables
+from creacion_variables import crear_variables
 from utils.paths import get_path
 import pandas as pd
 import os

@@ -1,8 +1,8 @@
 # config.py
 """
-Módulo: configuración de credenciales para autenticación con la API de Twitter.
+Módulo: configuración de credenciales para autenticación con la API de twitter.
 
-Este script contiene las claves necesarias para autenticar el acceso a la API de Twitter
+Este script contiene las claves necesarias para autenticar el acceso a la API de twitter
 (v2) usando la librería `tweepy`. Es utilizado por los módulos de extracción de datos
 que requieren conexión a dicha API.
 

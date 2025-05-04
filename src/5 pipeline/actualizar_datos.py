@@ -67,16 +67,16 @@ if __name__ == "__main__":
     # -------- ETAPA 1: Extracción de datos --------
     print("\n ETAPA 1: Extracción de datos")
     rutas_extraccion = [
-        get_path("src", "1 extraccion", "Alternative.py"),
-        get_path("src", "1 extraccion", "Binance.py"),
-        get_path("src", "1 extraccion", "Bitget.py"),
-        get_path("src", "1 extraccion", "CoinGecko.py"),
-        get_path("src", "1 extraccion", "Google_Trends.py"),
-        get_path("src", "1 extraccion", "Halving.py"),
-        get_path("src", "1 extraccion", "Hashrate.py"),
+        get_path("src", "1 extraccion", "alternative.py"),
+        get_path("src", "1 extraccion", "binance.py"),
+        get_path("src", "1 extraccion", "bitget.py"),
+        get_path("src", "1 extraccion", "coingecko.py"),
+        get_path("src", "1 extraccion", "google_trends.py"),
+        get_path("src", "1 extraccion", "halving.py"),
+        get_path("src", "1 extraccion", "hashrate.py"),
         get_path("src", "1 extraccion", "mercadoDerivados_binance.py"),
         get_path("src", "1 extraccion", "mercadoDerivados_deribit.py"),
-        get_path("src", "1 extraccion", "Yahoo_Finance.py")
+        get_path("src", "1 extraccion", "yahoo_finance.py")
     ]
     for ruta in rutas_extraccion:
         ejecutar_script(ruta)
@@ -87,14 +87,14 @@ if __name__ == "__main__":
         get_path("src", "2 transformacion", "limpieza_binance.py"),
         get_path("src", "2 transformacion", "limpieza_bitget.py"),
         get_path("src", "2 transformacion", "limpieza_coingecko.py"),
-        get_path("src", "2 transformacion", "limpieza_datos_Google_Trends.py"),
+        get_path("src", "2 transformacion", "limpieza_datos_google_trends.py"),
         get_path("src", "2 transformacion", "limpieza_dxy.py"),
         get_path("src", "2 transformacion", "limpieza_fear_and_greed.py"),
         get_path("src", "2 transformacion", "limpieza_halving.py"),
         get_path("src", "2 transformacion", "limpieza_hashrate.py"),
         get_path("src", "2 transformacion", "limpieza_mercadoDerivados_binance.py"),
-        get_path("src", "2 transformacion", "limpieza_mercDer_derivit.py"),
-        get_path("src", "2 transformacion", "limpieza_Nasdaq.py"),
+        get_path("src", "2 transformacion", "limpieza_mercadoDerivados_deribit.py"),
+        get_path("src", "2 transformacion", "limpieza_nasdaq.py"),
         get_path("src", "2 transformacion", "limpieza_sp500.py")
     ]
     for ruta in rutas_limpieza:

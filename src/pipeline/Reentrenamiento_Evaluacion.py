@@ -71,7 +71,6 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
 
         # Selección de columnas con mutual_info_regression
         X_train_sel, columnas_seleccionadas = seleccionar_variables_mutual_info_k15(X_train, y_train, k_vars=15)
-
         print(f"Columnas de SVR ({len(columnas_seleccionadas)}):")
         print(columnas_seleccionadas)
 
@@ -92,11 +91,6 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
         print("Reentrenamiento SVR:")
         metricas_svr_nuevos = evaluar_modelo_7d(modelo_svr, X_train_scaled, y_train)
 
-        # Guardar modelo, escalador e imputador
-        joblib.dump(modelo_svr, 'modelos/SVR_eval_7d.joblib')
-        joblib.dump(scaler, 'modelos/SVR_scaler_eval_7d.joblib')
-        joblib.dump(imputador, 'modelos/SVR_imputador_eval_7d.joblib')
-
         # ------------------------
         # Evaluación en nuevos datos
         # ------------------------
@@ -116,7 +110,7 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
         X_nuevos_imputado = imputador.transform(X_nuevos_sel)
         X_nuevos_escalado = scaler.transform(X_nuevos_imputado)
 
-        print("Métricas SVR en datos nuevos 7d:")
+        print("Métricas SVR en datos nuevos:")
         metricas_svr_nuevos = evaluar_modelo_7d(modelo_svr, X_nuevos_escalado, y_nuevos)
 
         # ------------------------
@@ -141,8 +135,8 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
         modelo_svr_final.fit(X_final_escalado, y_final)
 
         # Guardar modelo final
-        ruta_modelo_final = "modelos/SVR_final_7d.joblib"
-        ruta_scaler_final = "modelos/SVR_scaler_final_7d.joblib"
+        ruta_modelo_final = "modelos/SVR.joblib"
+        ruta_scaler_final = "modelos/SVR_scaler.joblib"
         joblib.dump(modelo_svr_final, ruta_modelo_final)
         joblib.dump(scaler, ruta_scaler_final)
 
@@ -151,94 +145,22 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
 
         # Evaluación final
         pred_final = modelo_svr_final.predict(X_final_escalado)
-        evaluar_modelo(y_final, pred_final, "SVR (Final 7d)")
+        evaluar_modelo(y_final, pred_final, "SVR Final")
 
 
     elif tecnica == "xgboost":
 
         print(f"\n--- Entrenando, evaluando y reentrenando modelo XGBoost ---")
-        parquet_file_path_30d = get_path('data', 'parquet', 'data_30d.parquet')
-        df_30d = cargar_datos_30d(parquet_file_path_30d)
-        df_30d_sin_nan = df_30d.dropna(subset=["pct_cambio_30d"])
-        y_30d = df_30d_sin_nan["pct_cambio_30d"]
-        X_original_30d = df_30d_sin_nan.drop(columns=["pct_cambio_30d"])
 
-        # Dividir los datos
-        X_train, X_test_eval, y_train, y_test_eval = train_test_split(
-            X_original_30d, y_30d, test_size=test_size, random_state=42
-        )
+        """
 
-        # Selección de características
-        X_train_sel = seleccionar_variables_f_regression_k10(X_train, y_train, k_vars=15)
-        X_test_sel = X_test_eval[X_train_sel.columns]
-
-        # Escalado
-        scaler_eval = StandardScaler()
-        X_scaled_train = scaler_eval.fit_transform(X_train_sel)
-        X_scaled_test = scaler_eval.transform(X_test_sel)
-
-        # Entrenar y evaluar modelo
-        best_params_xgb = {"n_estimators": 100, "max_depth": 3, "learning_rate": 0.1}
-        modelo_xgb_eval = XGBRegressor(**best_params_xgb)
-        modelo_xgb_eval.fit(X_scaled_train, y_train)
-
-        # Evaluación
-        pred_xgb_eval = modelo_xgb_eval.predict(X_scaled_test)
-        evaluar_modelo(y_test_eval, pred_xgb_eval, "XGBoost (Evaluación Inicial)")
-
-        # Guardar modelo y escalador
-        joblib.dump(modelo_xgb_eval, "modelos/XGB_eval.joblib")
-        joblib.dump(scaler_eval, "modelos/XGB_scaler_eval.joblib")
-
-        # Cargar nuevos datos
-        parquet_file_path_nuevos_30d = get_path('data', 'parquet nuevos', 'data_30d_nuevos.parquet')
-        df_nuevos_30d = cargar_datos_30d(parquet_file_path_nuevos_30d)
-        df_nuevos_30d_sin_nan = df_nuevos_30d.dropna(subset=["pct_cambio_30d"])
-        y_nuevos_30d = df_nuevos_30d_sin_nan["pct_cambio_30d"]
-        X_nuevos_30d = df_nuevos_30d_sin_nan.drop(columns=["pct_cambio_30d"])
-
-        if set(X_train_sel.columns).issubset(X_nuevos_30d.columns):
-            X_nuevos_sel = X_nuevos_30d[X_train_sel.columns]
-            X_nuevos_scaled = scaler_eval.transform(X_nuevos_sel)
-            pred_xgb_nuevos = modelo_xgb_eval.predict(X_nuevos_scaled)
-            evaluar_modelo(y_nuevos_30d, pred_xgb_nuevos, "XGBoost (Datos Nuevos)")
-
-        else:
-            print("Advertencia: Las columnas de los datos nuevos no coinciden con las del entrenamiento.")
-
-        # Reentrenamiento con todos los datos
-        df_final_30d = pd.concat([df_30d_sin_nan, df_nuevos_30d_sin_nan])
-        y_final = df_final_30d["pct_cambio_30d"]
-        X_final = df_final_30d.drop(columns=["pct_cambio_30d"])
-        X_train_final, X_test_final, y_train_final, y_test_final = train_test_split(
-            X_final, y_final, test_size=0.2, random_state=42
-        )
-        X_train_sel_final = seleccionar_variables_f_regression_k10(X_train_final, y_train_final, k_vars=15)
-        X_test_sel_final = X_test_final[X_train_sel_final.columns]
-
-        scaler_final = StandardScaler()
-        X_scaled_train_final = scaler_final.fit_transform(X_train_sel_final)
-        X_scaled_test_final = scaler_final.transform(X_test_sel_final)
-
-        modelo_xgb_final = XGBRegressor(**best_params_xgb)
-        modelo_xgb_final.fit(X_scaled_train_final, y_train_final)
-
-        pred_xgb_final = modelo_xgb_final.predict(X_scaled_test_final)
-        evaluar_modelo(y_test_final, pred_xgb_final, "XGBoost (Reentrenamiento Final)")
-
-        # Entrenar con todos los datos disponibles
-
-        X_final_sel = seleccionar_variables_f_regression_k10(X_final, y_final, k_vars=15)
-        X_scaled_final = scaler_final.fit_transform(X_final_sel)
-        modelo_xgb_final.fit(X_scaled_final, y_final)
-
-        joblib.dump(modelo_xgb_final, "modelos/XGB_final.joblib")
-        joblib.dump(scaler_final, "modelos/XGB_scaler_final.joblib")
-
+        joblib.dump(modelo_xgb_final, "modelos/XGB.joblib")
+        joblib.dump(scaler_final, "modelos/XGB_scaler.joblib")
+        
         pred_final_total = modelo_xgb_final.predict(X_scaled_final)
         evaluar_modelo(y_final, pred_final_total, "XGBoost (Final)")
 
-
+        """
 if __name__ == "__main__":
     # Entrenar, evaluar y reentrenar SVR
     entrenar_evaluar_y_reentrenar_modelo(tecnica="svr", test_size=0.2)

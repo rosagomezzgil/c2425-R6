@@ -27,6 +27,7 @@ dependencies = [
     "torch>=2.6.0",
     "tweepy>=4.15.0",
     "webdriver-manager>=4.0.2",
+    "xgboost>=3.0.0",
     "yfinance>=0.2.55",
 ]
 

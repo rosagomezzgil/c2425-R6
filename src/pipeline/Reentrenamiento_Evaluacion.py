@@ -10,10 +10,10 @@ from sklearn.feature_selection import SelectKBest, f_regression, mutual_info_reg
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import numpy as np
-from src.utils.modelos_sklearn.A_cargar_datos import cargar_datos_7d, cargar_datos_30d
-from src.utils.modelos_sklearn.B_preprocesamiento import preprocesar_datos_7d, preprocesar_datos_30d
-from src.utils.modelos_sklearn.F_metricas import evaluar_modelo_7d, evaluar_modelo_30d
-from src.utils.paths import get_path
+from utils.modelos_sklearn.A_cargar_datos import cargar_datos_7d, cargar_datos_30d
+from utils.modelos_sklearn.B_preprocesamiento import preprocesar_datos_7d, preprocesar_datos_30d
+from utils.modelos_sklearn.F_metricas import evaluar_modelo_7d, evaluar_modelo_30d
+from utils.paths import get_path
 
 
 
@@ -53,7 +53,7 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
     Entrena, evalúa y reentrena el modelo SVR o ARIMA.
 
     Args:
-        tecnica (str): 'svr' o 'arima' para especificar el modelo.
+        tecnica (str): 'svr' o 'xgboost' para especificar el modelo.
         test_size (float): Proporción de datos a usar como conjunto de prueba
                            durante la evaluación inicial.
     Returns:
@@ -71,6 +71,9 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
 
         # Selección de columnas con mutual_info_regression
         X_train_sel, columnas_seleccionadas = seleccionar_variables_mutual_info_k15(X_train, y_train, k_vars=15)
+
+        print(f"Columnas de SVR ({len(columnas_seleccionadas)}):")
+        print(columnas_seleccionadas)
 
         # Imputación y escalado
         imputador = SimpleImputer(strategy="mean")

@@ -17,7 +17,7 @@ import os
 
 if __name__ == "__main__":
     # Cargar datos desde un CSV (ajusta la ruta a tu archivo)
-    df = pd.read_csv(get_path('data', 'extraccion', 'datos_hashrate.csv'))
+    df = pd.read_csv(get_path('data', '1 extraccion', 'datos_hashrate.csv'))
 
     # Ver las primeras filas
     print(df.head())

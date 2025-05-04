@@ -110,7 +110,7 @@ def main():
     args = parser.parse_args()
 
     if args.output_dir is None:
-        output_dir = get_path('data', 'extraccion')
+        output_dir = get_path('data', '1 extraccion')
     else:
         output_dir = args.output_dir
 

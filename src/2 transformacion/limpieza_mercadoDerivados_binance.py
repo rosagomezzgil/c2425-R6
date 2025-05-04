@@ -5,7 +5,7 @@
     derivados (prefijo 'mD').
 
     Además, se calculan nuevas métricas como variación diaria, volatilidad, momentum, medias móviles
-    (SMA y EMA) y el RSI utilizando la función ya definida, preparando los datos para su uso en modelos
+    (SMA y EMA) y el RSI utilizando la función ya definida, preparando los datos para su uso en 4 modelos
     de predicción.
 
     Por úlimo, se extrae el dataset limpio a un nuevo archivo CSV, listo para su integración con datos
@@ -20,7 +20,7 @@ import pandas as pd
 import os
 
 if __name__ == "__main__":
-    df = pd.read_csv(get_path('data', 'extraccion', 'datos_mercadoDerivados_binance.csv'))
+    df = pd.read_csv(get_path('data', '1 extraccion', 'datos_mercadoDerivados_binance.csv'))
 
     # Mostrar las primeras filas del DataFrame
     print("Primeras filas del archivo CSV:")

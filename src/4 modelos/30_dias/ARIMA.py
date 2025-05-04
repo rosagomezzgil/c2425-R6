@@ -2,7 +2,7 @@
 Módulo: ARIMA.py
 
 Descripción:
-Este script implementa el entrenamiento y evaluación de modelos ARIMA aplicados a series
+Este script implementa el entrenamiento y evaluación de 4 modelos ARIMA aplicados a series
 temporales de variación porcentual a 30 días (`pct_cambio_30d`). Está diseñado para encontrar
 el mejor modelo ARIMA mediante validación cruzada y evaluar su desempeño en datos de prueba.
 

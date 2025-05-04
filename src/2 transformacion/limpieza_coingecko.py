@@ -19,7 +19,7 @@ import pandas as pd
 import os
 
 if __name__ == "__main__":
-    df = pd.read_csv(get_path('data', 'extraccion', 'datos_coingecko.csv'))
+    df = pd.read_csv(get_path('data', '1 extraccion', 'datos_coingecko.csv'))
 
     print(df.info())  # Ver tipos de datos y valores nulos
     print(df.describe())  # Estadísticas básicas

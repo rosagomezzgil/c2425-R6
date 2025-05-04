@@ -9,7 +9,7 @@
     de que no hubo búsquedas ese día.
 
     Posteriormente, los ceros son reemplazados con valores interpolados linealmente para suavizar la serie,
-    lo cual es útil en modelos predictivos que requieren continuidad en los datos.
+    lo cual es útil en 4 modelos predictivos que requieren continuidad en los datos.
 
     Finalmente, se guarda el dataset limpio como archivo CSV.
 
@@ -20,7 +20,7 @@ import pandas as pd
 from utils.paths import get_path
 
 if __name__ == "__main__":
-    df = pd.read_csv(get_path('data', 'extraccion', 'datos_google_trends.csv'))
+    df = pd.read_csv(get_path('data', '1 extraccion', 'datos_google_trends.csv'))
     df = df.reset_index(drop=True)
 
     # Convertir timestamp a datetime

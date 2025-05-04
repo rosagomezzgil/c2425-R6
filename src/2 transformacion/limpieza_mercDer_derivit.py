@@ -5,7 +5,7 @@
     las columnas para diferenciar métricas específicas del mercado de derivados (prefijo 'mD').
 
     Además, se calculan nuevas métricas como variación diaria, volatilidad, momentum, medias móviles
-    (SMA y EMA) y el RSI utilizando la función ya definida, preparando los datos para su uso en modelos
+    (SMA y EMA) y el RSI utilizando la función ya definida, preparando los datos para su uso en 4 modelos
     de predicción.
 
     Por úlimo, se extrae el dataset limpio a un nuevo archivo CSV, listo para su integración con datos
@@ -21,7 +21,7 @@ import os
 if __name__ == "__main__":
     # Cargar el DataFrame
     df = pd.read_csv(
-        get_path('data', 'extraccion', 'datos_mercadoDerivados_deribit.csv'),
+        get_path('data', '1 extraccion', 'datos_mercadoDerivados_deribit.csv'),
         parse_dates=["timestamp"],
     )
 

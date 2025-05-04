@@ -8,7 +8,7 @@ de múltiples variables temporales en la predicción futura del target.
 
 Características principales:
 - Carga y preprocesamiento del dataset multivariado.
-- Selección de variables relevantes mediante una técnica adaptada a modelos VAR.
+- Selección de variables relevantes mediante una técnica adaptada a 4 modelos VAR.
 - División temporal de datos para garantizar la validez temporal.
 - Validación cruzada específica para series temporales para determinar el mejor número de rezagos (lags).
 - Entrenamiento del modelo VAR con el mejor `lag`.

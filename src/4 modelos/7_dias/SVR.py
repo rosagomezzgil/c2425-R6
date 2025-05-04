@@ -2,7 +2,7 @@
 Módulo: SVR.py
 
 Descripción:
-Este script implementa una serie de experimentos para entrenar modelos de regresión por
+Este script implementa una serie de experimentos para entrenar 4 modelos de regresión por
 vectores de soporte (SVR) aplicados a series temporales financieras. Se exploran diferentes
 estrategias de selección de variables y se prueban hiperparámetros para abordar el sobreajuste.
 
@@ -10,7 +10,7 @@ Características principales:
 - Carga y preprocesamiento de datos.
 - Selección de características mediante técnicas como `f_regression` o `mutual_info_regression`.
 - Escalado de datos con `StandardScaler`.
-- Entrenamiento y validación de modelos SVR con búsqueda aleatoria (`RandomizedSearchCV`).
+- Entrenamiento y validación de 4 modelos SVR con búsqueda aleatoria (`RandomizedSearchCV`).
 - Evaluación del modelo en datos fuera de muestra (test set).
 - Reentrenamiento del mejor modelo con todos los datos de entrenamiento y validación.
 - Registro automático de métricas, parámetros y visualizaciones usando MLflow.
@@ -27,7 +27,7 @@ Dependencias:
     - utils.mlflow_utils (configuración y logging en MLflow)
 
 Uso:
-Ejecutar este script para entrenar múltiples modelos SVR con distintas combinaciones de
+Ejecutar este script para entrenar múltiples 4 modelos SVR con distintas combinaciones de
 características seleccionadas y configuraciones de hiperparámetros, y registrar todo el
 proceso con MLflow para su posterior análisis.
 

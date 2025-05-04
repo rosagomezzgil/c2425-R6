@@ -14,7 +14,7 @@ import os
 
 
 if __name__ == "__main__":
-    df = pd.read_csv(get_path('data', 'extraccion', 'halving_data.csv'))
+    df = pd.read_csv(get_path('data', '1 extraccion', 'halving_data.csv'))
 
     print(df.info())  # Ver tipos de datos y valores nulos
     print(df.describe())  # Estadísticas básicas

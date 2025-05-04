@@ -10,7 +10,7 @@ from subprocess import run
 Este script ejecuta de forma automatizada el flujo completo de actualización de datos, 
 desde la extracción, pasando por la limpieza, hasta la exportación final de un archivo `.parquet`.
 
- Etapas del pipeline:
+ Etapas del 5 pipeline:
 1. Extracción de datos desde múltiples fuentes externas (APIs, webs, etc.)
 2. Limpieza y transformación de los datos extraídos.
 3. Unión de todas las fuentes en un único DataFrame.
@@ -67,16 +67,16 @@ if __name__ == "__main__":
     # -------- ETAPA 1: Extracción de datos --------
     print("\n ETAPA 1: Extracción de datos")
     rutas_extraccion = [
-        get_path("src", "extraccion", "Alternative.py"),
-        get_path("src", "extraccion", "Binance.py"),
-        get_path("src", "extraccion", "Bitget.py"),
-        get_path("src", "extraccion", "CoinGecko.py"),
-        get_path("src", "extraccion", "Google_Trends.py"),
-        get_path("src", "extraccion", "Halving.py"),
-        get_path("src", "extraccion", "Hashrate.py"),
-        get_path("src", "extraccion", "mercadoDerivados_binance.py"),
-        get_path("src", "extraccion", "mercadoDerivados_deribit.py"),
-        get_path("src", "extraccion", "Yahoo_Finance.py")
+        get_path("src", "1 extraccion", "Alternative.py"),
+        get_path("src", "1 extraccion", "Binance.py"),
+        get_path("src", "1 extraccion", "Bitget.py"),
+        get_path("src", "1 extraccion", "CoinGecko.py"),
+        get_path("src", "1 extraccion", "Google_Trends.py"),
+        get_path("src", "1 extraccion", "Halving.py"),
+        get_path("src", "1 extraccion", "Hashrate.py"),
+        get_path("src", "1 extraccion", "mercadoDerivados_binance.py"),
+        get_path("src", "1 extraccion", "mercadoDerivados_deribit.py"),
+        get_path("src", "1 extraccion", "Yahoo_Finance.py")
     ]
     for ruta in rutas_extraccion:
         ejecutar_script(ruta)
@@ -84,25 +84,25 @@ if __name__ == "__main__":
     # -------- ETAPA 2: Limpieza y transformación --------
     print("\n ETAPA 2: Limpieza y transformación")
     rutas_limpieza = [
-        get_path("src", "transformacion", "limpieza_binance.py"),
-        get_path("src", "transformacion", "limpieza_bitget.py"),
-        get_path("src", "transformacion", "limpieza_coingecko.py"),
-        get_path("src", "transformacion", "limpieza_datos_Google_Trends.py"),
-        get_path("src", "transformacion", "limpieza_dxy.py"),
-        get_path("src", "transformacion", "limpieza_fear_and_greed.py"),
-        get_path("src", "transformacion", "limpieza_halving.py"),
-        get_path("src", "transformacion", "limpieza_hashrate.py"),
-        get_path("src", "transformacion", "limpieza_mercadoDerivados_binance.py"),
-        get_path("src", "transformacion", "limpieza_mercDer_derivit.py"),
-        get_path("src", "transformacion", "limpieza_Nasdaq.py"),
-        get_path("src", "transformacion", "limpieza_sp500.py")
+        get_path("src", "2 transformacion", "limpieza_binance.py"),
+        get_path("src", "2 transformacion", "limpieza_bitget.py"),
+        get_path("src", "2 transformacion", "limpieza_coingecko.py"),
+        get_path("src", "2 transformacion", "limpieza_datos_Google_Trends.py"),
+        get_path("src", "2 transformacion", "limpieza_dxy.py"),
+        get_path("src", "2 transformacion", "limpieza_fear_and_greed.py"),
+        get_path("src", "2 transformacion", "limpieza_halving.py"),
+        get_path("src", "2 transformacion", "limpieza_hashrate.py"),
+        get_path("src", "2 transformacion", "limpieza_mercadoDerivados_binance.py"),
+        get_path("src", "2 transformacion", "limpieza_mercDer_derivit.py"),
+        get_path("src", "2 transformacion", "limpieza_Nasdaq.py"),
+        get_path("src", "2 transformacion", "limpieza_sp500.py")
     ]
     for ruta in rutas_limpieza:
         ejecutar_script(ruta)
 
     # -------- ETAPA 3: Merge final y exportación --------
     print("\n ETAPA 3: Unión y exportación")
-    ejecutar_script(get_path("src", "transformacion", "merge_nuevos_datos.py"))
+    ejecutar_script(get_path("src", "2 transformacion", "merge_nuevos_datos.py"))
 
     # -------- ETAPA 4: Generación de datasets de modelado --------
     print("\n ETAPA 4: Generación de datasets 7d y 30d")
@@ -131,6 +131,6 @@ if __name__ == "__main__":
             print(f" No se encontró el archivo Parquet '{nombre_archivo}', no se creó backup.")
 
     # -------- ETAPA 6: Guardado del nuevo parquet -------
-    ejecutar_script(get_path("src", "pipeline", "creacion_nuevos_datos.py"))
+    ejecutar_script(get_path("src", "5 pipeline", "creacion_nuevos_datos.py"))
 
     print("\n Pipeline de actualización completado.")

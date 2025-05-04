@@ -11,7 +11,7 @@
     variación diaria, rango diario y el RSI a partir de la función calculada. Estos indicadores permiten
     estudiar el comportamiento del DXY y su posible relación con el precio del Bitcoin.
 
-    El resultado final se guarda como un CSV para su posterior uso en modelos de análisis o predicción.
+    El resultado final se guarda como un CSV para su posterior uso en 4 modelos de análisis o predicción.
 
     """
 
@@ -22,9 +22,9 @@ from utils.paths import get_path
 
 if __name__ == "__main__":
 
-    dxy = pd.read_csv(get_path('data', 'extraccion', 'datos_dxy.csv'))
+    dxy = pd.read_csv(get_path('data', '1 extraccion', 'datos_dxy.csv'))
 
-    # Hacemos un analisis inicial de como se comporta el df
+    # Hacemos un 3 analisis inicial de como se comporta el df
     print(dxy.head())
     print(dxy.info())
     print(dxy.describe())  # Observamos que el volumen es 0

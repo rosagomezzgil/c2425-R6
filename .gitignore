@@ -15,7 +15,7 @@ build/
 *.egg-info/
 src/c2425_r6.egg-info/
 
-# MLflow: directorio de logs y modelos
+# MLflow: directorio de logs y 4 modelos
 **/mlruns/
 
 # Datos generados o procesados

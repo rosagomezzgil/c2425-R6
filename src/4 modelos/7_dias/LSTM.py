@@ -2,14 +2,14 @@
 Módulo: LSTM.py
 
 Descripción:
-Este script implementa un flujo completo de experimentación con modelos LSTM
-(Long Short-Term Memory) para series temporales. El código entrena múltiples modelos con distintas ventanas temporales
+Este script implementa un flujo completo de experimentación con 4 modelos LSTM
+(Long Short-Term Memory) para series temporales. El código entrena múltiples 4 modelos con distintas ventanas temporales
 y realiza la selección automática del mejor modelo basándose en el error cuadrático medio (MSE).
 Incluye visualizaciones de predicción y análisis de atención.
 
 Características principales:
 - Preparación automática de datos (carga, preprocesamiento, selección de variables, ventanas temporales).
-- Entrenamiento y evaluación de modelos LSTM usando una interfaz estilo `sklearn`.
+- Entrenamiento y evaluación de 4 modelos LSTM usando una interfaz estilo `sklearn`.
 - Ajuste de hiperparámetros vía búsqueda aleatoria (`RandomizedSearchCV`).
 - Registro de experimentos y resultados usando MLflow.
 - Visualización de predicciones y de los pesos de atención.
@@ -154,7 +154,7 @@ def visualizar_atencion(model, X_test, fechas_test, window_size, show=True):
 
 
 def main():
-    """Función principal para la experimentación con modelos LSTM"""
+    """Función principal para la experimentación con 4 modelos LSTM"""
     setup_mlflow("LSTM-PyTorch")
 
     # Configuración de la experimentación

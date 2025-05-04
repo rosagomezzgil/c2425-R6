@@ -2,7 +2,7 @@
 Módulo: SARIMA.py
 
 Descripción:
-Este script entrena y evalúa modelos SARIMA (Seasonal ARIMA) sobre series temporales que representan
+Este script entrena y evalúa 4 modelos SARIMA (Seasonal ARIMA) sobre series temporales que representan
 la variación porcentual a 30 días (`pct_cambio_30d`). Se realiza una búsqueda de hiperparámetros tanto
 para el componente no estacional (p, d, q) como para el estacional (P, D, Q, s), considerando patrones
 como estacionalidad semanal o mensual.
@@ -21,12 +21,12 @@ Dependencias:
 - mlflow
 - matplotlib
 - utils personalizados:
-    - utils.modelos_sklearn.* (carga, preprocesamiento, evaluación, gráficos, validación de modelos)
+    - utils.modelos_sklearn.* (carga, preprocesamiento, evaluación, gráficos, validación de 4 modelos)
     - utils.paths (manejo de rutas)
     - utils.mlflow_utils (configuración de experimentos MLflow)
 
 Uso:
-Ejecutar este script para evaluar el comportamiento de modelos SARIMA sobre la serie temporal de
+Ejecutar este script para evaluar el comportamiento de 4 modelos SARIMA sobre la serie temporal de
 interés (`pct_cambio_30d`), ideal para detectar patrones recurrentes en los datos financieros o similares.
 
 """

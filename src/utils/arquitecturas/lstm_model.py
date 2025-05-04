@@ -2,7 +2,7 @@
 Esta clase fue creada para envolver un modelo LSTM de PyTorch y hacerlo compatible con el ecosistema de scikit-learn.
 Esto permite integrar el modelo fácilmente en flujos de trabajo que utilizan herramientas como `GridSearchCV`, `Pipeline`
 y funciones de evaluación que esperan métodos estándar como `fit()`, `predict()`, `get_params()` y `set_params()`.
-Además, facilita la experimentación y reproducción de modelos al permitir ajustar hiperparámetros y reconstruir
+Además, facilita la experimentación y reproducción de 4 modelos al permitir ajustar hiperparámetros y reconstruir
 el modelo de forma automática, manteniendo la flexibilidad y el control que ofrece PyTorch.
 """
 

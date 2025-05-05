@@ -21,8 +21,8 @@ if __name__ == "__main__":
     print(df.head())  # Primeras filas
 
     # convertimos la columna timestamp a datetime
-    df["fecha"] = pd.to_datetime(df["fecha"]).dt.date
-    df = df.rename(columns={"fecha": "timestamp"})  # cambio el nombre para que coincida
+    df["Fecha"] = pd.to_datetime(df["Fecha"]).dt.date
+    df = df.rename(columns={"Fecha": "timestamp"})  # cambio el nombre para que coincida
 
     output_path = get_path('data', 'limpieza', 'limpios_halving.csv')
     os.makedirs(os.path.dirname(output_path), exist_ok=True)

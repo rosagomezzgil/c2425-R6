@@ -1,12 +1,11 @@
 # CryptoVision Insights
 ![LOGO](https://img.bitgetimg.com/multiLang/web/ebb606b3d63bb1f7d48e7ccdfbb984c1.png)
 
-# Presentación del Proyecto
-El proyecto consiste en un sistema de **predicción de tendencias de Bitcoin**, que permite analizar los movimientos del mercado y prever posibles fluctuaciones en el precio de la criptomoneda. Para ello, se utilizan datos en tiempo real obtenidos mediante **web scraping** con Selenium y ChromeDriver, junto con modelos de análisis de datos.
+# Descripción de los objetivos.
+El proyecto consiste en un sistema de **predicción de tendencias de Bitcoin**, que permite analizar los movimientos del mercado y prever posibles fluctuaciones en el precio de la criptomoneda. Para ello, se utilizan datos en tiempo real, junto con modelos de análisis de datos.
 
-El objetivo principal es proporcionar una herramienta que ayude a los inversores a tomar decisiones informadas basadas en patrones históricos y tendencias actuales del mercado.
-
-# Estructura del Proyecto
+El objetivo principal es predecir la tendencia de Bitcoin en base a los datos históricos, patrones y a la evolución de la moneda utilizando técnicas de aprendizaje automático
+# Estructura del repositorio
 
 ```
 CryptoVision-Insights/
@@ -88,7 +87,8 @@ CryptoVision-Insights/
 ├── .gitignore                   # Archivos ignorados por Git
 └── README.md                    # Documentación del proyecto (este archivo)
 
-# Indicaciones
+# Instrucciones para iniciar el entorno de desarrollo con sus dependencias.
+
 El proyecto está desarrollado en **Python 3.10**, utilizando Selenium para la automatización de la extracción de datos. Para ejecutar o modificar el código, se recomienda utilizar **Jupyter Notebook** o un entorno de desarrollo como **VS Code** o **PyCharm**.
 La carpeta de datos del [drive](https://drive.google.com/drive/folders/1rx4XvYLFwyn86TofruAenmslBwZ_eMg2?usp=sharing).
 
@@ -103,6 +103,7 @@ Para la correcta ejecución del proyecto, es necesario instalar las siguientes d
    ```bash
    python -m ipykernel install --user --name=c2425-r6 --display-name "Python (c2425-R6)"
    ```
+
 # Reglas del Análisis
 
 ### 1. Obtención de Datos
@@ -117,8 +118,9 @@ Para la correcta ejecución del proyecto, es necesario instalar las siguientes d
 - Se utilizan modelos de machine learning como **ARIMA, LSTM** o **Redes Neuronales** para prever tendencias futuras.
 - Se comparan los resultados de diferentes modelos para optimizar la predicción.
 
+# Resumen de los resultados de los mejores modelos construidos.
 
-# Crédito
+#  Equipo de desarrollo.
 Rodrigo Jesús-Portanet    
 Pablo Alonso    
 Rosa Gómez-Gil    

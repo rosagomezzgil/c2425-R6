@@ -2,17 +2,14 @@ import os
 import joblib
 from xgboost import XGBRegressor
 from sklearn.svm import SVR
-from statsmodels.tsa.arima.model import ARIMA
 from sklearn.preprocessing import StandardScaler
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import TimeSeriesSplit
 import pandas as pd
-from sklearn.feature_selection import SelectKBest, f_regression, mutual_info_regression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+from sklearn.feature_selection import mutual_info_regression
+from sklearn.metrics import r2_score
 import numpy as np
 from utils.modelos_sklearn.A_cargar_datos import cargar_datos_7d, cargar_datos_30d
-from utils.modelos_sklearn.B_preprocesamiento import preprocesar_datos_7d, preprocesar_datos_30d
 from utils.modelos_sklearn.F_metricas import evaluar_modelo_7d, evaluar_modelo_30d
 from utils.paths import get_path
 

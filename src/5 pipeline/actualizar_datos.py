@@ -1,12 +1,4 @@
-import subprocess
-import os
-from datetime import datetime
-import shutil
-from utils.paths import get_path
-import sys
-from subprocess import run
-
-""" 
+"""
 Este script ejecuta de forma automatizada el flujo completo de actualización de datos, 
 desde la extracción, pasando por la limpieza, hasta la exportación final de un archivo `.parquet`.
 
@@ -32,6 +24,15 @@ Ejecutá el siguiente comando en la terminal con el entorno virtual activado:
 
 Este paso solo es necesario una vez por entorno virtual.
 """
+
+import subprocess
+import os
+from datetime import datetime
+import shutil
+from utils.paths import get_path
+import sys
+from subprocess import run
+
 
 def ejecutar_script(ruta):
     python_executable = sys.executable

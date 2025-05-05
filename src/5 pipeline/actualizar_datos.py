@@ -97,6 +97,7 @@ if __name__ == "__main__":
         get_path("src", "2 transformacion", "limpieza_mercadoDerivados_deribit.py"),
         get_path("src", "2 transformacion", "limpieza_nasdaq.py"),
         get_path("src", "2 transformacion", "limpieza_sp500.py")
+
     ]
     for ruta in rutas_limpieza:
         ejecutar_script(ruta)

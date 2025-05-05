@@ -86,7 +86,7 @@ CryptoVision-Insights/
 ├── uv.lock                      # Archivo de bloqueo de versiones con uv
 ├── .gitignore                   # Archivos ignorados por Git
 └── README.md                    # Documentación del proyecto (este archivo)
-
+ ```
 # Instrucciones para iniciar el entorno de desarrollo con sus dependencias.
 
 El proyecto está desarrollado en **Python 3.10**, utilizando Selenium para la automatización de la extracción de datos. Para ejecutar o modificar el código, se recomienda utilizar **Jupyter Notebook** o un entorno de desarrollo como **VS Code** o **PyCharm**.
@@ -102,21 +102,8 @@ Para la correcta ejecución del proyecto, es necesario instalar las siguientes d
    Para el pipeline correctamente asegurando la ejecución de los notebooks ejecutar el siguiente comando en la terminal con el entorno virtual activado
    ```bash
    python -m ipykernel install --user --name=c2425-r6 --display-name "Python (c2425-R6)"
-   ```
-
-# Reglas del Análisis
-
-### 1. Obtención de Datos
-- Se extraen datos de precios de Bitcoin desde plataformas como **CoinMarketCap**, **Binance**, **Bitget** y **Yahoo Finance**.
-- Se almacena la información en formatos como CSV o bases de datos para su posterior análisis.
-
-### 2. Procesamiento de Datos
-- Se filtran y limpian los datos recopilados.
-- Se generan estadísticas descriptivas y se identifican patrones históricos.
-
-### 3. Predicción de Tendencias
-- Se utilizan modelos de machine learning como **ARIMA, LSTM** o **Redes Neuronales** para prever tendencias futuras.
-- Se comparan los resultados de diferentes modelos para optimizar la predicción.
+  
+# Instrucciones para ejecutar los scripts del proyecto.
 
 # Resumen de los resultados de los mejores modelos construidos.
 

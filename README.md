@@ -101,13 +101,17 @@ Para la correcta ejecución del proyecto, es necesario instalar las siguientes d
    ```bash
    python -m ipykernel install --user --name=c2425-r6 --display-name "Python (c2425-R6)"
   
+Se debe ejecutar este código en la terminal para la configuración entorno virtual:
+```bash
+uv sync
+```
 # Instrucciones para ejecutar los scripts del proyecto.
 Para la correcta ejecución de los scrpits del proyecto se ha de seguir el siguiente orden:
-1. **Extracción**:  
+1. **Extracción:**  
    En esta primera parte del proyecto no hay ningún script que tenga que ser ejecutado antes que otro, pero debes ejecutar todos ellos antes de pasar a la siguiente fase.
 
 
-2. **Transformación**:  
+2. **Transformación:**  
    Para esta segunda, se han debido ejecutar todos los scripts de la fase anterior.  
    Y además, dentro de esta fase sí que se deben ejecutar antes todos los scripts de limpieza junto a _sentiment_analysis.py_ antes de ejecutar cualquier otro script.  
 
@@ -116,12 +120,12 @@ Para la correcta ejecución de los scrpits del proyecto se ha de seguir el sigui
    Y no se debe ejecutar en ningún caso _parquet_merged_data.py_; se ejecutará más adelante cuando se indique.
 
 
-3. **Análisis**:  
+3. **Análisis:**  
    Para esta tercera fase, se deben haber ejecutado las dos fases anteriores.  
    Dentro de esta es indiferente el orden de ejecución de los scripts.
 
 
-4. **Modelo**:  
+4. **Modelo:**  
    Para esta cuarta fase, se deben haber ejecutado las tres fases anteriores.  
    Y dentro de esta, se debe seguir el siguiente orden:  
    Primero se debe ejecutar el notebook _eliminacion de variables.ipynb_,  
@@ -131,14 +135,14 @@ Para la correcta ejecución de los scrpits del proyecto se ha de seguir el sigui
    El notebook _estudio de correlaciones.ipynb_ se puede ejecutar en cualquier momento ya que no depende de ningún script.
 
 
-5. **Pipeline**:  
+5. **Pipeline:**  
    Para esta quinta fase, se debe haber ejecutado todo lo mencionado anteriormente.  
    Además, dentro de esta primero se debe ejecutar el script _actualizar_datos.py_  
    y después se podría ejecutar _reentrenamiento.py_  
    (aunque simplemente con ejecutar _actualizar_datos.py_ ya ejecutará todos los scripts de la fase 5 y 6 en el orden óptimo).
 
 
-6. **Nuevos datos**:  
+6. **Nuevos datos:**  
    Para esta última fase se debe haber ejecutado todo lo dicho anteriormente.  
    Y dentro de esta se ha de seguir el siguiente orden:  
    primero se debe ejecutar el _merge_nuevos_datos.py_,  

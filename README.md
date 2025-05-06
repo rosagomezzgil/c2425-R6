@@ -109,7 +109,7 @@ uv sync
 Para la correcta ejecución de los scrpits del proyecto se ha de seguir el siguiente orden:
 1. **Extracción:**  
    En esta primera parte del proyecto no hay ningún script que tenga que ser ejecutado antes que otro, pero debes ejecutar todos ellos antes de pasar a la siguiente fase.
-
+   Los ficheros de Google Trends, Twitter y Yahoo Finance pueden dar error de Too Many Requests si se ejecutan más de un número de veces en el mismo día.
 
 2. **Transformación:**  
    Para esta segunda, se han debido ejecutar todos los scripts de la fase anterior.  
@@ -125,7 +125,7 @@ Para la correcta ejecución de los scrpits del proyecto se ha de seguir el sigui
    Dentro de esta es indiferente el orden de ejecución de los scripts.
 
 
-4. **Modelo:**  
+4. **Modelos:**  
    Para esta cuarta fase, se deben haber ejecutado las tres fases anteriores.  
    Y dentro de esta, se debe seguir el siguiente orden:  
    Primero se debe ejecutar el notebook _eliminacion de variables.ipynb_,  
@@ -137,10 +137,10 @@ Para la correcta ejecución de los scrpits del proyecto se ha de seguir el sigui
 
 5. **Pipeline:**  
    Para esta quinta fase, se debe haber ejecutado todo lo mencionado anteriormente.  
-   Además, dentro de esta primero se debe ejecutar el script _actualizar_datos.py_  
-   y después se podría ejecutar _reentrenamiento.py_  
+   Además, dentro de esta primero se debe ejecutar el script _actualizar_datos.py_  , si da error la compilación inicial, es por la función ejecutar_scripts que hay implementada en el script. Para arreglarlo, ejecutar en consola el siguiente comando: python -m ipykernel install --user --name=c2425-r6 --display-name "Python (c2425-R6)" (explicado en el comentario inicial del script).
+   Después se podría ejecutar _reentrenamiento.py_  
    (aunque simplemente con ejecutar _actualizar_datos.py_ ya ejecutará todos los scripts de la fase 5 y 6 en el orden óptimo).
-
+   
 
 6. **Nuevos datos:**  
    Para esta última fase se debe haber ejecutado todo lo dicho anteriormente.  

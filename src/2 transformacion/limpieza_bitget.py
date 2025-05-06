@@ -1,23 +1,23 @@
 """
-    Este script se encarga de limpiar y transformar los datos de Bitcoin obtenidos a través
-    de scraping desde la plataforma Bitget. Primero convierte los formatos de fecha y
-    valores monetarios (incluyendo volúmenes expresados en billones) a tipos numéricos.
+Este script se encarga de limpiar y transformar los datos de Bitcoin obtenidos a través
+de scraping desde la plataforma Bitget. Primero convierte los formatos de fecha y
+valores monetarios (incluyendo volúmenes expresados en billones) a tipos numéricos.
 
-    También se renombran columnas para mantener consistencia con otros datasets.
+También se renombran columnas para mantener consistencia con otros datasets.
 
-    Además, se calculan nuevas métricas como variación diaria, volatilidad,
-    momentum, medias móviles (SMA y EMA) y el RSI utilizando la función
-    ya definida, preparando los datos para su uso en 4 modelos de predicción.
+Además, se calculan nuevas métricas como variación diaria, volatilidad,
+momentum, medias móviles (SMA y EMA) y el RSI utilizando la función
+ya definida, preparando los datos para su uso en 4 modelos de predicción.
 
-    Finalmente, el dataset limpio se guarda en un nuevo archivo CSV.
+Finalmente, el dataset limpio se guarda en un nuevo archivo CSV.
 
-    """
-
+"""
 
 from creacion_variables import crear_variables
 from utils.paths import get_path
 import pandas as pd
 import os
+
 
 def convertir_euros(valor):
     """
@@ -42,7 +42,7 @@ def convertir_volumen(vol):
 
 
 if __name__ == "__main__":
-    df = pd.read_csv(get_path('data', 'extraccion', 'bitget_scrapping.csv'))
+    df = pd.read_csv(get_path("data", "extraccion", "bitget_scrapping.csv"))
 
     # Mostrar las primeras filas del DataFrame
     print("Primeras filas del archivo CSV:")
@@ -93,6 +93,6 @@ if __name__ == "__main__":
 
     df = crear_variables(df)
 
-    output_path = get_path('data', 'limpieza', 'limpios_bitget_scrapping.csv')
+    output_path = get_path("data", "limpieza", "limpios_bitget_scrapping.csv")
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_csv(output_path, index=False)

@@ -2,7 +2,8 @@ from sklearn.preprocessing import StandardScaler
 from statsmodels.tsa.stattools import adfuller
 import pandas as pd
 
-def preprocesar_datos_7d(df, tecnica, target_col, scaler = None):
+
+def preprocesar_datos_7d(df, tecnica, target_col, scaler=None):
     """
     Preprocesa los datos:
     - Separa X e y
@@ -30,6 +31,7 @@ def preprocesar_datos_7d(df, tecnica, target_col, scaler = None):
         else:
             X = scaler.transform(X)  # Predicción
     return X, y, scaler
+
 
 def preprocesar_datos_30d(df: pd.DataFrame, target_col: str):
     df = df.dropna()

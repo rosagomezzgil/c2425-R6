@@ -2,6 +2,7 @@ from pathlib import Path
 import mlflow
 from utils.paths import get_path
 
+
 def setup_mlflow(experiment_name: str):
     """
     Configura MLflow con una URI de tracking local válida en Windows y establece el experimento.

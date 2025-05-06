@@ -1,15 +1,14 @@
 """
-    Este script procesa el dataset de hashrate de la red Bitcoin.
-    Convierte la columna de fechas a formato datetime y crea un rango completo de fechas diarias.
+Este script procesa el dataset de hashrate de la red Bitcoin.
+Convierte la columna de fechas a formato datetime y crea un rango completo de fechas diarias.
 
-    Luego interpola los valores faltantes en el hashrate de forma lineal, estimando los días sin datos.
-    Más tarde, se calculan medias móviles simples (SMA) y exponenciales (EMA) para ventanas de 50 y 200 días,
-    útiles para análisis de tendencias.
+Luego interpola los valores faltantes en el hashrate de forma lineal, estimando los días sin datos.
+Más tarde, se calculan medias móviles simples (SMA) y exponenciales (EMA) para ventanas de 50 y 200 días,
+útiles para análisis de tendencias.
 
-    Finalmente, se guarda el conjunto de datos limpio y enriquecido para su uso posterior en análisis y modelado.
+Finalmente, se guarda el conjunto de datos limpio y enriquecido para su uso posterior en análisis y modelado.
 
-    """
-
+"""
 
 from utils.paths import get_path
 import pandas as pd
@@ -17,7 +16,7 @@ import os
 
 if __name__ == "__main__":
     # Cargar datos desde un CSV (ajusta la ruta a tu archivo)
-    df = pd.read_csv(get_path('data', 'extraccion', 'datos_hashrate.csv'))
+    df = pd.read_csv(get_path("data", "extraccion", "datos_hashrate.csv"))
 
     # Ver las primeras filas
     print(df.head())
@@ -69,6 +68,6 @@ if __name__ == "__main__":
     # Ver si hay valores nulos
     print(df_merged.isnull().sum())
 
-    output_path = get_path('data', 'limpieza', 'limpios_hashrate.csv')
+    output_path = get_path("data", "limpieza", "limpios_hashrate.csv")
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df_merged.to_csv(output_path, index=False)

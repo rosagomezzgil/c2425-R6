@@ -3,6 +3,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.dates as mdates
 
+
 def plot_predictions(y_real, pred=None, modelo=None, X=None, fechas=None, show=True):
     """
     Grafica predicciones junto con los valores reales, usando fechas opcionalmente.
@@ -19,7 +20,9 @@ def plot_predictions(y_real, pred=None, modelo=None, X=None, fechas=None, show=T
         if fechas is not None:
             y_real = pd.Series(y_real.squeeze(), index=pd.to_datetime(fechas))
         else:
-            raise ValueError("Para arrays de y_real, se requiere el argumento 'fechas'.")
+            raise ValueError(
+                "Para arrays de y_real, se requiere el argumento 'fechas'."
+            )
 
     y_pred = pred if pred is not None else modelo.predict(X)
     if isinstance(y_pred, np.ndarray):

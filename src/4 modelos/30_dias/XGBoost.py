@@ -49,6 +49,7 @@ from utils.modelos_sklearn.G_graficar_predicciones import plot_predictions
 from utils.mlflow_utils import setup_mlflow
 from utils.paths import get_path
 
+
 def validar_modelo_xgboost(X, y, param_grid, n_splits=3):
     tscv = TimeSeriesSplit(n_splits=n_splits)
     best_mse = np.inf
@@ -77,24 +78,28 @@ def validar_modelo_xgboost(X, y, param_grid, n_splits=3):
     print(f"Mejores hiperparámetros encontrados: {best_params}")
     return best_model, best_params
 
+
 def main():
     mlflow.set_tracking_uri("mlruns")
     experiment_name = "XGBoost"
     setup_mlflow(experiment_name)
 
-    with mlflow.start_run(run_name=f"xgboost_{datetime.now().strftime('%Y%m%d_%H%M%S')}"):
+    with mlflow.start_run(
+        run_name=f"xgboost_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    ):
         # 1. Cargar y preprocesar datos
-        df = cargar_datos_30d(get_path('data', 'parquet', 'data_30d.parquet'))
+        df = cargar_datos_30d(get_path("data", "parquet", "data_30d.parquet"))
         target_col = "pct_cambio_30d"
         df = preprocesar_datos_30d(df, target_col)
 
         # 2. División en train/test (multivariado=True para XGBoost)
-        train_df, test_df = dividir_datos_temporalmente_30d(df, target_col, multivariado=True)
+        train_df, test_df = dividir_datos_temporalmente_30d(
+            df, target_col, multivariado=True
+        )
         X_train = train_df.drop(columns=[target_col])
         y_train = train_df[target_col]
         X_test = test_df.drop(columns=[target_col])
         y_test = test_df[target_col]
-
 
         # 3. Definir búsqueda de hiperparámetros
         param_grid = {
@@ -104,11 +109,13 @@ def main():
             "subsample": [0.8, 1.0],
             "colsample_bytree": [0.8, 1.0],
             "reg_alpha": [0, 0.1, 1, 10],  # Regularización L1 (Lasso)
-            "reg_lambda": [1, 5, 10, 100]  # Regularización L2 (Ridge)
+            "reg_lambda": [1, 5, 10, 100],  # Regularización L2 (Ridge)
         }
 
         # 4. Validación y entrenamiento
-        best_model, best_params = validar_modelo_xgboost(X_train, y_train, param_grid, n_splits=3)
+        best_model, best_params = validar_modelo_xgboost(
+            X_train, y_train, param_grid, n_splits=3
+        )
 
         # 5. Predicción y evaluación
         y_pred = best_model.predict(X_test)
@@ -116,13 +123,7 @@ def main():
 
         # 6. Registro en MLflow
         mlflow.log_params({"order": best_params})
-        mlflow.log_metrics({
-            "mse": mse,
-            "mae": mae,
-            "rmse": rmse,
-            "r2": r2,
-            "acc": acc
-        })
+        mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2, "acc": acc})
 
         fig = plot_predictions(y_test, pred=y_pred)
         mlflow.log_figure(fig, "prediction_plot.png")

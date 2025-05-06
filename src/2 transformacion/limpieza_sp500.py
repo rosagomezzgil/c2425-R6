@@ -1,24 +1,23 @@
 """
-    Para este script es necesario DESCARGAR EL CSV DEL DRIVE SI LA EXTRACCION DA ERROR
+Para este script es necesario DESCARGAR EL CSV DEL DRIVE SI LA EXTRACCION DA ERROR
 
-    Este script procesa los datos históricos del índice S&P 500 obtenidos de un archivo CSV.
+Este script procesa los datos históricos del índice S&P 500 obtenidos de un archivo CSV.
 
-    Realiza las siguientes operaciones sobre los datos:
-    - Convierte la columna 'timestamp' a formato de fecha y ordena los datos cronológicamente.
-    - Crea un rango de fechas completo con frecuencia diaria e inserta fechas faltantes en el dataset.
-    - Interpola los valores faltantes en todas las columnas numéricas, excepto 'timestamp', utilizando interpolación lineal.
-    - Calcula métricas de análisis técnico, tales como:
-       - Medias Móviles (SMA, EMA) de 50 y 200 días.
-       - Volatilidad (desviación estándar) de 50 y 200 días.
-       - Momentum (diferencia entre precios actuales y de hace 50/200 días).
-       - Variación diaria en porcentaje.
-       - Rango diario (diferencia entre el precio más alto y el más bajo).
-       - Índice de Fuerza Relativa (RSI) basado en el precio de cierre.
-    - Guarda el DataFrame procesado con las métricas calculadas en un archivo CSV de salida.
+Realiza las siguientes operaciones sobre los datos:
+- Convierte la columna 'timestamp' a formato de fecha y ordena los datos cronológicamente.
+- Crea un rango de fechas completo con frecuencia diaria e inserta fechas faltantes en el dataset.
+- Interpola los valores faltantes en todas las columnas numéricas, excepto 'timestamp', utilizando interpolación lineal.
+- Calcula métricas de análisis técnico, tales como:
+   - Medias Móviles (SMA, EMA) de 50 y 200 días.
+   - Volatilidad (desviación estándar) de 50 y 200 días.
+   - Momentum (diferencia entre precios actuales y de hace 50/200 días).
+   - Variación diaria en porcentaje.
+   - Rango diario (diferencia entre el precio más alto y el más bajo).
+   - Índice de Fuerza Relativa (RSI) basado en el precio de cierre.
+- Guarda el DataFrame procesado con las métricas calculadas en un archivo CSV de salida.
 
 
-    """
-
+"""
 
 from creacion_variables import crear_variables
 from utils.paths import get_path
@@ -27,7 +26,7 @@ import os
 
 if __name__ == "__main__":
     # Cargar datos desde CSV
-    sp500 = pd.read_csv(get_path('data', 'extraccion', 'datos_sp500.csv'))
+    sp500 = pd.read_csv(get_path("data", "extraccion", "datos_sp500.csv"))
 
     # Ver si hay valores nulos
     print(sp500.isnull().sum())  # No tiene valores nulos
@@ -63,7 +62,7 @@ if __name__ == "__main__":
     sp500 = crear_variables(sp500)
 
     # Guardar el conjunto de datos procesados
-    output_path = get_path('data', 'limpieza', 'limpios_sp500.csv')
+    output_path = get_path("data", "limpieza", "limpios_sp500.csv")
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     sp500.to_csv(output_path, index=False)
 

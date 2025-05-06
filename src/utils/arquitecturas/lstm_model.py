@@ -16,8 +16,15 @@ import matplotlib.pyplot as plt
 
 
 class LSTMModel(nn.Module):
-    def __init__(self, input_size: int, hidden_size: int, num_layers: int = 1,
-                 dropout: float = 0.0, bidirectional: bool = False, attention: bool = True):
+    def __init__(
+        self,
+        input_size: int,
+        hidden_size: int,
+        num_layers: int = 1,
+        dropout: float = 0.0,
+        bidirectional: bool = False,
+        attention: bool = True,
+    ):
         """
         Modelo LSTM con opción de atención
 
@@ -46,7 +53,7 @@ class LSTMModel(nn.Module):
             num_layers=num_layers,
             batch_first=True,
             dropout=dropout if num_layers > 1 else 0,
-            bidirectional=bidirectional
+            bidirectional=bidirectional,
         )
 
         # Capa de atención (si está activada)
@@ -69,17 +76,25 @@ class LSTMModel(nn.Module):
 
         if self.use_attention:
             # Calcular pesos de atención
-            attn_weights = torch.softmax(self.attn_fc(lstm_out).squeeze(-1), dim=1)  # [batch, seq_len]
+            attn_weights = torch.softmax(
+                self.attn_fc(lstm_out).squeeze(-1), dim=1
+            )  # [batch, seq_len]
 
             # Aplicar atención al output de LSTM
-            context = torch.sum(lstm_out * attn_weights.unsqueeze(-1), dim=1)  # [batch, hidden_size * directions]
+            context = torch.sum(
+                lstm_out * attn_weights.unsqueeze(-1), dim=1
+            )  # [batch, hidden_size * directions]
             output = self.fc(context)
         else:
             # Sin atención, usar el último estado oculto
             if self.bidirectional:
                 # Concatenar las direcciones del último estado oculto
-                last_hidden = hn.view(self.num_layers, self.directions, x.size(0), self.hidden_size)
-                last_hidden = last_hidden[-1].transpose(0, 1).contiguous().view(x.size(0), -1)
+                last_hidden = hn.view(
+                    self.num_layers, self.directions, x.size(0), self.hidden_size
+                )
+                last_hidden = (
+                    last_hidden[-1].transpose(0, 1).contiguous().view(x.size(0), -1)
+                )
                 output = self.fc(last_hidden)
             else:
                 # Usar directamente el último estado oculto
@@ -109,11 +124,21 @@ class LSTMModel(nn.Module):
 
 
 class SklearnLikeLSTM(BaseEstimator, RegressorMixin):
-    def __init__(self, input_shape: Optional[Tuple] = None, hidden_size: int = 50,
-                 num_layers: int = 1, dropout: float = 0.0, bidirectional: bool = False,
-                 attention: bool = True, epochs: int = 10, batch_size: int = 32,
-                 lr: float = 0.001, weight_decay: float = 0,
-                 early_stopping_patience: int = None, device: Optional[str] = None):
+    def __init__(
+        self,
+        input_shape: Optional[Tuple] = None,
+        hidden_size: int = 50,
+        num_layers: int = 1,
+        dropout: float = 0.0,
+        bidirectional: bool = False,
+        attention: bool = True,
+        epochs: int = 10,
+        batch_size: int = 32,
+        lr: float = 0.001,
+        weight_decay: float = 0,
+        early_stopping_patience: int = None,
+        device: Optional[str] = None,
+    ):
         """
         Wrapper scikit-learn para modelo LSTM de PyTorch
 
@@ -157,13 +182,19 @@ class SklearnLikeLSTM(BaseEstimator, RegressorMixin):
             num_layers=self.num_layers,
             dropout=self.dropout,
             bidirectional=self.bidirectional,
-            attention=self.attention
+            attention=self.attention,
         )
         return model.to(self.device)
 
-    def fit(self, X: Union[np.ndarray, torch.Tensor], y: Union[np.ndarray, torch.Tensor],
-            validation_data: Optional[Tuple[Union[np.ndarray, torch.Tensor], Union[np.ndarray, torch.Tensor]]] = None,
-            verbose: bool = True) -> 'SklearnLikeLSTM':
+    def fit(
+        self,
+        X: Union[np.ndarray, torch.Tensor],
+        y: Union[np.ndarray, torch.Tensor],
+        validation_data: Optional[
+            Tuple[Union[np.ndarray, torch.Tensor], Union[np.ndarray, torch.Tensor]]
+        ] = None,
+        verbose: bool = True,
+    ) -> "SklearnLikeLSTM":
         """
         Entrena el modelo
 
@@ -200,9 +231,7 @@ class SklearnLikeLSTM(BaseEstimator, RegressorMixin):
         # Definir función de pérdida y optimizador
         criterion = nn.MSELoss()
         optimizer = torch.optim.Adam(
-            self.model.parameters(),
-            lr=self.lr,
-            weight_decay=self.weight_decay
+            self.model.parameters(), lr=self.lr, weight_decay=self.weight_decay
         )
 
         # Crear dataloader para entrenamiento
@@ -210,7 +239,7 @@ class SklearnLikeLSTM(BaseEstimator, RegressorMixin):
         dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True)
 
         # Variables para early stopping
-        best_val_loss = float('inf')
+        best_val_loss = float("inf")
         patience_counter = 0
 
         # Entrenamiento
@@ -257,12 +286,16 @@ class SklearnLikeLSTM(BaseEstimator, RegressorMixin):
 
                         if patience_counter >= self.early_stopping_patience:
                             if verbose:
-                                print(f"Early stopping en época {epoch + 1}/{self.epochs}")
+                                print(
+                                    f"Early stopping en época {epoch + 1}/{self.epochs}"
+                                )
                             break
 
                 if verbose:
-                    print(f"Época {epoch + 1}/{self.epochs}, Pérdida: {avg_train_loss:.6f}, "
-                          f"Pérdida val: {val_loss:.6f}")
+                    print(
+                        f"Época {epoch + 1}/{self.epochs}, Pérdida: {avg_train_loss:.6f}, "
+                        f"Pérdida val: {val_loss:.6f}"
+                    )
             elif verbose:
                 print(f"Época {epoch + 1}/{self.epochs}, Pérdida: {avg_train_loss:.6f}")
 
@@ -290,7 +323,9 @@ class SklearnLikeLSTM(BaseEstimator, RegressorMixin):
 
         return preds.cpu().numpy().squeeze()
 
-    def get_attention_weights(self, X: Union[np.ndarray, torch.Tensor]) -> Optional[np.ndarray]:
+    def get_attention_weights(
+        self, X: Union[np.ndarray, torch.Tensor]
+    ) -> Optional[np.ndarray]:
         """
         Obtiene los pesos de atención para una entrada dada
 
@@ -339,14 +374,17 @@ class SklearnLikeLSTM(BaseEstimator, RegressorMixin):
         if self.model is None:
             raise ValueError("El modelo no ha sido entrenado. Llama a fit() primero.")
 
-        torch.save({
-            'model_state_dict': self.model.state_dict(),
-            'model_params': self.get_params(),
-            'history': self.history
-        }, path)
+        torch.save(
+            {
+                "model_state_dict": self.model.state_dict(),
+                "model_params": self.get_params(),
+                "history": self.history,
+            },
+            path,
+        )
 
     @classmethod
-    def load_model(cls, path: str, device: Optional[str] = None) -> 'SklearnLikeLSTM':
+    def load_model(cls, path: str, device: Optional[str] = None) -> "SklearnLikeLSTM":
         """
         Carga un modelo desde disco
 
@@ -360,14 +398,14 @@ class SklearnLikeLSTM(BaseEstimator, RegressorMixin):
         checkpoint = torch.load(path, map_location=device or "cpu")
 
         # Crear instancia con los parámetros guardados
-        instance = cls(**checkpoint['model_params'])
+        instance = cls(**checkpoint["model_params"])
 
         # Construir modelo y cargar pesos
         instance.model = instance._build_model()
-        instance.model.load_state_dict(checkpoint['model_state_dict'])
+        instance.model.load_state_dict(checkpoint["model_state_dict"])
 
         # Cargar historial
-        instance.history = checkpoint['history']
+        instance.history = checkpoint["history"]
 
         return instance
 
@@ -388,7 +426,7 @@ class SklearnLikeLSTM(BaseEstimator, RegressorMixin):
             "device": self.device,
         }
 
-    def set_params(self, **params) -> 'SklearnLikeLSTM':
+    def set_params(self, **params) -> "SklearnLikeLSTM":
         """Establece parámetros (para compatibilidad con scikit-learn)"""
         for param, value in params.items():
             setattr(self, param, value)

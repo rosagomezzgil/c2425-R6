@@ -1,18 +1,17 @@
 """
-    Este script procesa el dataset de mercado de derivados de Binance.
-    Para ello se carga del archivo CSV y se hace una eliminación de valores duplicados y valores nulos,
-    así como un renombrado de variables clave para diferenciar métricas específicas del mercado de
-    derivados (prefijo 'mD').
+Este script procesa el dataset de mercado de derivados de Binance.
+Para ello se carga del archivo CSV y se hace una eliminación de valores duplicados y valores nulos,
+así como un renombrado de variables clave para diferenciar métricas específicas del mercado de
+derivados (prefijo 'mD').
 
-    Además, se calculan nuevas métricas como variación diaria, volatilidad, momentum, medias móviles
-    (SMA y EMA) y el RSI utilizando la función ya definida, preparando los datos para su uso en 4 modelos
-    de predicción.
+Además, se calculan nuevas métricas como variación diaria, volatilidad, momentum, medias móviles
+(SMA y EMA) y el RSI utilizando la función ya definida, preparando los datos para su uso en 4 modelos
+de predicción.
 
-    Por úlimo, se extrae el dataset limpio a un nuevo archivo CSV, listo para su integración con datos
-    del mercado spot.
+Por úlimo, se extrae el dataset limpio a un nuevo archivo CSV, listo para su integración con datos
+del mercado spot.
 
-    """
-
+"""
 
 from creacion_variables import crear_variables
 from utils.paths import get_path
@@ -20,7 +19,9 @@ import pandas as pd
 import os
 
 if __name__ == "__main__":
-    df = pd.read_csv(get_path('data', 'extraccion', 'datos_mercadoDerivados_binance.csv'))
+    df = pd.read_csv(
+        get_path("data", "extraccion", "datos_mercadoDerivados_binance.csv")
+    )
 
     # Mostrar las primeras filas del DataFrame
     print("Primeras filas del archivo CSV:")
@@ -56,7 +57,7 @@ if __name__ == "__main__":
 
     df = crear_variables(df)
 
-    output_path = get_path('data', 'limpieza', 'limpios_mercadoDerivados_binance.csv')
+    output_path = get_path("data", "limpieza", "limpios_mercadoDerivados_binance.csv")
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_csv(
         output_path,

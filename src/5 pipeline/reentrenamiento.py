@@ -76,9 +76,10 @@ from utils.paths import get_path
 def seleccionar_variables_mutual_info_k15(X, y, k_vars=15):
     mi = mutual_info_regression(X, y)
     mi_series = pd.Series(mi, index=X.columns)
-    columnas_seleccionadas = mi_series.sort_values(ascending=False).head(k_vars).index.tolist()
+    columnas_seleccionadas = (
+        mi_series.sort_values(ascending=False).head(k_vars).index.tolist()
+    )
     return X[columnas_seleccionadas], columnas_seleccionadas
-
 
 
 def accuracy_direccion(y_true, y_pred):
@@ -103,14 +104,16 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
 
     if tecnica == "svr":
         # Cargar y preparar datos de entrenamiento
-        parquet_file_path_train = get_path('data', 'parquet', 'data_7d.parquet')
+        parquet_file_path_train = get_path("data", "parquet", "data_7d.parquet")
         df_train = cargar_datos_7d(parquet_file_path_train)
         df_train_sin_nan = df_train.dropna(subset=["pct_cambio_7d"])
         y_train = df_train_sin_nan["pct_cambio_7d"]
         X_train = df_train_sin_nan.drop(columns=["pct_cambio_7d"])
 
         # Selección de columnas con mutual_info_regression
-        X_train_sel, columnas_seleccionadas = seleccionar_variables_mutual_info_k15(X_train, y_train, k_vars=15)
+        X_train_sel, columnas_seleccionadas = seleccionar_variables_mutual_info_k15(
+            X_train, y_train, k_vars=15
+        )
         print(f"Columnas de SVR ({len(columnas_seleccionadas)}):")
         print(columnas_seleccionadas)
 
@@ -123,7 +126,7 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
         X_train_scaled = scaler.fit_transform(X_train_sel)
 
         # Entrenar SVR con mejores parámetros
-        best_params_svr = {'kernel': 'linear', 'epsilon': 0.5, 'C': 0.1}
+        best_params_svr = {"kernel": "linear", "epsilon": 0.5, "C": 0.1}
         modelo_svr = SVR(**best_params_svr)
         modelo_svr.fit(X_train_scaled, y_train)
 
@@ -134,7 +137,9 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
         # ------------------------
         # Evaluación en nuevos datos
         # ------------------------
-        parquet_file_path_nuevos = get_path('data', 'parquet nuevos', 'data_7d_nuevos.parquet')
+        parquet_file_path_nuevos = get_path(
+            "data", "parquet nuevos", "data_7d_nuevos.parquet"
+        )
         df_nuevos = cargar_datos_7d(parquet_file_path_nuevos)
         df_nuevos_sin_nan = df_nuevos.dropna(subset=["pct_cambio_7d"])
         y_nuevos = df_nuevos_sin_nan["pct_cambio_7d"]
@@ -193,7 +198,7 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
         print(f"\n--- Entrenando, evaluando y reentrenando modelo XGBoost ---")
 
         # Cargar y preparar datos de entrenamiento
-        parquet_file_path_train = get_path('data', 'parquet', 'data_30d.parquet')
+        parquet_file_path_train = get_path("data", "parquet", "data_30d.parquet")
         df_train = cargar_datos_30d(parquet_file_path_train)
         df_train_sin_nan = df_train.dropna(subset=["pct_cambio_30d"])
 
@@ -206,13 +211,13 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
 
         # Hiperparámetros más conservadores para evitar overfitting
         best_params_xgb = {
-            'colsample_bytree': 0.8,
-            'learning_rate': 0.05,
-            'max_depth': 2,
-            'n_estimators': 100,
-            'reg_alpha': 1,
-            'reg_lambda': 5,
-            'subsample': 0.8
+            "colsample_bytree": 0.8,
+            "learning_rate": 0.05,
+            "max_depth": 2,
+            "n_estimators": 100,
+            "reg_alpha": 1,
+            "reg_lambda": 5,
+            "subsample": 0.8,
         }
 
         # -----------------------------
@@ -249,7 +254,9 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
         evaluar_modelo_7d(modelo_xgb, X_train_scaled, y_train)
 
         # Evaluación en nuevos datos
-        parquet_file_path_nuevos = get_path('data', 'parquet nuevos', 'data_30d_nuevos.parquet')
+        parquet_file_path_nuevos = get_path(
+            "data", "parquet nuevos", "data_30d_nuevos.parquet"
+        )
         df_nuevos = cargar_datos_30d(parquet_file_path_nuevos)
         df_nuevos_sin_nan = df_nuevos.dropna(subset=["pct_cambio_30d"])
         y_nuevos = df_nuevos_sin_nan["pct_cambio_30d"]
@@ -288,6 +295,7 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
 
         print("XGBoost (Final):")
         evaluar_modelo_30d(y_final, pred_final_total)
+
 
 if __name__ == "__main__":
     # Entrenar, evaluar y reentrenar SVR

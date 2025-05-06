@@ -16,7 +16,7 @@ import pandas as pd
 import argparse
 import os
 from typing import Optional
-from utils.paths import  get_path
+from utils.paths import get_path
 
 
 def get_bitcoin_hashrate(
@@ -87,7 +87,7 @@ def main():
     args = parser.parse_args()
 
     if args.output_path is None:
-        output_path = get_path('data', 'extraccion', 'datos_hashrate.csv')
+        output_path = get_path("data", "extraccion", "datos_hashrate.csv")
     else:
         output_path = args.output_path
 

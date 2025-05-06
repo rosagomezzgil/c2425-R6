@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def dividir_datos_temporalmente_7d(X, y, test_size=0.1):
     """
     Divide los datos en train+val (para validación cruzada temporal) y test (últimos datos).
@@ -19,7 +20,6 @@ def dividir_datos_temporalmente_7d(X, y, test_size=0.1):
     y_test = y[test_start:]
 
     return X_train_val, y_train_val, X_test, y_test
-
 
 
 def dividir_datos_temporalmente_30d(df, target_col, test_ratio=0.2, multivariado=False):

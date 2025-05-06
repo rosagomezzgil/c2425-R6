@@ -32,6 +32,7 @@ características seleccionadas y configuraciones de hiperparámetros, y registra
 proceso con MLflow para su posterior análisis.
 
 """
+
 from utils.modelos_sklearn.A_cargar_datos import cargar_datos_7d
 from utils.modelos_sklearn.D_division_temporal import dividir_datos_temporalmente_7d
 from utils.modelos_sklearn.E_ajuste_hiperparametros import ajustar_modelo
@@ -47,17 +48,20 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVR
 from datetime import datetime
 
+
 def main():
     setup_mlflow("Modelo SVR")
 
     # Cargar y preparar datos
-    df = cargar_datos_7d(get_path('data', 'parquet', 'data_7d.parquet'))
+    df = cargar_datos_7d(get_path("data", "parquet", "data_7d.parquet"))
     df.dropna(inplace=True)
     y = df["pct_cambio_7d"]
     X_original = df.drop(columns=["pct_cambio_7d"])
 
     # Dividir en train/val y test
-    X_train_val, y_train_val, X_test, y_test = dividir_datos_temporalmente_7d(X_original, y)
+    X_train_val, y_train_val, X_test, y_test = dividir_datos_temporalmente_7d(
+        X_original, y
+    )
 
     # Escalado solo sobre los datos de entrenamiento
     scaler = StandardScaler()
@@ -65,30 +69,38 @@ def main():
     X_test_scaled = scaler.transform(X_test)
 
     # Convertir los datos escalados de vuelta a un DataFrame de pandas con las mismas columnas
-    X_train_val_scaled = pd.DataFrame(X_train_val_scaled, columns=X_train_val.columns, index=X_train_val.index)
-    X_test_scaled = pd.DataFrame(X_test_scaled, columns=X_test.columns, index=X_test.index)
+    X_train_val_scaled = pd.DataFrame(
+        X_train_val_scaled, columns=X_train_val.columns, index=X_train_val.index
+    )
+    X_test_scaled = pd.DataFrame(
+        X_test_scaled, columns=X_test.columns, index=X_test.index
+    )
 
     # Parámetros para explorar
     k_vars_a_probar = [5, 10, min(15, X_original.shape[1])]
     c_values_a_probar = [0.01, 0.1, 1, 10]
     epsilon_values_a_probar = [0.1, 0.2, 0.5]
-    kernels_a_probar = ['rbf', 'linear']
+    kernels_a_probar = ["rbf", "linear"]
 
     for k_vars in k_vars_a_probar:
         # Selección de variables SOLO en train
-        conjuntos_X_train = seleccionar_variables(X_train_val_scaled, y_train_val, tecnica="svr", k_vars=k_vars)
+        conjuntos_X_train = seleccionar_variables(
+            X_train_val_scaled, y_train_val, tecnica="svr", k_vars=k_vars
+        )
 
         for nombre_conjunto, X_train_sel in conjuntos_X_train.items():
-            print(f"\nEntrenando y evaluando con el conjunto de variables: {nombre_conjunto} (k={k_vars})")
+            print(
+                f"\nEntrenando y evaluando con el conjunto de variables: {nombre_conjunto} (k={k_vars})"
+            )
 
             # Aplicar misma selección al test
             X_test_sel = X_test_scaled[X_train_sel.columns]
 
             svr_model = SVR()
             param_grid_svr = {
-                'C': c_values_a_probar,
-                'epsilon': epsilon_values_a_probar,
-                'kernel': kernels_a_probar
+                "C": c_values_a_probar,
+                "epsilon": epsilon_values_a_probar,
+                "kernel": kernels_a_probar,
             }
 
             hora_actual = datetime.now().strftime("%H-%M-%S")
@@ -96,21 +108,37 @@ def main():
 
                 # Ajuste de hiperparámetros
                 best_model_svr, best_params_svr = ajustar_modelo(
-                    svr_model, X_train_sel, y_train_val,
-                    param_grid_svr, strategy="random", scoring="r2", n_iter=50
+                    svr_model,
+                    X_train_sel,
+                    y_train_val,
+                    param_grid_svr,
+                    strategy="random",
+                    scoring="r2",
+                    n_iter=50,
                 )
 
                 # Evaluación en test
-                mse_svr, mae_svr, rmse_svr, r2_svr, acc_svr = evaluar_modelo_7d(best_model_svr, X_test_sel, y_test)
+                mse_svr, mae_svr, rmse_svr, r2_svr, acc_svr = evaluar_modelo_7d(
+                    best_model_svr, X_test_sel, y_test
+                )
                 fig_svr = plot_predictions(y_test, modelo=best_model_svr, X=X_test_sel)
 
                 # Log
                 mlflow.log_params(best_params_svr)
-                mlflow.log_metrics({
-                    "mse": mse_svr, "mae": mae_svr, "rmse": rmse_svr,
-                    "r2": r2_svr, "acc": acc_svr, "k_vars": k_vars
-                })
-                mlflow.log_figure(fig_svr, f"prediction_plot_{nombre_conjunto}_k{k_vars}.png")
+                mlflow.log_metrics(
+                    {
+                        "mse": mse_svr,
+                        "mae": mae_svr,
+                        "rmse": rmse_svr,
+                        "r2": r2_svr,
+                        "acc": acc_svr,
+                        "k_vars": k_vars,
+                    }
+                )
+                mlflow.log_figure(
+                    fig_svr, f"prediction_plot_{nombre_conjunto}_k{k_vars}.png"
+                )
+
 
 if __name__ == "__main__":
     main()

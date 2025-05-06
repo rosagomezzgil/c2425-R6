@@ -1,5 +1,5 @@
 """
-Este script ejecuta de forma automatizada el flujo completo de actualización de datos, 
+Este script ejecuta de forma automatizada el flujo completo de actualización de datos,
 desde la extracción, pasando por la limpieza, hasta la exportación final de un archivo `.parquet`.
 
  Etapas del 5 pipeline:
@@ -11,7 +11,7 @@ desde la extracción, pasando por la limpieza, hasta la exportación final de un
 6. Guardado del nuevo archivo Parquet actualizado.
 
 IMPORTANTE: Antes de ejecutar este script en un entorno nuevo o después de clonar el proyecto,
-asegurate de registrar el entorno virtual actual como un kernel de Jupyter. Esto es necesario 
+asegurate de registrar el entorno virtual actual como un kernel de Jupyter. Esto es necesario
 para que los notebooks se puedan ejecutar correctamente desde este script.
 
 Ejecutá el siguiente comando en la terminal con el entorno virtual activado:
@@ -44,19 +44,26 @@ def ejecutar_script(ruta):
     else:
         print(f" Completado: {ruta}")
 
+
 def ejecutar_notebook(ruta):
     python_executable = sys.executable
     cwd = get_path("src")
     print(f"\n Ejecutando notebook: {ruta}")
 
-    resultado = run([
-        python_executable, "-m", "nbconvert",
-        "--to", "notebook",
-        "--execute",
-        "--inplace",
-        f"--ExecutePreprocessor.kernel_name=c2425-r6",
-        ruta
-    ], cwd=cwd)
+    resultado = run(
+        [
+            python_executable,
+            "-m",
+            "nbconvert",
+            "--to",
+            "notebook",
+            "--execute",
+            "--inplace",
+            f"--ExecutePreprocessor.kernel_name=c2425-r6",
+            ruta,
+        ],
+        cwd=cwd,
+    )
 
     if resultado.returncode != 0:
         print(f" Error al ejecutar el notebook {ruta}")
@@ -77,7 +84,7 @@ if __name__ == "__main__":
         get_path("src", "1 extraccion", "hashrate.py"),
         get_path("src", "1 extraccion", "mercadoDerivados_binance.py"),
         get_path("src", "1 extraccion", "mercadoDerivados_deribit.py"),
-        get_path("src", "1 extraccion", "yahoo_finance.py")
+        get_path("src", "1 extraccion", "yahoo_finance.py"),
     ]
     for ruta in rutas_extraccion:
         ejecutar_script(ruta)
@@ -96,8 +103,7 @@ if __name__ == "__main__":
         get_path("src", "2 transformacion", "limpieza_mercadoDerivados_binance.py"),
         get_path("src", "2 transformacion", "limpieza_mercadoDerivados_deribit.py"),
         get_path("src", "2 transformacion", "limpieza_nasdaq.py"),
-        get_path("src", "2 transformacion", "limpieza_sp500.py")
-
+        get_path("src", "2 transformacion", "limpieza_sp500.py"),
     ]
     for ruta in rutas_limpieza:
         ejecutar_script(ruta)
@@ -108,7 +114,9 @@ if __name__ == "__main__":
 
     # -------- ETAPA 4: Generación de datasets de modelado --------
     print("\n ETAPA 4: Generación de datasets 7d y 30d")
-    ejecutar_notebook(get_path("src", "6 nuevos datos", "eliminacion de variables nuevos datos.ipynb"))
+    ejecutar_notebook(
+        get_path("src", "6 nuevos datos", "eliminacion de variables nuevos datos.ipynb")
+    )
 
     # -------- ETAPA 5: BACKUP antes de guardar parquet final --------
     archivos_a_respaldar = {
@@ -130,7 +138,9 @@ if __name__ == "__main__":
             shutil.copy2(parquet_path, ruta_backup)
             print(f" Backup creado para '{nombre_logico}': {ruta_backup}")
         else:
-            print(f" No se encontró el archivo Parquet '{nombre_archivo}', no se creó backup.")
+            print(
+                f" No se encontró el archivo Parquet '{nombre_archivo}', no se creó backup."
+            )
 
     # -------- ETAPA 6: Guardado del nuevo parquet -------
     ejecutar_script(get_path("src", "6 nuevos datos", "creacion_nuevos_datos.py"))

@@ -1,14 +1,14 @@
 """
-    Este script realiza una limpieza de los datos históricos de Bitcoin
-    obtenidos desde Binance. Comienza cargando el dataset, transformando el timestamp a
-    formato de fecha, y calculando nuevas métricas relevantes para el análisis técnico:
-    volumen en dólares, medias móviles simples (SMA) y exponenciales (EMA), variación diaria,
-    volatilidad, rango diario y momentum. También se calcula el RSI utilizando la función
-    definida previamente. Finalmente, los datos procesados se guardan en un nuevo archivo CSV.
-    Además, se genera un gráfico para visualizar las medias móviles junto con el precio de cierre,
-    lo cual ayuda a evaluar visualmente las tendencias del mercado.
+Este script realiza una limpieza de los datos históricos de Bitcoin
+obtenidos desde Binance. Comienza cargando el dataset, transformando el timestamp a
+formato de fecha, y calculando nuevas métricas relevantes para el análisis técnico:
+volumen en dólares, medias móviles simples (SMA) y exponenciales (EMA), variación diaria,
+volatilidad, rango diario y momentum. También se calcula el RSI utilizando la función
+definida previamente. Finalmente, los datos procesados se guardan en un nuevo archivo CSV.
+Además, se genera un gráfico para visualizar las medias móviles junto con el precio de cierre,
+lo cual ayuda a evaluar visualmente las tendencias del mercado.
 
-    """
+"""
 
 import os
 import pandas as pd
@@ -18,7 +18,7 @@ from creacion_variables import crear_variables
 
 if __name__ == "__main__":
     # Cargar datos desde un CSV (ajusta la ruta a tu archivo)
-    df = pd.read_csv(get_path('data', 'extraccion', 'datos_bitcoin_binance.csv'))
+    df = pd.read_csv(get_path("data", "extraccion", "datos_bitcoin_binance.csv"))
 
     # Ver las primeras filas
     print(df.head())
@@ -53,6 +53,6 @@ if __name__ == "__main__":
     plt.legend()
     plt.show()
 
-    output_path = get_path('data', 'limpieza', 'limpios_binance.csv')
+    output_path = get_path("data", "limpieza", "limpios_binance.csv")
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_csv(output_path, index=False)

@@ -12,9 +12,8 @@ from utils.mlflow_utils import setup_mlflow
 import numpy as np
 import mlflow
 
-def baseline_persistencia_numerica(
-    df: pd.DataFrame, target_col: str, horizon: int
-):
+
+def baseline_persistencia_numerica(df: pd.DataFrame, target_col: str, horizon: int):
     """
     Implementa un modelo baseline de persistencia para variables numéricas.
     Predice que el valor de la variable será igual al de `horizon` días atrás.
@@ -34,7 +33,9 @@ def baseline_persistencia_numerica(
 
     df = df.copy()
     df["baseline_pred"] = df[target_col].shift(horizon)
-    df = df.dropna().reset_index(drop=True)  # Elimina valores nulos creados por el shift
+    df = df.dropna().reset_index(
+        drop=True
+    )  # Elimina valores nulos creados por el shift
 
     mae = mean_absolute_error(df[target_col], df["baseline_pred"])
     mse = mean_squared_error(df[target_col], df["baseline_pred"])
@@ -46,7 +47,15 @@ def baseline_persistencia_numerica(
     real_sign = np.sign(df[target_col])
     directional_acc = accuracy_score(real_sign, pred_sign)
 
-    return df[["timestamp", "baseline_pred", f"{target_col}"]], mae, mse, rmse, r2, directional_acc
+    return (
+        df[["timestamp", "baseline_pred", f"{target_col}"]],
+        mae,
+        mse,
+        rmse,
+        r2,
+        directional_acc,
+    )
+
 
 def plot_predictions(df: pd.DataFrame):
     """
@@ -64,7 +73,9 @@ def plot_predictions(df: pd.DataFrame):
     # Crear figura
     fig, ax = plt.subplots(figsize=(12, 6))
     ax.plot(timestamps, y, label="Real", color="blue")
-    ax.plot(timestamps, predictions, label="Predicción", color="red", linestyle="dashed")
+    ax.plot(
+        timestamps, predictions, label="Predicción", color="red", linestyle="dashed"
+    )
 
     # Línea horizontal en y = 0
     ax.axhline(y=0, color="purple", linestyle="--", linewidth=1, label="y = 0")
@@ -91,13 +102,15 @@ if __name__ == "__main__":
     setup_mlflow("Baseline")
 
     # Datos para 7 días
-    df = pd.read_parquet(get_path('data', 'parquet', 'data_7d.parquet'))
+    df = pd.read_parquet(get_path("data", "parquet", "data_7d.parquet"))
 
     print("BASELINE PARA 7 DIAS:")
 
     # Numérica
     with mlflow.start_run(run_name=f"Baseline 7d regresion"):
-        pred, mae, mse, rmse, r2, directional_acc = baseline_persistencia_numerica(df, "pct_cambio_7d", 7)
+        pred, mae, mse, rmse, r2, directional_acc = baseline_persistencia_numerica(
+            df, "pct_cambio_7d", 7
+        )
         print()
         print(f"MAE: {mae}")
         print(f"MSE: {mse}")
@@ -107,18 +120,28 @@ if __name__ == "__main__":
 
         fig = plot_predictions(pred)
 
-        mlflow.log_metrics({"mae": mae, "mse": mse, "rmse": rmse, "r2":r2, "directional accuracy":directional_acc})
+        mlflow.log_metrics(
+            {
+                "mae": mae,
+                "mse": mse,
+                "rmse": rmse,
+                "r2": r2,
+                "directional accuracy": directional_acc,
+            }
+        )
         mlflow.log_figure(fig, "prediction_plot.png")
 
     # Datos para 30 días
-    df = pd.read_parquet(get_path('data', 'parquet', 'data_30d.parquet'))
+    df = pd.read_parquet(get_path("data", "parquet", "data_30d.parquet"))
 
     print("\n")
     print("BASELINE PARA 30 DIAS:")
 
     # Numérica
     with mlflow.start_run(run_name=f"Baseline 30d regresion"):
-        pred, mae, mse, rmse, r2, directional_acc = baseline_persistencia_numerica(df, "pct_cambio_30d", 30)
+        pred, mae, mse, rmse, r2, directional_acc = baseline_persistencia_numerica(
+            df, "pct_cambio_30d", 30
+        )
         print()
         print(f"MAE: {mae}")
         print(f"MSE: {mse}")
@@ -128,5 +151,13 @@ if __name__ == "__main__":
 
         fig = plot_predictions(pred)
 
-        mlflow.log_metrics({"mae": mae, "mse": mse, "rmse": rmse, "r2": r2, "directional accuracy": directional_acc})
+        mlflow.log_metrics(
+            {
+                "mae": mae,
+                "mse": mse,
+                "rmse": rmse,
+                "r2": r2,
+                "directional accuracy": directional_acc,
+            }
+        )
         mlflow.log_figure(fig, "prediction_plot.png")

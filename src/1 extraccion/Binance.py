@@ -69,7 +69,7 @@ def get_binance_data(
             "trades",
             "taker_buy_base",
             "taker_buy_quote",
-            "ignore"
+            "ignore",
         ],
     )
 
@@ -121,7 +121,7 @@ def main():
     args = parser.parse_args()
 
     if args.output_path is None:
-        output_path = get_path('data', 'extraccion', 'datos_bitcoin_binance.csv')
+        output_path = get_path("data", "extraccion", "datos_bitcoin_binance.csv")
     else:
         output_path = args.output_path
 

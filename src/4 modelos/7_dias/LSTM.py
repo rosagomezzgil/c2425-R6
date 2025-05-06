@@ -62,7 +62,7 @@ def crear_ventanas(X, y, window_size=10):
     """
     Xs, ys, fechas = [], [], []
     for i in range(len(X) - window_size):
-        Xs.append(X[i:i + window_size])
+        Xs.append(X[i : i + window_size])
         ys.append(y.iloc[i + window_size])
         fechas.append(y.index[i + window_size])
     return np.array(Xs), np.array(ys), pd.to_datetime(fechas)
@@ -78,7 +78,7 @@ def preparar_datos(window_size=10, test_size=0.2):
     :returns: Datos preparados para el modelo
     """
     # Cargar y preprocesar datos
-    df = cargar_datos_7d(get_path('data', 'parquet', 'data_7d.parquet'))
+    df = cargar_datos_7d(get_path("data", "parquet", "data_7d.parquet"))
     X, y, scaler = preprocesar_datos_7d(df, tecnica="lstm", target_col="pct_cambio_7d")
 
     # Seleccionar variables importantes
@@ -88,7 +88,9 @@ def preparar_datos(window_size=10, test_size=0.2):
     X_seq, y_seq, fechas = crear_ventanas(X, y, window_size)
 
     # División temporal en entrenamiento y prueba
-    X_train, y_train, X_test, y_test = dividir_datos_temporalmente_7d(X_seq, y_seq, test_size)
+    X_train, y_train, X_test, y_test = dividir_datos_temporalmente_7d(
+        X_seq, y_seq, test_size
+    )
 
     # Obtener fechas para conjuntos de entrenamiento y prueba
     n = len(fechas)
@@ -97,11 +99,11 @@ def preparar_datos(window_size=10, test_size=0.2):
 
     # Devolver todos los conjuntos de datos
     return {
-        'train': (X_train, y_train, fechas_train),
-        'test': (X_test, y_test, fechas_test),
-        'scaler': scaler,
-        'selector': selector,
-        'input_shape': X_train.shape[1:]
+        "train": (X_train, y_train, fechas_train),
+        "test": (X_test, y_test, fechas_test),
+        "scaler": scaler,
+        "selector": selector,
+        "input_shape": X_train.shape[1:],
     }
 
 
@@ -129,7 +131,7 @@ def visualizar_atencion(model, X_test, fechas_test, window_size, show=True):
 
     for i, idx in enumerate(indices):
         # Obtener pesos de atención para esta muestra
-        attn_weights = model.get_attention_weights(X_test[idx:idx + 1])
+        attn_weights = model.get_attention_weights(X_test[idx : idx + 1])
         if attn_weights is None:
             continue
 
@@ -138,9 +140,9 @@ def visualizar_atencion(model, X_test, fechas_test, window_size, show=True):
 
         # Visualizar pesos de atención
         axes[i].bar(range(window_size), attn_weights[0], alpha=0.7)
-        axes[i].set_title(f'Pesos de atención para predicción en {fecha_pred.date()}')
-        axes[i].set_xlabel('Posición temporal en la ventana')
-        axes[i].set_ylabel('Peso de atención')
+        axes[i].set_title(f"Pesos de atención para predicción en {fecha_pred.date()}")
+        axes[i].set_xlabel("Posición temporal en la ventana")
+        axes[i].set_ylabel("Peso de atención")
         axes[i].grid(alpha=0.3)
 
     plt.tight_layout()
@@ -163,11 +165,11 @@ def main():
 
     # Variables para el seguimiento del mejor modelo
     best_results = {
-        'model': None,
-        'params': None,
-        'window_size': None,
-        'metrics': {'mse': float('inf')},
-        'data': None
+        "model": None,
+        "params": None,
+        "window_size": None,
+        "metrics": {"mse": float("inf")},
+        "data": None,
     }
 
     # Experimentar con diferentes tamaños de ventana
@@ -178,9 +180,9 @@ def main():
 
         # Preparar datos
         data_dict = preparar_datos(window_size, test_size)
-        X_train, y_train, fechas_train = data_dict['train']
-        X_test, y_test, fechas_test = data_dict['test']
-        input_shape = data_dict['input_shape']
+        X_train, y_train, fechas_train = data_dict["train"]
+        X_test, y_test, fechas_test = data_dict["test"]
+        input_shape = data_dict["input_shape"]
 
         print(f"Dimensiones: X_train: {X_train.shape}, X_test: {X_test.shape}")
 
@@ -199,7 +201,9 @@ def main():
             "lr": [0.001, 0.0005],
             "weight_decay": [0.0, 0.0001],
             "early_stopping_patience": [5],  # Usar early stopping
-            "input_shape": [input_shape]  # Necesario para instanciar el modelo correctamente
+            "input_shape": [
+                input_shape
+            ],  # Necesario para instanciar el modelo correctamente
         }
 
         # Iniciar run de MLflow
@@ -214,7 +218,7 @@ def main():
                 y_train,
                 param_grid,
                 strategy="random",  # Para usar RandomizedSearchCV
-                verbose=1
+                verbose=1,
             )
 
             # Evaluar modelo en conjunto de prueba
@@ -222,31 +226,19 @@ def main():
 
             # Visualizar predicciones
             pred_fig = plot_predictions(
-                y_test,
-                modelo=best_model,
-                X=X_test,
-                fechas=fechas_test,
-                show=False
+                y_test, modelo=best_model, X=X_test, fechas=fechas_test, show=False
             )
 
             # Visualizar pesos de atención si el modelo los utiliza
             attn_fig = visualizar_atencion(
-                best_model,
-                X_test,
-                fechas_test,
-                window_size,
-                show=False
+                best_model, X_test, fechas_test, window_size, show=False
             )
 
             # Registrar métricas, parámetros y figuras en MLflow
             mlflow.log_params(best_params)
-            mlflow.log_metrics({
-                "mse": mse,
-                "mae": mae,
-                "rmse": rmse,
-                "r2": r2,
-                "acc": acc
-            })
+            mlflow.log_metrics(
+                {"mse": mse, "mae": mae, "rmse": rmse, "r2": r2, "acc": acc}
+            )
             mlflow.log_figure(pred_fig, "prediction_plot.png")
 
             if attn_fig:
@@ -261,27 +253,31 @@ def main():
             print(f"Accuracy: {acc:.2%}")
 
             # Actualizar mejor modelo si es necesario
-            if mse < best_results['metrics']['mse']:
-                print(f"\n>>> Nuevo mejor modelo encontrado (window_size={window_size})!")
-                best_results['model'] = best_model
-                best_results['params'] = best_params
-                best_results['window_size'] = window_size
-                best_results['metrics'] = {
+            if mse < best_results["metrics"]["mse"]:
+                print(
+                    f"\n>>> Nuevo mejor modelo encontrado (window_size={window_size})!"
+                )
+                best_results["model"] = best_model
+                best_results["params"] = best_params
+                best_results["window_size"] = window_size
+                best_results["metrics"] = {
                     "mse": mse,
                     "mae": mae,
                     "rmse": rmse,
                     "r2": r2,
-                    "acc": acc
+                    "acc": acc,
                 }
-                best_results['data'] = {
+                best_results["data"] = {
                     "X_test": X_test,
                     "y_test": y_test,
-                    "fechas_test": fechas_test
+                    "fechas_test": fechas_test,
                 }
 
     # Registrar el mejor modelo global en MLflow
     print("\n" + "=" * 50)
-    print(f"Registrando el mejor modelo global (window_size={best_results['window_size']})")
+    print(
+        f"Registrando el mejor modelo global (window_size={best_results['window_size']})"
+    )
     print("=" * 50)
 
     hora_actual = datetime.now().strftime("%H-%M-%S")
@@ -289,28 +285,28 @@ def main():
 
     with mlflow.start_run(run_name=run_name):
         # Métricas del mejor modelo
-        metrics = best_results['metrics']
+        metrics = best_results["metrics"]
 
         # Visualizar predicciones del mejor modelo
         best_fig = plot_predictions(
-            best_results['data']['y_test'],
-            modelo=best_results['model'],
-            X=best_results['data']['X_test'],
-            fechas=best_results['data']['fechas_test'],
-            show=True
+            best_results["data"]["y_test"],
+            modelo=best_results["model"],
+            X=best_results["data"]["X_test"],
+            fechas=best_results["data"]["fechas_test"],
+            show=True,
         )
 
         # Visualizar pesos de atención del mejor modelo
         best_attn_fig = visualizar_atencion(
-            best_results['model'],
-            best_results['data']['X_test'],
-            best_results['data']['fechas_test'],
-            best_results['window_size'],
-            show=True
+            best_results["model"],
+            best_results["data"]["X_test"],
+            best_results["data"]["fechas_test"],
+            best_results["window_size"],
+            show=True,
         )
 
         # Registrar métricas, parámetros y figuras
-        mlflow.log_params(best_results['params'])
+        mlflow.log_params(best_results["params"])
         mlflow.log_metrics(metrics)
         mlflow.log_figure(best_fig, "best_prediction_plot.png")
 

@@ -7,7 +7,8 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
 
-def seleccionar_variables(X, y, tecnica, k_vars = 0):
+
+def seleccionar_variables(X, y, tecnica, k_vars=0):
     """
     Selecciona variables en función de la técnica especificada.
     Para 'var', se seleccionan aquellas con alta correlación con la variable objetivo.
@@ -28,17 +29,23 @@ def seleccionar_variables(X, y, tecnica, k_vars = 0):
         X_kbest_f = selector_f.fit_transform(X, y)
         selected_columns_indices_f = selector_f.get_support()
         selected_columns_f = original_columns[selected_columns_indices_f]
-        resultados['f_regression'] = pd.DataFrame(X_kbest_f, columns=selected_columns_f, index=X.index)
+        resultados["f_regression"] = pd.DataFrame(
+            X_kbest_f, columns=selected_columns_f, index=X.index
+        )
 
         # 2. Usando mutual_info_regression (relación no lineal)
-        selector_mi = SelectKBest(score_func=mutual_info_regression, k=min(k_vars, X.shape[1]))
+        selector_mi = SelectKBest(
+            score_func=mutual_info_regression, k=min(k_vars, X.shape[1])
+        )
         X_kbest_mi = selector_mi.fit_transform(X, y)
         selected_columns_indices_mi = selector_mi.get_support()
         selected_columns_mi = original_columns[selected_columns_indices_mi]
-        resultados['mutual_info'] = pd.DataFrame(X_kbest_mi, columns=selected_columns_mi, index=X.index)
+        resultados["mutual_info"] = pd.DataFrame(
+            X_kbest_mi, columns=selected_columns_mi, index=X.index
+        )
 
         # 3. Todas las variables
-        resultados['all'] = X.copy()
+        resultados["all"] = X.copy()
 
         return resultados
 
@@ -64,7 +71,9 @@ def seleccionar_variables(X, y, tecnica, k_vars = 0):
         X_pca = pca.fit_transform(X_estandarizado)
 
         # Convertimos a DataFrame para compatibilidad
-        X_pca_df = pd.DataFrame(X_pca, columns=[f"PC{i + 1}" for i in range(X_pca.shape[1])])
+        X_pca_df = pd.DataFrame(
+            X_pca, columns=[f"PC{i + 1}" for i in range(X_pca.shape[1])]
+        )
 
         # Retornamos el DataFrame con las componentes principales y la variable target
         X_pca_df["target"] = y
@@ -76,21 +85,18 @@ def seleccionar_variables(X, y, tecnica, k_vars = 0):
         Selecciona variables usando Random Forest para la selección de características.
         Solo se seleccionan aquellas características cuya importancia sea mayor al umbral dado.
         Esta versión no realiza imputación de los valores faltantes.
-    
+
         :param X: ndarray o DataFrame de características
         :param y: Serie objetivo (pandas Series)
         :param tecnica: Parámetro ignorado (solo para compatibilidad de firma)
         :param threshold: Umbral de importancia para la selección de características
-    
+
         :return: (X_selected, selected_features)
         """
         threshold = 0.01
         # 1) Convertir X a DataFrame si viene como ndarray
         if isinstance(X, np.ndarray):
-            X = pd.DataFrame(
-                X,
-                columns=[f"var_{i}" for i in range(X.shape[1])]
-            )
+            X = pd.DataFrame(X, columns=[f"var_{i}" for i in range(X.shape[1])])
         elif not isinstance(X, pd.DataFrame):
             X = pd.DataFrame(X)
 
@@ -113,6 +119,7 @@ def seleccionar_variables(X, y, tecnica, k_vars = 0):
     else:
         return X, None
 
+
 def reducir_vif(X, umbral=10.0):
     """
     Elimina variables con VIF alto de forma iterativa.
@@ -125,8 +132,11 @@ def reducir_vif(X, umbral=10.0):
     X_filtrado = X.copy()
     while True:
         vif = pd.Series(
-            [variance_inflation_factor(X_filtrado.values, i) for i in range(X_filtrado.shape[1])],
-            index=X_filtrado.columns
+            [
+                variance_inflation_factor(X_filtrado.values, i)
+                for i in range(X_filtrado.shape[1])
+            ],
+            index=X_filtrado.columns,
         )
         max_vif = vif.max()
         if max_vif > umbral:
@@ -135,6 +145,7 @@ def reducir_vif(X, umbral=10.0):
         else:
             break
     return X_filtrado
+
 
 def test_estacionariedad_adf(X, alpha=0.1):
     """

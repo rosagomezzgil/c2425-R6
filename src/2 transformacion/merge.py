@@ -1,26 +1,24 @@
 """
 
-    Este script procesa y analiza datos de múltiples fuentes relacionadas con el mercado de Bitcoin.
+Este script procesa y analiza datos de múltiples fuentes relacionadas con el mercado de Bitcoin.
 
-    1. Carga y combina archivos CSV provenientes de distintas fuentes (como Binance, Bitget, CoinGecko,
-     entre otros), con datos sobre precios, volumen, volatilidad, indicadores técnicos, etc.
+1. Carga y combina archivos CSV provenientes de distintas fuentes (como Binance, Bitget, CoinGecko,
+ entre otros), con datos sobre precios, volumen, volatilidad, indicadores técnicos, etc.
 
-    2. Filtra los datos para considerar solo los últimos 3 años.
+2. Filtra los datos para considerar solo los últimos 3 años.
 
-    3. Compara la similitud de los datos entre diferentes plataformas de intercambio (por ejemplo,
-     Binance vs Bitget, Binance vs Coingecko) usando métricas como el Error Absoluto Medio (MAE) y la
-     correlación de Pearson de los retornos logarítmicos.
+3. Compara la similitud de los datos entre diferentes plataformas de intercambio (por ejemplo,
+ Binance vs Bitget, Binance vs Coingecko) usando métricas como el Error Absoluto Medio (MAE) y la
+ correlación de Pearson de los retornos logarítmicos.
 
-    4. Calcula la tendencia futura del mercado basado en la variación porcentual del precio medio en
-     diferentes horizontes temporales (7 días, 30 días).
+4. Calcula la tendencia futura del mercado basado en la variación porcentual del precio medio en
+ diferentes horizontes temporales (7 días, 30 días).
 
-    5. Elimina columnas irrelevantes y realiza limpieza de los datos (interpolación de valores nulos).
+5. Elimina columnas irrelevantes y realiza limpieza de los datos (interpolación de valores nulos).
 
-    6. Guarda el conjunto de datos final procesado en un archivo CSV.
+6. Guarda el conjunto de datos final procesado en un archivo CSV.
 
-    """
-
-
+"""
 
 import pandas as pd
 import numpy as np
@@ -119,11 +117,11 @@ def interpretar_metrica(mae: float, r: float, nombre: str):
 
 
 def calcular_tendencia(
-        df: pd.DataFrame,
-        horizonte: int,
-        threshold: float = 0,
-        pct_promedio = False,
-        output_path: Optional[str] = None,
+    df: pd.DataFrame,
+    horizonte: int,
+    threshold: float = 0,
+    pct_promedio=False,
+    output_path: Optional[str] = None,
 ):
     """
     Calcula la tendencia futura basada en la variación porcentual del precio medio.
@@ -140,7 +138,7 @@ def calcular_tendencia(
     if pct_promedio:
         precio_medio = df["close_binance"].rolling(window=horizonte).mean()
         df_result[f"pct_cambio_{horizonte}d"] = (
-                (precio_medio.shift(-horizonte) - precio_medio) / precio_medio * 100
+            (precio_medio.shift(-horizonte) - precio_medio) / precio_medio * 100
         )
 
     else:
@@ -148,16 +146,20 @@ def calcular_tendencia(
         # Usamos el precio actual y el precio futuro después de 'horizonte' días
         future_price = df_result["close_binance"].shift(-horizonte)
         df_result[f"pct_cambio_{horizonte}d"] = (
-                (future_price - df_result["close_binance"]) / df_result["close_binance"] * 100
+            (future_price - df_result["close_binance"])
+            / df_result["close_binance"]
+            * 100
         )
 
     # Definir la tendencia futura
     df_result[f"tendencia_futura_{horizonte}d"] = 0  # Neutral por defecto
     df_result.loc[
-        df_result[f"pct_cambio_{horizonte}d"] > threshold, f"tendencia_futura_{horizonte}d"
+        df_result[f"pct_cambio_{horizonte}d"] > threshold,
+        f"tendencia_futura_{horizonte}d",
     ] = 1  # Alcista
     df_result.loc[
-        df_result[f"pct_cambio_{horizonte}d"] < -threshold, f"tendencia_futura_{horizonte}d"
+        df_result[f"pct_cambio_{horizonte}d"] < -threshold,
+        f"tendencia_futura_{horizonte}d",
     ] = -1  # Bajista
 
     # Guardar CSV si se proporciona una ruta
@@ -174,7 +176,7 @@ if __name__ == "__main__":
     1 - JUNTAMOS TODOS LOS DATAFRAMES
     """
     ### RUTA ABSOLUTA A LA CARPETA 'DATA' ###
-    DATA_DIR = get_path('data', 'limpieza')
+    DATA_DIR = get_path("data", "limpieza")
 
     ### LISTA DE LOS CSV Q VAMOS A CARGAR ###
     archivos = [
@@ -257,13 +259,7 @@ if __name__ == "__main__":
         1. Evaluar Binance comparándolo con Bitget
     """
     # Columnas a evaluar
-    columns = [
-        "open",
-        "high",
-        "low",
-        "close",
-        "volumen"
-    ]
+    columns = ["open", "high", "low", "close", "volumen"]
 
     # Calcular métricas para cada columna
     resultados = [
@@ -284,11 +280,7 @@ if __name__ == "__main__":
             2. Evaluar Binance comparándolo con Coingecko
     """
     # Columnas a evaluar
-    columns = [
-        "close",
-        "volumen",
-        "var_diaria"
-    ]
+    columns = ["close", "volumen", "var_diaria"]
 
     # Calcular métricas para cada columna
     resultados = [
@@ -311,13 +303,7 @@ if __name__ == "__main__":
     """
 
     # Columnas a evaluar
-    columns = [
-        "open",
-        "high",
-        "low",
-        "close",
-        "volumen"
-    ]
+    columns = ["open", "high", "low", "close", "volumen"]
 
     # Calcular métricas para cada columna
     resultados = [
@@ -365,6 +351,6 @@ if __name__ == "__main__":
     df = calcular_tendencia(df=df, horizonte=30, pct_promedio=True)
 
     # Guardar el dataframe final
-    output_path = get_path('data', 'limpieza', 'cleaned_data.csv')
+    output_path = get_path("data", "limpieza", "cleaned_data.csv")
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df.to_csv(output_path, index=False)

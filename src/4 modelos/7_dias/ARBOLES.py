@@ -45,6 +45,7 @@ from utils.mlflow_utils import setup_mlflow
 from utils.paths import get_path
 import pandas as pd
 
+
 def analizar_importancias(modelo, X, umbral_importancia=0.01, top_n=20):
     """Muestra, guarda y retorna las variables más importantes según el árbol."""
     importancias = pd.Series(modelo.feature_importances_, index=X.columns)
@@ -56,7 +57,9 @@ def analizar_importancias(modelo, X, umbral_importancia=0.01, top_n=20):
     print()
 
     # Seleccionar las variables importantes
-    variables_importantes = importancias[importancias > umbral_importancia].index.tolist()
+    variables_importantes = importancias[
+        importancias > umbral_importancia
+    ].index.tolist()
 
     return variables_importantes
 
@@ -64,7 +67,7 @@ def analizar_importancias(modelo, X, umbral_importancia=0.01, top_n=20):
 def main():
     setup_mlflow("Modelo Arbol")
 
-    df = cargar_datos_7d(get_path('data', 'parquet', 'data_7d.parquet'))
+    df = cargar_datos_7d(get_path("data", "parquet", "data_7d.parquet"))
     X, y, _ = preprocesar_datos_7d(df, tecnica="arbol", target_col="pct_cambio_7d")
 
     # Cambiado: ahora separamos solo train_val y test
@@ -76,7 +79,11 @@ def main():
         "max_depth": [3, 5, 10, 15, None],
         "min_samples_split": [2, 5, 10],
         "min_samples_leaf": [1, 2, 4],
-        "max_features": ["sqrt", "log2", None],  # Para controlar el número de variables evaluadas en cada split
+        "max_features": [
+            "sqrt",
+            "log2",
+            None,
+        ],  # Para controlar el número de variables evaluadas en cada split
     }
 
     try:
@@ -90,17 +97,19 @@ def main():
             fig = plot_predictions(y_test, modelo=best_model, X=X_test)
 
             mlflow.log_params(best_params)
-            mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2, "acc": acc})
+            mlflow.log_metrics(
+                {"mse": mse, "mae": mae, "rmse": rmse, "r2": r2, "acc": acc}
+            )
             mlflow.log_figure(fig, "prediction_plot.png")
 
-            #Seleccionar las variables importantes
+            # Seleccionar las variables importantes
             variables_importantes = analizar_importancias(best_model, X_train_val)
 
             # Quedarse solo variables importantes
             X_train_val_filtrado = X_train_val[variables_importantes]
             X_test_filtrado = X_test[variables_importantes]
 
-            #Reentrenar el modelo con las variables importantes y train_val completo
+            # Reentrenar el modelo con las variables importantes y train_val completo
             modelo_reentrenado = DecisionTreeRegressor(random_state=42, **best_params)
             modelo_reentrenado.fit(X_train_val_filtrado, y_train_val)
 
@@ -110,11 +119,14 @@ def main():
             )
             fig2 = plot_predictions(y_test, modelo=best_model, X=X_test)
 
-            mlflow.log_metrics({"mse": mse2, "mae": mae2, "rmse": rmse2, "r2": r2_2, "acc": acc2})
+            mlflow.log_metrics(
+                {"mse": mse2, "mae": mae2, "rmse": rmse2, "r2": r2_2, "acc": acc2}
+            )
             mlflow.log_figure(fig2, "prediction_plot.png")
 
     except Exception as e:
         print(e)
+
 
 if __name__ == "__main__":
     main()

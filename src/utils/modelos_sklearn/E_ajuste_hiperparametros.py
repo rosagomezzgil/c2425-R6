@@ -1,8 +1,19 @@
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, TimeSeriesSplit
 import numpy as np
 
-def ajustar_modelo(modelo, X, y, param_grid, strategy="grid", scoring="r2",
-                   n_splits=5, random_state=42, n_iter = 20, verbose=1):
+
+def ajustar_modelo(
+    modelo,
+    X,
+    y,
+    param_grid,
+    strategy="grid",
+    scoring="r2",
+    n_splits=5,
+    random_state=42,
+    n_iter=20,
+    verbose=1,
+):
     """
     Ajusta un modelo sklearn usando validación cruzada temporal.
 
@@ -27,7 +38,7 @@ def ajustar_modelo(modelo, X, y, param_grid, strategy="grid", scoring="r2",
             scoring=scoring,
             cv=cv,
             n_jobs=-1,
-            verbose=verbose
+            verbose=verbose,
         )
     else:
         search = RandomizedSearchCV(
@@ -38,7 +49,7 @@ def ajustar_modelo(modelo, X, y, param_grid, strategy="grid", scoring="r2",
             cv=cv,
             n_jobs=-1,
             verbose=verbose,
-            random_state=random_state
+            random_state=random_state,
         )
 
     search.fit(X, y)
@@ -54,8 +65,9 @@ def ajustar_modelo(modelo, X, y, param_grid, strategy="grid", scoring="r2",
     return best_model, best_params
 
 
-
-def validar_modelo_timeseries(y, param_grid, model_class, seasonal=False, seasonal_param_grid=None, n_splits=3):
+def validar_modelo_timeseries(
+    y, param_grid, model_class, seasonal=False, seasonal_param_grid=None, n_splits=3
+):
     tscv = TimeSeriesSplit(n_splits=n_splits)
     best_mse = np.inf
     best_params = None
@@ -69,10 +81,14 @@ def validar_modelo_timeseries(y, param_grid, model_class, seasonal=False, season
                 for train_idx, test_idx in tscv.split(y):
                     y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
                     try:
-                        model = model_class(y_train, order=order, seasonal_order=seasonal_order)
+                        model = model_class(
+                            y_train, order=order, seasonal_order=seasonal_order
+                        )
                         model_fit = model.fit(disp=False)
-                        pred = model_fit.predict(start=y_test.index[0], end=y_test.index[-1])
-                        mse = np.mean((y_test - pred[:len(y_test)]) ** 2)
+                        pred = model_fit.predict(
+                            start=y_test.index[0], end=y_test.index[-1]
+                        )
+                        mse = np.mean((y_test - pred[: len(y_test)]) ** 2)
                         fold_mse.append(mse)
                     except Exception:
                         # Si ocurre un error, asigna infinito al error de ese split
@@ -82,7 +98,9 @@ def validar_modelo_timeseries(y, param_grid, model_class, seasonal=False, season
                 if avg_mse < best_mse:
                     best_mse = avg_mse
                     best_params = (order, seasonal_order)
-                    best_model = model_class(y, order=order, seasonal_order=seasonal_order).fit(disp=False)
+                    best_model = model_class(
+                        y, order=order, seasonal_order=seasonal_order
+                    ).fit(disp=False)
     else:
         # Sin parámetros estacionales
         for order in param_grid:
@@ -92,8 +110,10 @@ def validar_modelo_timeseries(y, param_grid, model_class, seasonal=False, season
                 try:
                     model = model_class(y_train, order=order)
                     model_fit = model.fit()
-                    pred = model_fit.predict(start=y_test.index[0], end=y_test.index[-1])
-                    mse = np.mean((y_test - pred[:len(y_test)]) ** 2)
+                    pred = model_fit.predict(
+                        start=y_test.index[0], end=y_test.index[-1]
+                    )
+                    mse = np.mean((y_test - pred[: len(y_test)]) ** 2)
                     fold_mse.append(mse)
                 except Exception:
                     fold_mse.append(np.inf)
@@ -104,7 +124,5 @@ def validar_modelo_timeseries(y, param_grid, model_class, seasonal=False, season
                 best_params = order
                 best_model = model_class(y, order=order).fit()
 
-
     print(best_params)
     return best_model, best_params
-

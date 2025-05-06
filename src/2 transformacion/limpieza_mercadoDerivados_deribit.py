@@ -1,17 +1,17 @@
 """
-    Este script procesa el dataset de mercado de derivados de Deribit.
-    Para ello se carga del archivo CSV y se hace una conversión del timestamp a formato fecha (si
-    es necesario) y re-muestreo de los datos para obtener los valores diarios y un renombrado de
-    las columnas para diferenciar métricas específicas del mercado de derivados (prefijo 'mD').
+Este script procesa el dataset de mercado de derivados de Deribit.
+Para ello se carga del archivo CSV y se hace una conversión del timestamp a formato fecha (si
+es necesario) y re-muestreo de los datos para obtener los valores diarios y un renombrado de
+las columnas para diferenciar métricas específicas del mercado de derivados (prefijo 'mD').
 
-    Además, se calculan nuevas métricas como variación diaria, volatilidad, momentum, medias móviles
-    (SMA y EMA) y el RSI utilizando la función ya definida, preparando los datos para su uso en 4 modelos
-    de predicción.
+Además, se calculan nuevas métricas como variación diaria, volatilidad, momentum, medias móviles
+(SMA y EMA) y el RSI utilizando la función ya definida, preparando los datos para su uso en 4 modelos
+de predicción.
 
-    Por úlimo, se extrae el dataset limpio a un nuevo archivo CSV, listo para su integración con datos
-    del mercado spot.
+Por úlimo, se extrae el dataset limpio a un nuevo archivo CSV, listo para su integración con datos
+del mercado spot.
 
-    """
+"""
 
 from creacion_variables import crear_variables
 from utils.paths import get_path
@@ -21,7 +21,7 @@ import os
 if __name__ == "__main__":
     # Cargar el DataFrame
     df = pd.read_csv(
-        get_path('data', 'extraccion', 'datos_mercadoDerivados_deribit.csv'),
+        get_path("data", "extraccion", "datos_mercadoDerivados_deribit.csv"),
         parse_dates=["timestamp"],
     )
 
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     df_diario = crear_variables(df_diario)
 
     # Guardar el conjunto de datos
-    output_path = get_path('data', 'limpieza', 'limpios_mercadoDerivados_deribit.csv')
+    output_path = get_path("data", "limpieza", "limpios_mercadoDerivados_deribit.csv")
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df_diario.to_csv(output_path, encoding="utf-8-sig", index=False)
     print(df_diario)

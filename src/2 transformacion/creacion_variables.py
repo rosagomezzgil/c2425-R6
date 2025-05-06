@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+
 def calcular_rsi(df, columna: str, window: int = 14):
     """
     Calcula el Índice de Fuerza Relativa (RSI) para una serie de precios.
@@ -69,7 +70,6 @@ def crear_variables(df: pd.DataFrame) -> pd.DataFrame:
 
         # Momentum
         df[f"momentum_{periodo}"] = df["close"].pct_change(periods=periodo) * 100
-
 
     # Medias móviles
     # dias = [7, 14, 30, 50, 200]  # Añadidos 50 y 200 días (muy usados)

@@ -36,7 +36,7 @@ from utils.modelos_sklearn.E_ajuste_hiperparametros import validar_modelo_timese
 from utils.modelos_sklearn.F_metricas import evaluar_modelo_30d
 from utils.modelos_sklearn.A_cargar_datos import cargar_datos_30d
 from utils.modelos_sklearn.D_division_temporal import dividir_datos_temporalmente_30d
-from utils.modelos_sklearn.G_graficar_predicciones import  plot_predictions
+from utils.modelos_sklearn.G_graficar_predicciones import plot_predictions
 from utils.mlflow_utils import setup_mlflow
 from utils.paths import get_path
 import mlflow
@@ -44,7 +44,7 @@ from datetime import datetime
 from statsmodels.tsa.arima.model import ARIMA
 
 
-def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
+def main(parquet_path: str, target_col: str = "pct_cambio_30d"):
     df = cargar_datos_30d(parquet_path)
     df = preprocesar_datos_30d(df, target_col)
 
@@ -65,15 +65,9 @@ def main(parquet_path: str, target_col: str = 'pct_cambio_30d'):
         fig = plot_predictions(y_test, pred=pred)
 
         mlflow.log_params({"order": best_order})
-        mlflow.log_metrics({
-            "mse": mse,
-            "mae": mae,
-            "rmse": rmse,
-            "r2": r2,
-            "acc": acc
-        })
+        mlflow.log_metrics({"mse": mse, "mae": mae, "rmse": rmse, "r2": r2, "acc": acc})
         mlflow.log_figure(fig, "prediction_plot.png")
 
 
 if __name__ == "__main__":
-    main(get_path('data', 'parquet', 'data_30d.parquet'))
+    main(get_path("data", "parquet", "data_30d.parquet"))

@@ -1,19 +1,19 @@
 """
-    Para este script habrá que DESCARGAR EL CSV DEL DRIVE SI LA EXTRACCION DA ERROR
+Para este script habrá que DESCARGAR EL CSV DEL DRIVE SI LA EXTRACCION DA ERROR
 
-    Este script procesa los datos del índice DXY (Dollar Index), eliminando columnas irrelevantes
-    como el volumen, ya que no aplica a un índice no negociable. Se convierte el timestamp a formato
-    de fecha y se asegura la continuidad temporal diaria mediante la creación de un rango completo
-    de fechas.
+Este script procesa los datos del índice DXY (Dollar Index), eliminando columnas irrelevantes
+como el volumen, ya que no aplica a un índice no negociable. Se convierte el timestamp a formato
+de fecha y se asegura la continuidad temporal diaria mediante la creación de un rango completo
+de fechas.
 
-    Luego se interpolan los valores faltantes para mantener la coherencia de la serie temporal.
-    Se calculan múltiples indicadores técnicos como medias móviles (SMA y EMA), volatilidad, momentum,
-    variación diaria, rango diario y el RSI a partir de la función calculada. Estos indicadores permiten
-    estudiar el comportamiento del DXY y su posible relación con el precio del Bitcoin.
+Luego se interpolan los valores faltantes para mantener la coherencia de la serie temporal.
+Se calculan múltiples indicadores técnicos como medias móviles (SMA y EMA), volatilidad, momentum,
+variación diaria, rango diario y el RSI a partir de la función calculada. Estos indicadores permiten
+estudiar el comportamiento del DXY y su posible relación con el precio del Bitcoin.
 
-    El resultado final se guarda como un CSV para su posterior uso en 4 modelos de análisis o predicción.
+El resultado final se guarda como un CSV para su posterior uso en 4 modelos de análisis o predicción.
 
-    """
+"""
 
 import os
 import pandas as pd
@@ -22,7 +22,7 @@ from utils.paths import get_path
 
 if __name__ == "__main__":
 
-    dxy = pd.read_csv(get_path('data', 'extraccion', 'datos_dxy.csv'))
+    dxy = pd.read_csv(get_path("data", "extraccion", "datos_dxy.csv"))
 
     # Hacemos un 3 analisis inicial de como se comporta el df
     print(dxy.head())
@@ -60,7 +60,7 @@ if __name__ == "__main__":
     dxy = crear_variables(dxy)
 
     # Guardar el conjunto de datos procesados
-    output_path = get_path('data', 'limpieza', 'limpios_dxy.csv')
+    output_path = get_path("data", "limpieza", "limpios_dxy.csv")
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     dxy.to_csv(output_path, index=False)
 

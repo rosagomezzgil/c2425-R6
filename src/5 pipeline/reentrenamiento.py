@@ -1,3 +1,62 @@
+"""
+entrenamiento_modelos.py
+
+Este script entrena, evalúa y reentrena modelos de predicción de series temporales
+(SVR y XGBoost) aplicados a la predicción del cambio porcentual en datos financieros
+(u otra serie temporal). Utiliza estrategias como la selección de variables mediante
+información mutua, escalado de características, validación cruzada temporal y gestión
+robusta de datos nuevos.
+
+Dependencias:
+-------------
+- os: Para operaciones del sistema de archivos.
+- joblib: Para guardar y cargar modelos entrenados.
+- numpy: Operaciones numéricas y vectorización.
+- pandas: Manipulación de estructuras tabulares.
+- sklearn:
+    - SVR: Modelo de regresión basado en máquinas de soporte vectorial.
+    - preprocessing.StandardScaler: Para estandarizar características.
+    - impute.SimpleImputer: Para imputar valores faltantes.
+    - model_selection.TimeSeriesSplit: Para validación cruzada temporal.
+    - feature_selection.mutual_info_regression: Selección de variables.
+    - metrics.r2_score: Métrica de evaluación R^2.
+- xgboost.XGBRegressor: Regresor basado en boosting de gradiente.
+- utils.modelos_sklearn:
+    - A_cargar_datos: Funciones personalizadas para cargar datos parquet de 7d o 30d.
+    - F_metricas: Funciones para evaluar modelos.
+- utils.paths.get_path: Función auxiliar para construir rutas de archivos.
+
+Funciones:
+----------
+- seleccionar_variables_mutual_info_k15(X, y, k_vars=15):
+    Aplica `mutual_info_regression` para seleccionar las k_vars variables más
+    informativas con respecto al target `y`. Devuelve el subconjunto de X con
+    esas columnas y la lista de nombres seleccionados.
+
+- accuracy_direccion(y_true, y_pred):
+    Calcula la "accuracy direccional", es decir, cuántas veces la dirección
+    del cambio predicho coincide con la dirección real. Útil para tareas de
+    predicción de tendencias.
+
+- entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
+    Función principal del script. Realiza el flujo completo de entrenamiento y
+    evaluación para una técnica específica ('svr' o 'xgboost'):
+
+    Para SVR:
+        - Carga datos históricos y nuevos de horizonte 7 días.
+        - Selecciona variables mediante mutual information.
+        - Aplica imputación, escalado y entrena modelo con SVR.
+        - Evalúa en conjunto nuevo y reentrena con todos los datos.
+        - Guarda modelo y escalador final.
+
+    Para XGBoost:
+        - Carga datos de horizonte 30 días.
+        - Aplica imputación, escalado y entrenamiento con validación cruzada
+          (TimeSeriesSplit) para evitar data leakage.
+        - Evalúa en datos nuevos y reentrena con todo el histórico.
+        - Guarda modelo y escalador final.
+"""
+
 import os
 import joblib
 from xgboost import XGBRegressor

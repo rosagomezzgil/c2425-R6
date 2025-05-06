@@ -1,3 +1,38 @@
+"""
+Módulo: XGBoost.py
+
+Descripción:
+Este script entrena y evalúa un modelo de regresión XGBoost sobre series temporales multivariantes,
+utilizando la variación porcentual a 30 días (`pct_cambio_30d`) como variable objetivo. Realiza una
+búsqueda de hiperparámetros mediante validación cruzada temporal (TimeSeriesSplit) y registra todo el
+proceso en MLflow.
+
+Características principales:
+- Carga y preprocesamiento de los datos multivariantes.
+- División del conjunto de datos en entrenamiento y prueba respetando la estructura temporal.
+- Búsqueda de hiperparámetros con `ParameterGrid` y validación cruzada en series temporales.
+- Entrenamiento del mejor modelo XGBoost encontrado.
+- Evaluación de métricas de error estándar y generación de gráficos de predicción.
+- Registro completo del experimento con parámetros, métricas y visualizaciones en MLflow.
+
+Dependencias:
+- pandas
+- numpy
+- mlflow
+- xgboost
+- sklearn (model_selection, metrics, preprocessing)
+- utils personalizados:
+    - utils.modelos_sklearn.* (carga, preprocesamiento, evaluación, gráficos)
+    - utils.mlflow_utils (configuración de experimentos MLflow)
+    - utils.paths (manejo de rutas)
+
+Uso:
+Ejecutar este script para entrenar un modelo XGBoost sobre una serie temporal multivariante con el fin
+de predecir la variable `pct_cambio_30d`. Ideal para análisis financieros con múltiples indicadores
+predictivos.
+
+"""
+
 import pandas as pd
 import numpy as np
 import mlflow

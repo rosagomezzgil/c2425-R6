@@ -247,16 +247,10 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
             r2 = r2_score(y_val_cv, pred_cv)
             r2_scores.append(r2)
 
-        # Entrenamiento completo con todos los datos disponibles
-        modelo_xgb = XGBRegressor(**best_params_xgb)
+        
         # Entrenamiento con todos los datos
         modelo_xgb = XGBRegressor(**best_params_xgb)
         modelo_xgb.fit(X_train_scaled, y_train)
-
-        # ⚠️ ADVERTENCIA: Esta evaluación se hace sobre los mismos datos de entrenamiento
-        # por lo tanto no mide capacidad de generalización. Solo indica si el modelo ha aprendido.
-        print("\n[AVISO] Evaluando sobre datos de entrenamiento. Esta métrica NO representa generalización.")
-        print("Reentrenamiento XGBoost (solo para verificar overfitting):")
         evaluar_modelo_7d(modelo_xgb, X_train_scaled, y_train)
 
         # Evaluación en nuevos datos

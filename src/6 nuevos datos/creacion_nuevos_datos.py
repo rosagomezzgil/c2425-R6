@@ -1,3 +1,55 @@
+"""
+Script para combinar datasets CSV y exportar los datos nuevos en formato Parquet.
+
+Este script compara archivos CSV antiguos con archivos nuevos para extraer únicamente
+las filas con fechas posteriores a las ya existentes. Posteriormente, guarda los datos
+filtrados en formato Parquet para su uso eficiente en posteriores análisis o procesos.
+
+Dependencias:
+- os: para la manipulación de rutas y creación de directorios.
+- pandas: para la lectura, filtrado y escritura de datos.
+- utils.paths.get_path: función personalizada para construir rutas relativas
+  a carpetas específicas del proyecto (por ejemplo, 'data/limpieza', 'data/nuevos', etc.).
+- pyarrow: requerido por pandas para guardar archivos Parquet.
+
+Funciones:
+----------
+
+combinar_csvs(csv_antiguo, csv_nuevo, columna_fecha):
+    Combina dos archivos CSV, manteniendo únicamente las filas nuevas (con fechas posteriores).
+
+    Parámetros:
+    - csv_antiguo (str): Nombre del archivo CSV antiguo ubicado en 'data/limpieza/'.
+    - csv_nuevo (str): Nombre del archivo CSV nuevo ubicado en 'data/nuevos/'.
+    - columna_fecha (str): Nombre de la columna que contiene las fechas (formato datetime).
+
+    Comportamiento:
+    - Lee ambos archivos CSV.
+    - Filtra del nuevo CSV solo las filas con fecha mayor que la última del CSV antiguo.
+    - Sobrescribe el archivo CSV nuevo con esas filas nuevas.
+
+    Retorna:
+    - pd.DataFrame: DataFrame con los datos filtrados del CSV nuevo.
+
+guardar_dataframe_como_parquet(df, salida_parquet):
+    Guarda un DataFrame como archivo Parquet en la carpeta 'data/parquet nuevos/'.
+
+    Parámetros:
+    - df (pd.DataFrame): El DataFrame a guardar.
+    - salida_parquet (str): Nombre del archivo Parquet de salida.
+
+    Comportamiento:
+    - Crea la carpeta de destino si no existe.
+    - Guarda el DataFrame como archivo Parquet usando el engine 'pyarrow'.
+
+Bloque principal:
+-----------------
+Si el script se ejecuta directamente, combina y guarda en Parquet tres pares de datasets:
+1. dataset_30d.csv + dataset_30d_nuevos.csv → data_30d_nuevos.parquet
+2. cleaned_data.csv + cleaned_data_nuevos.csv → cleaned_data_nuevos.parquet
+3. dataset_7d.csv + dataset_7d_nuevos.csv → data_7d_nuevos.parquet
+"""
+
 import os
 import pandas as pd
 from utils.paths import get_path

@@ -114,8 +114,6 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
         X_train_sel, columnas_seleccionadas = seleccionar_variables_mutual_info_k15(
             X_train, y_train, k_vars=15
         )
-        print(f"Columnas de SVR ({len(columnas_seleccionadas)}):")
-        print(columnas_seleccionadas)
 
         # Imputación y escalado
         imputador = SimpleImputer(strategy="mean")
@@ -282,8 +280,6 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
 
         X_final = X_final[X_train.columns]
         X_scaled_final = scaler.fit_transform(X_final)
-
-        print(X_final.columns)
 
         modelo_xgb_final = XGBRegressor(**best_params_xgb)
         modelo_xgb_final.fit(X_scaled_final, y_final)

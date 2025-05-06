@@ -211,15 +211,6 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
 
         # Hiperparámetros más conservadores para evitar overfitting
         best_params_xgb = {
-<<<<<<< Updated upstream
-            "colsample_bytree": 0.8,
-            "learning_rate": 0.05,
-            "max_depth": 2,
-            "n_estimators": 100,
-            "reg_alpha": 1,
-            "reg_lambda": 5,
-            "subsample": 0.8,
-=======
             'colsample_bytree': 0.6,
             'learning_rate': 0.1,
             'max_depth': 1,
@@ -227,7 +218,6 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
             'reg_alpha': 10,
             'reg_lambda': 10,
             'subsample': 0.6
->>>>>>> Stashed changes
         }
 
         # -----------------------------

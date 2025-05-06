@@ -2,35 +2,35 @@
 ![LOGO](https://img.bitgetimg.com/multiLang/web/ebb606b3d63bb1f7d48e7ccdfbb984c1.png)
 
 # Descripción de los objetivos.
-El proyecto consiste en un sistema de **predicción de tendencias de Bitcoin**, que permite analizar los movimientos del mercado y prever posibles fluctuaciones en el precio de la criptomoneda. Para ello, se utilizan datos en tiempo real, junto con modelos de análisis de datos.
+El proyecto consiste en un sistema de **predicción de tendencias de Bitcoin a través de su porcentaje de cambio sobre el precio de cierre**, que permite analizar los movimientos del mercado y prever posibles fluctuaciones en el precio de la criptomoneda. Para ello, se utilizan datos en tiempo real, junto con modelos de análisis de datos.
 
 El objetivo principal es predecir la tendencia de Bitcoin en base a los datos históricos, patrones y a la evolución de la moneda utilizando técnicas de aprendizaje automático
 # Estructura del repositorio
 
 ```
 CryptoVision-Insights/
-├── src/                          # Código fuente principal organizado por etapas del flujo de datos
+├── src/                         # Código fuente principal organizado por etapas del flujo de datos
 │   ├── 1 extraccion/            # Scripts para extraer datos desde múltiples fuentes
 │   │   ├── Twitter/             # Extracción específica desde la API de Twitter
 │   │   │   ├── config.py        # Configuración y autenticación para Twitter API
 │   │   │   └── Twitter.py       # Script de conexión y extracción de tweets
-│   │   ├── Alternative.py       # Fuente alternativa de métricas de mercado
-│   │   ├── Binance.py           # Datos históricos de precios de Binance
-│   │   ├── Bitget.py            # Datos de exchange Bitget
-│   │   ├── CoinGecko.py         # API pública de criptomonedas
-│   │   ├── Google_Trends.py     # Tendencias de búsqueda sobre cripto
+│   │   ├── Alternative.py       # Fuente alternativa de métricas de mercado (miedo y codicia del bitcoin)
+│   │   ├── Binance.py           # Datos históricos de precios de Binance de Bitcoin
+│   │   ├── Bitget.py            # Datos de exchange de la web de Bitget sobre Bitcoin
+│   │   ├── CoinGecko.py         # API pública de criptomonedas para extraer datos de Bitcoin
+│   │   ├── Google_Trends.py     # Tendencias de búsqueda sobre cripto y, en especial, Bitcoin
 │   │   ├── Halving.py           # Información sobre eventos de halving de Bitcoin
-│   │   ├── Hashrate.py          # Métricas de poder de minado
-│   │   ├── mercadoDerivados_binance.py  # Datos de derivados desde Binance
-│   │   ├── mercadoDerivados_deribit.py  # Datos de derivados desde Deribit
-│   │   └── Yahoo_Finance.py     # Datos financieros tradicionales (Nasdaq, SP500...)
+│   │   ├── Hashrate.py          # Métricas de poder de minado de Bitcoin
+│   │   ├── mercadoDerivados_binance.py  # Datos de derivados desde Binance sobre Bitcoin
+│   │   ├── mercadoDerivados_deribit.py  # Datos de derivados desde Deribit sobre Bitcoin
+│   │   └── Yahoo_Finance.py     # Datos financieros tradicionales (Nasdaq, SP500...) desde Yahoo Finance
 │
 │   ├── 2 transformacion/        # Procesamiento y limpieza de los datos crudos
-│   │   ├── creacion_variables.py                # Creación de nuevas variables derivadas
+│   │   ├── creacion_variables.py                # Creación de nuevas variables derivadas para su posterior uso
 │   │   ├── limpieza_*.py                        # Scripts de limpieza por fuente de datos
 │   │   ├── merge.py                             # Fusión de todas las fuentes en un dataset único
 │   │   ├── parquet_merged_data.py               # Exportación a formato parquet
-│   │   └── sentiment_analysis.py                # Análisis de sentimiento de los tweets
+│   │   └── sentiment_analysis.py                # Análisis de sentimiento de los tweets relacionados con Bitcoin
 │
 │   ├── 3 analisis/              # Análisis exploratorio y visualización
 │   │   ├── visualizacion merged datos.ipynb     # Visualización de datos ya fusionados
@@ -39,15 +39,15 @@ CryptoVision-Insights/
 │
 │   ├── 4 modelos/               # Modelado predictivo con diferentes algoritmos
 │   │   ├── 7_dias/              # Modelos con ventana de predicción de 7 días
-│   │   │   ├── ARBOLES.py       # Modelos tipo árbol
-│   │   │   ├── LSTM.py          # Red neuronal LSTM
+│   │   │   ├── ARBOLES.py       # Modelos tipo árbol de regresión
+│   │   │   ├── LSTM.py          # Red neuronal (LSTM)
 │   │   │   └── SVR.py           # Support Vector Regression
 │   │   ├── 30_dias/             # Modelos con ventana de 30 días
-│   │   │   ├── ARIMA.py
-│   │   │   ├── SARIMA.py
-│   │   │   └── XGBoost.py
+│   │   │   ├── ARIMA.py         # Modelo Arima
+│   │   │   ├── SARIMA.py        # Modelo Sarima
+│   │   │   └── XGBoost.py       # Modelo XGBoost
 │   │   ├── baseline.py          # Comparación con modelos base
-│   │   ├── eliminación de variables.ipynb  # Feature selection
+│   │   ├── eliminación de variables.ipynb  # Feature selection (se ha de ejecutar antes de los modelos)
 │   │   └── estudio de correlaciones.ipynb  # Análisis de correlación entre variables
 │
 │   ├── 5 pipeline/              # Automatización de tareas: entrenamiento y predicción
@@ -56,13 +56,13 @@ CryptoVision-Insights/
 │   │   │   ├── SVR_scaler.joblib
 │   │   │   ├── XGB.joblib
 │   │   │   └── XGB_scaler.joblib
-│   │   ├── actualizar_datos.py  # Script para actualizar predicciones automáticamente
+│   │   ├── actualizar_datos.py  # Script para actualizar predicciones automáticamente y obtener los nuevos datos
 │   │   └── reentrenamiento.py   # Reentrenamiento automático del modelo
 │
 │   └── 6 nuevos datos/          # Preparación de nuevos datos para predicciones en tiempo real
-│       ├── creacion_nuevos_datos.py
-│       ├── eliminación de variables nuevos datos.ipynb
-│       └── merge_nuevos_datos.py
+│       ├── creacion_nuevos_datos.py                        # Creacion de nuevos datos (ejecutar como tercer script del apartado 6)
+│       ├── eliminación de variables nuevos datos.ipynb     # Eliminación de variables (ejecutar como primer script del apartado 6)
+│       └── merge_nuevos_datos.py                           # Unión de los nuevos datos (ejecutar como segundo script del apartado 6)
 │
 ├── utils/                       # Funciones utilitarias y herramientas de ML
 │   ├── arquitecturas/
@@ -80,8 +80,6 @@ CryptoVision-Insights/
 │   ├── mlflow_utils.py          # Integración con MLflow para tracking
 │   └── paths.py                 # Rutas comunes para acceso a datos y modelos
 │
-├── Dockerfile                   # Dockerfile para contenerizar la aplicación
-├── requirements.txt             # Lista de dependencias (pip)
 ├── pyproject.toml               # Configuración del proyecto para herramientas modernas
 ├── uv.lock                      # Archivo de bloqueo de versiones con uv
 ├── .gitignore                   # Archivos ignorados por Git
@@ -104,7 +102,49 @@ Para la correcta ejecución del proyecto, es necesario instalar las siguientes d
    python -m ipykernel install --user --name=c2425-r6 --display-name "Python (c2425-R6)"
   
 # Instrucciones para ejecutar los scripts del proyecto.
+Para la correcta ejecución de los scrpits del proyecto se ha de seguir el siguiente orden:
+1. **Extracción**:  
+   En esta primera parte del proyecto no hay ningún script que tenga que ser ejecutado antes que otro, pero debes ejecutar todos ellos antes de pasar a la siguiente fase.
 
+
+2. **Transformación**:  
+   Para esta segunda, se han debido ejecutar todos los scripts de la fase anterior.  
+   Y además, dentro de esta fase sí que se deben ejecutar antes todos los scripts de limpieza junto a _sentiment_analysis.py_ antes de ejecutar cualquier otro script.  
+
+   Posteriormente se debe ejecutar el script _merge.py_.  
+   Es indiferente cuándo se ejecuta el script _creacion_variables.py_ debido a que solo contiene funciones que llaman los scripts de limpieza.  
+   Y no se debe ejecutar en ningún caso _parquet_merged_data.py_; se ejecutará más adelante cuando se indique.
+
+
+3. **Análisis**:  
+   Para esta tercera fase, se deben haber ejecutado las dos fases anteriores.  
+   Dentro de esta es indiferente el orden de ejecución de los scripts.
+
+
+4. **Modelo**:  
+   Para esta cuarta fase, se deben haber ejecutado las tres fases anteriores.  
+   Y dentro de esta, se debe seguir el siguiente orden:  
+   Primero se debe ejecutar el notebook _eliminacion de variables.ipynb_,  
+   y a continuación se debe ejecutar el script del apartado de transformación que nos saltamos anteriormente (_parquet_merged_data.py_),  
+   y ya por último se puede ejecutar cualquier script de los modelos (ya sean de 7 o 30 días) o el _baseline.py_ indiferentemente.  
+
+   El notebook _estudio de correlaciones.ipynb_ se puede ejecutar en cualquier momento ya que no depende de ningún script.
+
+
+5. **Pipeline**:  
+   Para esta quinta fase, se debe haber ejecutado todo lo mencionado anteriormente.  
+   Además, dentro de esta primero se debe ejecutar el script _actualizar_datos.py_  
+   y después se podría ejecutar _reentrenamiento.py_  
+   (aunque simplemente con ejecutar _actualizar_datos.py_ ya ejecutará todos los scripts de la fase 5 y 6 en el orden óptimo).
+
+
+6. **Nuevos datos**:  
+   Para esta última fase se debe haber ejecutado todo lo dicho anteriormente.  
+   Y dentro de esta se ha de seguir el siguiente orden:  
+   primero se debe ejecutar el _merge_nuevos_datos.py_,  
+   después el notebook _eliminacion de variables nuevos datos.ipynb_,  
+   y por último el script _creacion_nuevos_datos.py_  
+   (aunque solo con ejecutar el script _actualizar_datos.py_ de la fase 5 ya te ejecuta todos estos scripts).
 # Resumen de los resultados de los mejores modelos construidos.
 
 #  Equipo de desarrollo.

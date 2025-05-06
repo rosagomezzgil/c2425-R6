@@ -151,6 +151,42 @@ Para la correcta ejecución de los scrpits del proyecto se ha de seguir el sigui
    (aunque solo con ejecutar el script _actualizar_datos.py_ de la fase 5 ya te ejecuta todos estos scripts).
 # Resumen de los resultados de los mejores modelos construidos.
 
+### Modelos para Predicción a 7 Días
+
+| Modelo         | MSE     | RMSE   | MAE    | R²      | Accuracy |
+|----------------|---------|--------|--------|---------|----------|
+| **Baseline**   | 51.6097 | 7.1839 | 5.5585 | -0.6235 | 0.5564   |
+| Árbol Decisión | 13.7469 | 3.7077 | 3.1287 | -0.1264 | 0.5200   |
+| LSTM           | 14.2768 | 3.7784 | 3.0281 | -0.1270 | 0.4722   |
+| **SVR**        | **8.7346** | **2.9554** | **2.4299** | **0.2843** | **0.7200** |
+
+**Comentario**:  
+Para la predicción a 7 días, el modelo **SVR (Support Vector Regression)** obtiene claramente los mejores resultados. Es el único con un **R² positivo**, y logra la menor **MAE** y mayor **Accuracy** (72%).
+
+---
+
+### Modelos para Predicción a 30 Días
+
+| Modelo       | MSE      | RMSE    | MAE     | R²      | Accuracy |
+|--------------|----------|---------|---------|---------|----------|
+| **Baseline** | 249.4163 | 15.7929 | 13.0654 | -0.6583 | 0.5337   |
+| ARIMA        | 176.7573 | 13.2950 | 10.1990 | -0.1218 | 0.8108   |
+| SARIMA       | 163.7651 | 12.7971 | 10.3525 | -0.0393 | 0.8108   |
+| **XGBoost**  | **110.4928** | **10.5116** | **7.7751** | **0.2988** | **0.8108** |
+
+**Comentario**:  
+En la predicción a 30 días, **XGBoost** destaca con el **mejor rendimiento general**, siendo el único modelo con **R² positivo** y errores más bajos. Aunque comparte la misma precisión que ARIMA y SARIMA (81.08%), XGBoost es más robusto y preciso.
+
+---
+
+### Conclusión
+- A partir de los modelos evaluados, se han seleccionado **SVR** para el horizonte de **7 días** y **XGBoost** para el de **30 días**, 
+al ser los que han ofrecido los mejores resultados en sus respectivos contextos. La comparación se ha realizado usando 
+como métrica principal el error cuadrático medio (MSE), junto con métricas complementarias como RMSE, MAE, R² y
+una medida de accuracy que refleja la capacidad del modelo para anticipar correctamente la dirección del cambio.
+
+
+- Ambos modelos superan claramente al baseline, lo que valida el uso de técnicas avanzadas de regresión y series temporales para predecir el comportamiento del mercado de Bitcoin.
 #  Equipo de desarrollo.
 Rodrigo Jesús-Portanet    
 Pablo Alonso    

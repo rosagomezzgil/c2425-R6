@@ -211,13 +211,13 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
 
         # Hiperparámetros más conservadores para evitar overfitting
         best_params_xgb = {
-            "colsample_bytree": 0.8,
-            "learning_rate": 0.05,
-            "max_depth": 2,
-            "n_estimators": 100,
-            "reg_alpha": 1,
-            "reg_lambda": 5,
-            "subsample": 0.8,
+            'colsample_bytree': 0.6,
+            'learning_rate': 0.1,
+            'max_depth': 1,
+            'n_estimators': 50,
+            'reg_alpha': 10,
+            'reg_lambda': 10,
+            'subsample': 0.6
         }
 
         # -----------------------------
@@ -247,10 +247,10 @@ def entrenar_evaluar_y_reentrenar_modelo(tecnica, test_size=0.2):
             r2 = r2_score(y_val_cv, pred_cv)
             r2_scores.append(r2)
 
-        # Entrenamiento completo con todos los datos disponibles
+        
+        # Entrenamiento con todos los datos
         modelo_xgb = XGBRegressor(**best_params_xgb)
         modelo_xgb.fit(X_train_scaled, y_train)
-        print("Reentrenamiento XGBoost:")
         evaluar_modelo_7d(modelo_xgb, X_train_scaled, y_train)
 
         # Evaluación en nuevos datos

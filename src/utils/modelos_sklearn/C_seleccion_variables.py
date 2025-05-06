@@ -49,37 +49,6 @@ def seleccionar_variables(X, y, tecnica, k_vars=0):
 
         return resultados
 
-    elif tecnica == "var":
-
-        # 1. Comprobación de estacionariedad con ADF para cada variable
-        # Test ADF solo sobre X (sin target)
-        X_filtrado = X.copy()
-        adf_fail = test_estacionariedad_adf(X_filtrado)
-
-        # Diferenciación si hace falta
-        if adf_fail:
-            for col in adf_fail:
-                X_filtrado.loc[:, col] = X_filtrado[col].diff()
-            X_filtrado = X_filtrado.dropna()
-
-        # 2. Aplicar PCA para reducir dimensionalidad
-        # Estandarizamos las variables para PCA
-        scaler = StandardScaler()
-        X_estandarizado = scaler.fit_transform(X_filtrado)
-
-        pca = PCA(n_components=0.90)  # Esto conserva el 90% de la varianza
-        X_pca = pca.fit_transform(X_estandarizado)
-
-        # Convertimos a DataFrame para compatibilidad
-        X_pca_df = pd.DataFrame(
-            X_pca, columns=[f"PC{i + 1}" for i in range(X_pca.shape[1])]
-        )
-
-        # Retornamos el DataFrame con las componentes principales y la variable target
-        X_pca_df["target"] = y
-
-        return X_pca_df, None
-
     elif tecnica == "lstm":
         """
         Selecciona variables usando Random Forest para la selección de características.
@@ -118,50 +87,3 @@ def seleccionar_variables(X, y, tecnica, k_vars=0):
 
     else:
         return X, None
-
-
-def reducir_vif(X, umbral=10.0):
-    """
-    Elimina variables con VIF alto de forma iterativa.
-
-    :param X: DataFrame con variables explicativas
-    :param umbral: VIF máximo aceptable (por defecto: 10)
-    :param verbose: Si True, imprime qué variables se eliminan
-    :return: DataFrame con variables filtradas por VIF
-    """
-    X_filtrado = X.copy()
-    while True:
-        vif = pd.Series(
-            [
-                variance_inflation_factor(X_filtrado.values, i)
-                for i in range(X_filtrado.shape[1])
-            ],
-            index=X_filtrado.columns,
-        )
-        max_vif = vif.max()
-        if max_vif > umbral:
-            col_a_eliminar = vif.idxmax()
-            X_filtrado = X_filtrado.drop(columns=[col_a_eliminar])
-        else:
-            break
-    return X_filtrado
-
-
-def test_estacionariedad_adf(X, alpha=0.1):
-    """
-    Aplica el test de Dickey-Fuller aumentado (ADF) a cada columna de un DataFrame.
-
-    Este test evalúa si una serie temporal es estacionaria. La hipótesis nula (H0) es que la serie
-    NO es estacionaria (es decir, contiene raíz unitaria). Si el p-valor es mayor que el umbral alpha,
-    no podemos rechazar la hipótesis nula, por lo que consideramos que esa variable no es estacionaria.
-
-    :param X: DataFrame con variables temporales (una por columna)
-    :param alpha: Nivel de significancia para el test ADF (por defecto 0.05)
-    :return: Lista con los nombres de las columnas que NO son estacionarias
-    """
-    no_estacionarias = []
-    for col in X.columns:
-        p_valor = adfuller(X[col])[1]
-        if p_valor > alpha:
-            no_estacionarias.append(col)
-    return no_estacionarias

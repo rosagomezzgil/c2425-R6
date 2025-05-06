@@ -23,8 +23,8 @@ def validar_modelo_xgboost(X, y, param_grid, n_splits=3):
     for params in ParameterGrid(param_grid):
         fold_mse = []
         for train_idx, test_idx in tscv.split(X):
-            X_train_fold, X_test_fold = X[train_idx], X[test_idx]
-            y_train_fold, y_test_fold = y[train_idx], y[test_idx]
+            X_train_fold, X_test_fold = X.iloc[train_idx], X.iloc[test_idx]
+            y_train_fold, y_test_fold = y.iloc[train_idx], y.iloc[test_idx]
 
             model = xgb.XGBRegressor(**params)
             model.fit(X_train_fold, y_train_fold)
@@ -73,7 +73,7 @@ def main():
         }
 
         # 4. Validación y entrenamiento
-        best_model, best_params = validar_modelo_xgboost(X_train, y_train.values, param_grid, n_splits=3)
+        best_model, best_params = validar_modelo_xgboost(X_train, y_train, param_grid, n_splits=3)
 
         # 5. Predicción y evaluación
         y_pred = best_model.predict(X_test)

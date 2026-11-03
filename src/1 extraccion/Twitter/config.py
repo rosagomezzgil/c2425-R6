@@ -7,13 +7,14 @@ Este script contiene las claves necesarias para autenticar el acceso a la API de
 que requieren conexión a dicha API.
 
 IMPORTANTE:
-Este archivo contiene información sensible (API keys y tokens). No debe ser compartido
-ni subido a repositorios públicos. Se recomienda incluirlo en el archivo `.gitignore`
-y considerar el uso de variables de entorno o gestores de secretos para ambientes productivos.
+Las claves se leen de variables de entorno (por ejemplo, desde un archivo `.env`
+que no se sube al repositorio). Ver `.env.example`.
 """
 
-API_KEY = "***REMOVED***"
-API_SECRET = "***REMOVED***"
-ACCESS_TOKEN = "***REMOVED***"
-ACCESS_SECRET = "***REMOVED***"
-BEARER_TOKEN = "***REMOVED***"
+import os
+
+API_KEY = os.getenv("TWITTER_API_KEY")
+API_SECRET = os.getenv("TWITTER_API_SECRET")
+ACCESS_TOKEN = os.getenv("TWITTER_ACCESS_TOKEN")
+ACCESS_SECRET = os.getenv("TWITTER_ACCESS_SECRET")
+BEARER_TOKEN = os.getenv("TWITTER_BEARER_TOKEN")
